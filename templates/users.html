@@ -1,0 +1,32 @@
+{% extends "main.html" %}
+
+{% block content %}
+  <p><a href="/user-roles/1">Создать новую запись</a></p>
+  <table id="data" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Идентификатор</th>
+        <th>ФИО</th>
+        <th>Дата устройства на работу</th>
+        <th>Роль</th>
+        <th>Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>{{ user.fio }}</td>
+          <td>{{ user.employment_date }}</td>
+          <td>{{ user.user_role }}</td>
+          <td>
+            <p><a href="/users/1">Редактировать</a></p>
+            <p><a href="/users/1">Удалить</a></p>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p>Количество записей: {{count}}</p>
+  <a href="/" class="button-link">Назад</a>
+{% endblock %}
