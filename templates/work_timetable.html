@@ -153,7 +153,6 @@
 </script>
 
 
-  {# ── Toolbar ── #}
   <div class="table-toolbar">
     <button class="btn-action btn-create" onclick="openModal()">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
@@ -164,24 +163,25 @@
     <span class="record-count">Записей: {{count}}</span>
   </div>
 
-  {# ── Table ── #}
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Наименование</th>
-        <th>Действия</th>
+        <th>ID</th><th>Помещение</th><th>Дата работы</th>
+        <th>Начало</th><th>Конец</th><th>Действия</th>
       </tr>
     </thead>
     <tbody>
-      {% for user_role in user_roles %}
+      {% for entry in work_timetable %}
         <tr>
-          <td>{{ user_role.id }}</td>
-          <td>{{ user_role.name }}</td>
+          <td>{{ entry.id }}</td>
+          <td>{{ entry.room }}</td>
+          <td>{{ entry.work_date }}</td>
+          <td>{{ entry.time_from }}</td>
+          <td>{{ entry.time_to }}</td>
           <td>
             <div class="actions-cell">
-              {{ btn_edit_row('/user-roles/' ~ user_role.id) }}
-              {{ btn_delete_row('/user-roles/' ~ user_role.id) }}
+              {{ btn_edit_row('/work_timetable/' ~ entry.id) }}
+              {{ btn_delete_row('/work_timetable/' ~ entry.id) }}
             </div>
           </td>
         </tr>
@@ -189,18 +189,36 @@
     </tbody>
   </table>
 
-  {# ── Modal: создать запись ── #}
   <div id="modal-create" class="modal-overlay" onclick="closeModal('modal-create', event)">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>Создать: Роль пользователя</h3>
+        <h3>Создать: Расписание работы</h3>
         <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
-      <form method="POST" action="/user-roles">
+      <form method="POST" action="/work_timetable">
         <div class="modal-body">
           <div class="form-group">
-            <label class="form-label">Наименование</label>
-            <input class="form-control" type="text" name="name" placeholder="Введите название роли" required>
+            <label class="form-label">Помещение</label>
+            <select class="form-control" name="room_id" required>
+              <option value="">— Выберите помещение —</option>
+              {% for r in rooms %}
+                <option value="{{ r.id }}">{{ r.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Дата работы</label>
+            <input class="form-control" type="date" name="work_date" required>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 16px;">
+            <div class="form-group">
+              <label class="form-label">Время начала</label>
+              <input class="form-control" type="time" name="time_from" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Время окончания</label>
+              <input class="form-control" type="time" name="time_to" required>
+            </div>
           </div>
         </div>
         <div class="modal-footer">

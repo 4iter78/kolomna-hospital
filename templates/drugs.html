@@ -174,14 +174,14 @@
       </tr>
     </thead>
     <tbody>
-      {% for user_role in user_roles %}
+      {% for drug in drugs %}
         <tr>
-          <td>{{ user_role.id }}</td>
-          <td>{{ user_role.name }}</td>
+          <td>{{ drug.id }}</td>
+          <td>{{ drug.name }}</td>
           <td>
             <div class="actions-cell">
-              {{ btn_edit_row('/user-roles/' ~ user_role.id) }}
-              {{ btn_delete_row('/user-roles/' ~ user_role.id) }}
+              {{ btn_edit_row('/drugs/' ~ drug.id) }}
+              {{ btn_delete_row('/drugs/' ~ drug.id) }}
             </div>
           </td>
         </tr>
@@ -193,14 +193,14 @@
   <div id="modal-create" class="modal-overlay" onclick="closeModal('modal-create', event)">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>Создать: Роль пользователя</h3>
+        <h3>Создать: Препарат</h3>
         <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
-      <form method="POST" action="/user-roles">
+      <form method="POST" action="/drugs">
         <div class="modal-body">
           <div class="form-group">
             <label class="form-label">Наименование</label>
-            <input class="form-control" type="text" name="name" placeholder="Введите название роли" required>
+            <input class="form-control" type="text" name="name" placeholder="Введите наименование" required>
           </div>
         </div>
         <div class="modal-footer">

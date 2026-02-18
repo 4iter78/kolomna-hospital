@@ -1,7 +1,8 @@
-from flask import request, Blueprint, render_template
-from PP_2025.models.Users import Users
-from PP_2025.models.UserRoles import UserRoles
-from PP_2025.app import db_connection
+from flask import redirect, url_for, flash, request, Blueprint, render_template
+
+from app import db_connection
+from models.UserRoles import UserRoles
+from models.Users import Users
 
 db = db_connection
 users_controller = Blueprint('users_controller', __name__)
@@ -20,7 +21,10 @@ def handle_users():
                              user_role_id=data['user_role_id'])
             db.session.add(new_user)
             db.session.commit()
-            return {"message": f"user {new_user.surname} {new_user.name} {new_user.second_name} with id {new_user.id} has been created successfully."}
+            flash(f"Пользователь {new_user.surname} {new_user.name} {new_user.second_name} с идентификатором "
+                  f"{new_user.id} успешно создан.",
+                  'success')
+            return redirect(url_for('users_controller.handle_users'))
         else:
             return {"error": "The request payload is not in JSON format"}
 

@@ -153,7 +153,6 @@
 </script>
 
 
-  {# ── Toolbar ── #}
   <div class="table-toolbar">
     <button class="btn-action btn-create" onclick="openModal()">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
@@ -164,24 +163,22 @@
     <span class="record-count">Записей: {{count}}</span>
   </div>
 
-  {# ── Table ── #}
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Наименование</th>
-        <th>Действия</th>
+        <th>ID</th><th>Наименование</th><th>Тип помещения</th><th>Действия</th>
       </tr>
     </thead>
     <tbody>
-      {% for user_role in user_roles %}
+      {% for room in rooms %}
         <tr>
-          <td>{{ user_role.id }}</td>
-          <td>{{ user_role.name }}</td>
+          <td>{{ room.id }}</td>
+          <td>{{ room.name }}</td>
+          <td>{{ room.room_type }}</td>
           <td>
             <div class="actions-cell">
-              {{ btn_edit_row('/user-roles/' ~ user_role.id) }}
-              {{ btn_delete_row('/user-roles/' ~ user_role.id) }}
+              {{ btn_edit_row('/rooms/' ~ room.id) }}
+              {{ btn_delete_row('/rooms/' ~ room.id) }}
             </div>
           </td>
         </tr>
@@ -189,18 +186,26 @@
     </tbody>
   </table>
 
-  {# ── Modal: создать запись ── #}
   <div id="modal-create" class="modal-overlay" onclick="closeModal('modal-create', event)">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>Создать: Роль пользователя</h3>
+        <h3>Создать: Помещение</h3>
         <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
-      <form method="POST" action="/user-roles">
+      <form method="POST" action="/rooms">
         <div class="modal-body">
           <div class="form-group">
             <label class="form-label">Наименование</label>
-            <input class="form-control" type="text" name="name" placeholder="Введите название роли" required>
+            <input class="form-control" type="text" name="name" placeholder="Название помещения" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Тип помещения</label>
+            <select class="form-control" name="room_type_id" required>
+              <option value="">— Выберите тип —</option>
+              {% for rt in room_types %}
+                <option value="{{ rt.id }}">{{ rt.name }}</option>
+              {% endfor %}
+            </select>
           </div>
         </div>
         <div class="modal-footer">
