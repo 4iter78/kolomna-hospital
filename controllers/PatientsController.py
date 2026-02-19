@@ -9,28 +9,25 @@ patients_controller = Blueprint('patients_controller', __name__)
 @patients_controller.route('/patients', methods=['POST', 'GET'])
 def handle_patients():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            new_patient = Patients(
-                surname=data['surname'],
-                name=data['name'],
-                second_name=data.get('second_name'),
-                birth_date=data['birth_date'],
-                birth_place=data.get('birth_place'),
-                phone=data.get('phone'),
-                email=data.get('email'),
-                address=data.get('address'),
-                passport=data.get('passport'),
-                oms_number=data.get('oms_number')
-            )
-            db.session.add(new_patient)
-            db.session.commit()
-            flash(f"Пациент {new_patient.surname} {new_patient.name} с идентификатором {new_patient.id} "
-                  f"успешно создан.",
-                  'success')
-            return redirect(url_for('patients_controller.handle_patients'))
-        else:
-            return {"error": "The request payload is not in JSON format"}
+        data = request.get_json() if request.is_json else request.form
+        new_patient = Patients(
+            surname=data['surname'],
+            name=data['name'],
+            second_name=data.get('second_name'),
+            birth_date=data['birth_date'],
+            birth_place=data.get('birth_place'),
+            phone=data.get('phone'),
+            email=data.get('email'),
+            address=data.get('address'),
+            passport=data.get('passport'),
+            oms_number=data.get('oms_number')
+        )
+        db.session.add(new_patient)
+        db.session.commit()
+        flash(f"Пациент {new_patient.surname} {new_patient.name} с идентификатором {new_patient.id} "
+              f"успешно создан.",
+              'success')
+        return redirect(url_for('patients_controller.handle_patients'))
 
     elif request.method == 'GET':
         patients = Patients.query.all()

@@ -12,20 +12,17 @@ health_cards_controller = Blueprint('health_cards_controller', __name__)
 @health_cards_controller.route('/health_cards', methods=['POST', 'GET'])
 def handle_health_cards():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            new_health_card = HealthCards(
-                patient_id=data['patient_id'],
-                create_datetime=data.get('create_datetime', datetime.now()),
-                user_id=data['user_id']
-            )
-            db.session.add(new_health_card)
-            db.session.commit()
-            flash(f"Медицинская карта с идентификатором {new_health_card.id} успешно создана.",
-                  'success')
-            return redirect(url_for('health_cards_controller.handle_health_cards'))
-        else:
-            return {"error": "The request payload is not in JSON format"}
+        data = request.get_json() if request.is_json else request.form
+        new_health_card = HealthCards(
+            patient_id=data['patient_id'],
+            create_datetime=data.get('create_datetime', datetime.now()),
+            user_id=data['user_id']
+        )
+        db.session.add(new_health_card)
+        db.session.commit()
+        flash(f"Медицинская карта с идентификатором {new_health_card.id} успешно создана.",
+              'success')
+        return redirect(url_for('health_cards_controller.handle_health_cards'))
 
     elif request.method == 'GET':
         health_cards = HealthCards.query.all()
@@ -41,8 +38,18 @@ def handle_health_cards():
                 "user_id": hc.user_id,
                 "user": f'{user.surname} {user.name} {user.second_name or ""}' if user else ''
             })
+
+        patients_list = [
+            {"id": p.id, "fio": f'{p.surname} {p.name} {p.second_name or ""}'}
+            for p in Patients.query.all()
+        ]
+        users_list = [
+            {"id": u.id, "fio": f'{u.surname} {u.name} {u.second_name or ""}'}
+            for u in Users.query.all()
+        ]
         return render_template('health_cards.html', title='Медицинские карты',
-                               health_cards=results, count=len(results))
+                               health_cards=results, count=len(results),
+                               patients=patients_list, users=users_list)
 
 
 @health_cards_controller.route('/health_cards/<health_card_id>', methods=['GET', 'PUT', 'DELETE'])

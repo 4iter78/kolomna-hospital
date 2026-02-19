@@ -10,21 +10,18 @@ work_timetable_controller = Blueprint('work_timetable_controller', __name__)
 @work_timetable_controller.route('/work_timetable', methods=['POST', 'GET'])
 def handle_work_timetables():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            new_entry = WorkTimetable(
-                room_id=data['room_id'],
-                work_date=data['work_date'],
-                time_from=data['time_from'],
-                time_to=data['time_to']
-            )
-            db.session.add(new_entry)
-            db.session.commit()
-            flash(f"Рабочее расписание с идентификатором {new_entry.id} успешно создано.",
-                  'success')
-            return redirect(url_for('work_timetable_controller.handle_work_timetables'))
-        else:
-            return {"error": "The request payload is not in JSON format"}
+        data = request.get_json() if request.is_json else request.form
+        new_entry = WorkTimetable(
+            room_id=data['room_id'],
+            work_date=data['work_date'],
+            time_from=data['time_from'],
+            time_to=data['time_to']
+        )
+        db.session.add(new_entry)
+        db.session.commit()
+        flash(f"Рабочее расписание с идентификатором {new_entry.id} успешно создано.",
+              'success')
+        return redirect(url_for('work_timetable_controller.handle_work_timetables'))
 
     elif request.method == 'GET':
         entries = WorkTimetable.query.all()
@@ -39,8 +36,12 @@ def handle_work_timetables():
                 "time_from": e.time_from,
                 "time_to": e.time_to
             })
+
+        rooms_list = [{"id": r.id, "name": r.name} for r in Rooms.query.all()]
+
         return render_template('work_timetable.html', title='Расписание работы',
-                               work_timetable=results, count=len(results))
+                               work_timetable=results, count=len(results),
+                               rooms=rooms_list)
 
 
 @work_timetable_controller.route('/work_timetable/<entry_id>', methods=['GET', 'PUT', 'DELETE'])

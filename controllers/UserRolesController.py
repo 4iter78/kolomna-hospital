@@ -11,16 +11,13 @@ user_roles_controller = Blueprint('user_roles_controller', __name__)
 @user_roles_controller.route('/user-roles', methods=['POST', 'GET'])
 def handle_user_roles():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            new_user_role = UserRoles(name=data['name'])
-            db.session.add(new_user_role)
-            db.session.commit()
-            flash(f"Роль {new_user_role.name} с идентификатором {new_user_role.id} успешно создана.",
-                  'success')
-            return redirect(url_for('user_roles_controller.handle_user_roles'))
-        else:
-            return {"error": "The request payload is not in JSON format"}
+        data = request.get_json() if request.is_json else request.form
+        new_user_role = UserRoles(name=data['name'])
+        db.session.add(new_user_role)
+        db.session.commit()
+        flash(f"Роль {new_user_role.name} с идентификатором {new_user_role.id} успешно создана.",
+              'success')
+        return redirect(url_for('user_roles_controller.handle_user_roles'))
 
     elif request.method == 'GET':
         user_roles = UserRoles.query.all()

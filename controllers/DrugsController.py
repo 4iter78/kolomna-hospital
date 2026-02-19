@@ -9,16 +9,13 @@ drugs_controller = Blueprint('drugs_controller', __name__)
 @drugs_controller.route('/drugs', methods=['POST', 'GET'])
 def handle_drugs():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            new_drug = Drugs(name=data['name'])
-            db.session.add(new_drug)
-            db.session.commit()
-            flash(f"Препарат {new_drug.name} с идентификатором {new_drug.id} успешно создан.",
-                  'success')
-            return redirect(url_for('drugs_controller.handle_drugs'))
-        else:
-            return {"error": "The request payload is not in JSON format"}
+        data = request.get_json() if request.is_json else request.form
+        new_drug = Drugs(name=data['name'])
+        db.session.add(new_drug)
+        db.session.commit()
+        flash(f"Препарат {new_drug.name} с идентификатором {new_drug.id} успешно создан.",
+              'success')
+        return redirect(url_for('drugs_controller.handle_drugs'))
 
     elif request.method == 'GET':
         drugs = Drugs.query.all()

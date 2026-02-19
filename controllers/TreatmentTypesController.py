@@ -9,17 +9,14 @@ treatment_types_controller = Blueprint('treatment_types_controller', __name__)
 @treatment_types_controller.route('/treatment_types', methods=['POST', 'GET'])
 def handle_treatment_types():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            new_treatment_type = TreatmentTypes(name=data['name'])
-            db.session.add(new_treatment_type)
-            db.session.commit()
-            flash(f"Тип лечения {new_treatment_type.name} с идентификатором {new_treatment_type.id} "
-                  f"успешно создан.",
-                  'success')
-            return redirect(url_for('treatment_types_controller.handle_treatment_types'))
-        else:
-            return {"error": "The request payload is not in JSON format"}
+        data = request.get_json() if request.is_json else request.form
+        new_treatment_type = TreatmentTypes(name=data['name'])
+        db.session.add(new_treatment_type)
+        db.session.commit()
+        flash(f"Тип лечения {new_treatment_type.name} с идентификатором {new_treatment_type.id} "
+              f"успешно создан.",
+              'success')
+        return redirect(url_for('treatment_types_controller.handle_treatment_types'))
 
     elif request.method == 'GET':
         treatment_types = TreatmentTypes.query.all()

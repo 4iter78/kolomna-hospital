@@ -12,21 +12,18 @@ users_controller = Blueprint('users_controller', __name__)
 @users_controller.route('/users', methods=['POST', 'GET'])
 def handle_users():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            new_user = Users(surname=data['surname'],
-                             name=data['name'],
-                             second_name=data['second_name'],
-                             employment_date=data['employment_date'],
-                             user_role_id=data['user_role_id'])
-            db.session.add(new_user)
-            db.session.commit()
-            flash(f"Пользователь {new_user.surname} {new_user.name} {new_user.second_name} с идентификатором "
-                  f"{new_user.id} успешно создан.",
-                  'success')
-            return redirect(url_for('users_controller.handle_users'))
-        else:
-            return {"error": "The request payload is not in JSON format"}
+        data = request.get_json() if request.is_json else request.form
+        new_user = Users(surname=data['surname'],
+                         name=data['name'],
+                         second_name=data['second_name'],
+                         employment_date=data['employment_date'],
+                         user_role_id=data['user_role_id'])
+        db.session.add(new_user)
+        db.session.commit()
+        flash(f"Пользователь {new_user.surname} {new_user.name} {new_user.second_name} с идентификатором "
+              f"{new_user.id} успешно создан.",
+              'success')
+        return redirect(url_for('users_controller.handle_users'))
 
     elif request.method == 'GET':
         # db.session.query(Users, Profiles).join(Profiles, Users.id == Profiles.user_id).all()
@@ -43,13 +40,14 @@ def handle_users():
                 "second_name": user.second_name,
                 "fio": f'{user.surname} {user.name} {user.second_name}',
                 "employment_date": user.employment_date,
+                "user_role_id": user.user_role_id,
                 "user_role": user_role.name if user_role is not None else ''
             }
             results.append(txt_user)
 
+        roles = [{"id": r.id, "name": r.name} for r in UserRoles.query.all()]
         return render_template('users.html', title='Пользователи',
-                               users=results, count=len(results))
-        # {"count": len(results), "users": results}
+                               users=results, user_roles=roles, count=len(results))
 
 
 # маршрут к конкретному пользователю по его user_id

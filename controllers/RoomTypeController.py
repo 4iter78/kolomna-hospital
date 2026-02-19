@@ -9,16 +9,13 @@ room_type_controller = Blueprint('room_type_controller', __name__)
 @room_type_controller.route('/room_type', methods=['POST', 'GET'])
 def handle_room_types():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            new_room_type = RoomType(name=data['name'])
-            db.session.add(new_room_type)
-            db.session.commit()
-            flash(f"Тип помещения {new_room_type.name} с идентификатором {new_room_type.id} успешно создан.",
-                  'success')
-            return redirect(url_for('room_type_controller.handle_room_types'))
-        else:
-            return {"error": "The request payload is not in JSON format"}
+        data = request.get_json() if request.is_json else request.form
+        new_room_type = RoomType(name=data['name'])
+        db.session.add(new_room_type)
+        db.session.commit()
+        flash(f"Тип помещения {new_room_type.name} с идентификатором {new_room_type.id} успешно создан.",
+              'success')
+        return redirect(url_for('room_type_controller.handle_room_types'))
 
     elif request.method == 'GET':
         room_types = RoomType.query.all()

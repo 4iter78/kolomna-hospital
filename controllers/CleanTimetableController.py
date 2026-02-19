@@ -11,20 +11,17 @@ clean_timetable_controller = Blueprint('clean_timetable_controller', __name__)
 @clean_timetable_controller.route('/clean_timetable', methods=['POST', 'GET'])
 def handle_clean_timetables():
     if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            new_entry = CleanTimetable(
-                user_id=data['user_id'],
-                room_id=data['room_id'],
-                clean_datetime=data['clean_datetime']
-            )
-            db.session.add(new_entry)
-            db.session.commit()
-            flash(f"Расписание уборки помещений с идентификатором {new_entry.id} успешно создано.",
-                  'success')
-            return redirect(url_for('clean_timetable_controller.handle_clean_timetables'))
-        else:
-            return {"error": "The request payload is not in JSON format"}
+        data = request.get_json() if request.is_json else request.form
+        new_entry = CleanTimetable(
+            user_id=data['user_id'],
+            room_id=data['room_id'],
+            clean_datetime=data['clean_datetime']
+        )
+        db.session.add(new_entry)
+        db.session.commit()
+        flash(f"Расписание уборки помещений с идентификатором {new_entry.id} успешно создано.",
+              'success')
+        return redirect(url_for('clean_timetable_controller.handle_clean_timetables'))
 
     elif request.method == 'GET':
         entries = CleanTimetable.query.all()
@@ -40,8 +37,16 @@ def handle_clean_timetables():
                 "room": room.name if room else '',
                 "clean_datetime": e.clean_datetime
             })
+
+        users_list = [
+            {"id": u.id, "fio": f'{u.surname} {u.name} {u.second_name or ""}'}
+            for u in Users.query.all()
+        ]
+        rooms_list = [{"id": r.id, "name": r.name} for r in Rooms.query.all()]
+
         return render_template('clean_timetable.html', title='Расписание уборки помещений',
-                               clean_timetable=results, count=len(results))
+                               clean_timetable=results, count=len(results),
+                               users=users_list, rooms=rooms_list)
 
 
 @clean_timetable_controller.route('/clean_timetable/<entry_id>', methods=['GET', 'PUT', 'DELETE'])
