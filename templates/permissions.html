@@ -1,0 +1,111 @@
+{% extends "main.html" %}
+{% block content %}
+
+<p style="color:var(--text-muted);margin-bottom:24px;font-size:.9rem;">
+  Нажмите на ячейку чтобы изменить право. Изменения применяются мгновенно.
+</p>
+
+<div style="overflow-x:auto;">
+<table class="table" id="perm-table">
+  <thead>
+    <tr>
+      <th style="min-width:160px;">Сущность</th>
+      {% for role in roles %}
+        <th colspan="3" style="text-align:center;border-left:2px solid var(--gray-border);">
+          {{ role.name }}
+        </th>
+      {% endfor %}
+    </tr>
+    <tr>
+      <th></th>
+      {% for role in roles %}
+        <th style="font-size:.65rem;text-align:center;border-left:2px solid var(--gray-border);"
+            title="Чтение">👁</th>
+        <th style="font-size:.65rem;text-align:center;" title="Запись">✏️</th>
+        <th style="font-size:.65rem;text-align:center;" title="Только своё">🔒</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for entity in entities %}
+    <tr>
+      <td><strong>{{ entity.name }}</strong>
+        <span style="display:block;font-size:.75rem;color:var(--text-muted);">{{ entity.code }}</span>
+      </td>
+      {% for role in roles %}
+        {% set p = matrix[role.id][entity.code] %}
+        {% for field, val in [('can_read', p.can_read), ('can_write', p.can_write), ('own_only', p.own_only)] %}
+        <td style="text-align:center;{% if loop.first %}border-left:2px solid var(--gray-border);{% endif %}">
+          <button class="perm-toggle {% if val %}active{% endif %}"
+                  data-role="{{ role.id }}"
+                  data-entity="{{ entity.id }}"
+                  data-field="{{ field }}"
+                  data-value="{{ 'true' if val else 'false' }}"
+                  title="{{ 'Отключить' if val else 'Включить' }}">
+            {{ '✓' if val else '—' }}
+          </button>
+        </td>
+        {% endfor %}
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<style>
+  .perm-toggle {
+    width: 36px; height: 28px; border-radius: 6px; border: 1.5px solid var(--gray-border);
+    background: var(--gray-light); color: var(--text-muted);
+    font-size: .85rem; font-weight: 600; cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s;
+  }
+  .perm-toggle.active {
+    background: var(--blue-pale); color: var(--blue-mid);
+    border-color: var(--blue-light);
+  }
+  .perm-toggle:hover { opacity: .8; }
+  .perm-toggle.saving { opacity: .4; pointer-events: none; }
+  #perm-table th, #perm-table td { padding: 8px 10px; }
+</style>
+
+{% block scripts %}
+<script>
+document.querySelectorAll('.perm-toggle').forEach(btn => {
+  btn.addEventListener('click', async function () {
+    const role_id   = this.dataset.role;
+    const entity_id = this.dataset.entity;
+    const field     = this.dataset.field;
+    const oldValue  = this.dataset.value === 'true';
+    const newValue  = !oldValue;
+
+    this.classList.add('saving');
+
+    try {
+      const resp = await fetch('/admin/permissions/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role_id, entity_id, field, value: newValue })
+      });
+      const data = await resp.json();
+
+      if (data.ok) {
+        this.dataset.value = newValue ? 'true' : 'false';
+        this.textContent   = newValue ? '✓' : '—';
+        this.title         = newValue ? 'Отключить' : 'Включить';
+        this.classList.toggle('active', newValue);
+        showToast(`Право обновлено`, 'success');
+      } else {
+        showToast('Ошибка: ' + (data.error || 'неизвестно'), 'error');
+      }
+    } catch (e) {
+      showToast('Ошибка соединения', 'error');
+    } finally {
+      this.classList.remove('saving');
+    }
+  });
+});
+</script>
+{% endblock %}
+
+{% endblock %}
