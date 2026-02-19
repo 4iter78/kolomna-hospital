@@ -36,9 +36,10 @@ def login():
             flash('Неверный логин или пароль.', 'danger')
             return render_template('login.html')
 
-        session['user_id']   = user.id
-        session['user_name'] = f'{user.surname} {user.name}'
+        session['user_id']    = user.id
+        session['user_name']  = f'{user.surname} {user.name}'
         session['user_login'] = user.login
+        session['user_role']  = user.user_role_id
         next_page = request.args.get('next')
         return redirect(next_page if next_page else url_for('main_controller.index'))
 
