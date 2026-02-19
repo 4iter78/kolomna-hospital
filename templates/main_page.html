@@ -1,16 +1,23 @@
 {% extends "main.html" %}
 
 {% block content %}
-    <p>Добро пожаловать на страницу работы с приложением для ГБУЗ МО Коломенская больница</p>
-  <a href="/users" class="button-link" style="display: inline-block; margin: 10px;">Пользователи</a>
-  <a href="/user-roles" class="button-link" style="display: inline-block; margin: 10px;">Роли пользователей</a>
-  <a href="/patients" class="button-link" style="display: inline-block; margin: 10px;">Пациенты</a>
-  <a href="/health_cards" class="button-link" style="display: inline-block; margin: 10px;">Медицинские карты</a>
-  <a href="/work_timetable" class="button-link" style="display: inline-block; margin: 10px;">Расписание работы</a>
-  <a href="/clean_timetable" class="button-link" style="display: inline-block; margin: 10px;">Расписание уборки помещений</a>
-  <a href="/diagnosises" class="button-link" style="display: inline-block; margin: 10px;">Диагнозы</a>
-  <a href="/drugs" class="button-link" style="display: inline-block; margin: 10px;">Препараты</a>
-  <a href="/treatment_types" class="button-link" style="display: inline-block; margin: 10px;">Типы лечения</a>
-  <a href="/room_type" class="button-link" style="display: inline-block; margin: 10px;">Типы помещений</a>
-  <a href="/rooms" class="button-link" style="display: inline-block; margin: 10px;">Помещения</a>
+<p style="margin-bottom: 24px; color: var(--text-muted); font-size: .95rem;">
+  Добро пожаловать в информационную систему ГБУЗ МО Коломенская больница
+</p>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
+
+  <a href="/users"          class="btn-action btn-create">Пользователи</a>
+  <a href="/user-roles"     class="btn-action btn-create">Роли пользователей</a>
+  <a href="/patients"       class="btn-action btn-create">Пациенты</a>
+  <a href="/health_cards"   class="btn-action btn-create">Медицинские карты</a>
+  <a href="/work_timetable" class="btn-action btn-create">Расписание работы</a>
+  <a href="/clean_timetable"class="btn-action btn-create">Расписание уборки</a>
+  <a href="/diagnosises"    class="btn-action btn-create">Диагнозы</a>
+  <a href="/drugs"          class="btn-action btn-create">Препараты</a>
+  <a href="/treatment_types"class="btn-action btn-create">Типы лечения</a>
+  <a href="/room_type"      class="btn-action btn-create">Типы помещений</a>
+  <a href="/rooms"          class="btn-action btn-create">Помещения</a>
+
+</div>
 {% endblock %}

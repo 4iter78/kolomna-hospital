@@ -1,219 +1,13 @@
 {% extends "main.html" %}
 {% block content %}
 
-{%- macro btn_edit_row(id, onclick) -%}
-<button class="btn-action btn-edit" onclick="{{ onclick }}">
-  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm-1.96 2.708L4.5 9.25V11.5h2.25l6.395-6.396-2.25-2.25zM3.5 10.5v1h1l-1-1z"/>
-  </svg>
-  Изменить
-</button>
-{%- endmacro -%}
-
-{%- macro btn_delete_row(id, url) -%}
-<button class="btn-action btn-delete" onclick="deleteRecord('{{ url }}', {{ id }})">
-  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.5l1-1h3l1 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
-  </svg>
-  Удалить
-</button>
-{%- endmacro -%}
-
-<style>
-  /* ── Toolbar ── */
-  .table-toolbar {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
-  }
-  .record-count { font-size: .85rem; color: var(--text-muted); }
-
-  /* ── Buttons ── */
-  .btn-action {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 7px 16px; border-radius: 7px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: .78rem; font-weight: 600; letter-spacing: .03em;
-    text-decoration: none; border: none; cursor: pointer;
-    transition: opacity .18s, transform .15s, box-shadow .18s;
-    white-space: nowrap;
-  }
-  .btn-action:hover  { opacity: .85; transform: translateY(-1px); }
-  .btn-action:active { transform: none; opacity: 1; }
-
-  .btn-create {
-    background: linear-gradient(135deg, var(--blue-mid), var(--blue-light));
-    color: #fff !important; box-shadow: 0 3px 10px rgba(26,86,160,.28);
-  }
-  .btn-edit   { background: var(--blue-pale); color: var(--blue-mid) !important; }
-  .btn-edit:hover   { background: #d0e4f7; }
-  .btn-delete { background: #fdf0ef; color: var(--danger) !important; }
-  .btn-delete:hover { background: #fad9d7; }
-
-  .actions-cell { display: flex; gap: 6px; flex-wrap: wrap; }
-
-  /* ── Table ── */
-  .table { border-collapse: separate; border-spacing: 0;
-           overflow: hidden; border-radius: 10px;
-           border: 1px solid var(--gray-border); }
-  .table thead th:first-child { border-radius: 8px 0 0 0; }
-  .table thead th:last-child  { border-radius: 0 8px 0 0; }
-
-  /* ── Modal ── */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0; z-index: 1000;
-    background: rgba(10,45,94,.55); backdrop-filter: blur(3px);
-    align-items: center; justify-content: center; padding: 16px;
-  }
-  .modal-overlay.open { display: flex; animation: mOverlay .2s ease; }
-  @keyframes mOverlay { from { opacity:0 } to { opacity:1 } }
-  .modal-box {
-    background: #fff; border-radius: 14px; width: 100%; max-width: 480px;
-    box-shadow: 0 20px 60px rgba(10,45,94,.35);
-    animation: mBox .25s cubic-bezier(.22,.61,.36,1); overflow: hidden;
-  }
-  @keyframes mBox {
-    from { opacity:0; transform: translateY(20px) scale(.97) }
-    to   { opacity:1; transform: none }
-  }
-
-  .modal-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 20px 24px 16px; border-bottom: 1px solid var(--gray-border);
-    background: var(--gray-light);
-  }
-  .modal-header h3 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1rem; font-weight: 700; color: var(--blue-deep);
-  }
-  .modal-close {
-    background: none; border: none; cursor: pointer;
-    color: var(--text-muted); font-size: 1.1rem;
-    padding: 2px 6px; border-radius: 5px;
-    transition: background .15s, color .15s;
-  }
-  .modal-close:hover { background: var(--gray-border); color: var(--text-main); }
-  .modal-body { padding: 22px 24px; max-height: 65vh; overflow-y: auto; }
-  .modal-footer {
-    display: flex; gap: 10px; justify-content: flex-end;
-    padding: 16px 24px; border-top: 1px solid var(--gray-border);
-    background: var(--gray-light);
-  }
-
-  /* Form inside modal */
-  .form-label {
-    display: block; font-family: 'Montserrat', sans-serif;
-    font-size: .7rem; font-weight: 600; letter-spacing: .07em;
-    text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;
-  }
-  .form-group { margin-bottom: 16px; }
-  .form-group:last-child { margin-bottom: 0; }
-  .form-control {
-    width: 100%; padding: 9px 12px;
-    border: 1.5px solid var(--gray-border); border-radius: 7px;
-    font-family: 'Source Sans 3', sans-serif; font-size: .95rem;
-    color: var(--text-main); background: var(--white); outline: none;
-    transition: border-color .2s, box-shadow .2s;
-  }
-  .form-control:focus {
-    border-color: var(--blue-light);
-    box-shadow: 0 0 0 3px rgba(45,125,210,.15);
-  }
-
-  /* Toast */
-  .toast {
-    position: fixed; bottom: 28px; right: 28px; z-index: 9999;
-    padding: 12px 20px; border-radius: 10px; font-size: .9rem;
-    font-family: 'Montserrat', sans-serif; font-weight: 500;
-    box-shadow: 0 8px 24px rgba(10,45,94,.25);
-    animation: toastIn .3s cubic-bezier(.22,.61,.36,1);
-    pointer-events: none;
-  }
-  .toast.success { background: #edf7f2; color: #1a7f4b; border: 1.5px solid #9dd5b8; }
-  .toast.error   { background: #fdf0ef; color: #d93025; border: 1.5px solid #f5c2be; }
-  @keyframes toastIn { from { opacity:0; transform: translateY(12px) } to { opacity:1; transform:none } }
-</style>
-
-<script>
-// ── Утилиты ──────────────────────────────────────────────────────
-function openModal(id) {
-  document.getElementById(id || 'modal-create').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeModal(id) {
-  document.getElementById(id || 'modal-create').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function closeOnOverlay(e, id) {
-  if (e.target === e.currentTarget) closeModal(id);
-}
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape')
-    document.querySelectorAll('.modal-overlay.open').forEach(m => {
-      m.classList.remove('open');
-    });
-    document.body.style.overflow = '';
-});
-
-function showToast(msg, type) {
-  const t = document.createElement('div');
-  t.className = 'toast ' + (type || 'success');
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
-}
-
-// ── DELETE ───────────────────────────────────────────────────────
-function deleteRecord(url, id) {
-  if (!confirm('Удалить запись #' + id + '?')) return;
-  fetch(url + id, {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' }
-  })
-  .then(r => r.json())
-  .then(data => {
-    showToast(data.message || 'Запись удалена', 'success');
-    setTimeout(() => location.reload(), 800);
-  })
-  .catch(() => showToast('Ошибка при удалении', 'error'));
-}
-
-// ── PUT (вызывается из кнопки "Сохранить" модалки редактирования) ─
-function submitEdit(url, formId, modalId) {
-  const form = document.getElementById(formId);
-  const data = {};
-  new FormData(form).forEach((v, k) => { data[k] = v; });
-  const id = data.id;
-  delete data.id;
-
-  fetch(url + id, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  })
-  .then(r => r.json())
-  .then(resp => {
-    showToast(resp.message || 'Запись обновлена', 'success');
-    closeModal(modalId || 'modal-edit');
-    setTimeout(() => location.reload(), 800);
-  })
-  .catch(() => showToast('Ошибка при сохранении', 'error'));
-}
-</script>
-
-
-  {# ── Toolbar ── #}
   <div class="table-toolbar">
     <button class="btn-action btn-create" onclick="openModal('modal-create')">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-        <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2z"/>
-      </svg>
-      Создать запись
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2z"/></svg> Создать запись
     </button>
     <span class="record-count">Записей: {{count}}</span>
   </div>
 
-  {# ── Table ── #}
   <table class="table table-striped">
     <thead><tr><th>ID</th><th>Наименование</th><th>Действия</th></tr></thead>
     <tbody>
@@ -221,16 +15,21 @@ function submitEdit(url, formId, modalId) {
       <tr data-id="{{ room_type.id }}" data-name="{{ room_type.name }}">
         <td>{{ room_type.id }}</td><td>{{ room_type.name }}</td>
         <td><div class="actions-cell">
-          {% set _url = '/room_type/' %}
-          {{ btn_edit_row(room_type.id, 'openEditModal(' ~ room_type.id ~ ')') }}
-          {{ btn_delete_row(room_type.id, '/room_type/') }}
+          <button class="btn-action btn-edit"
+                  onclick="openEditModal({{ room_type.id }})">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm-1.96 2.708L4.5 9.25V11.5h2.25l6.395-6.396-2.25-2.25zM3.5 10.5v1h1l-1-1z"/></svg> Изменить
+          </button>
+          <button class="btn-action btn-delete"
+                  onclick="deleteRecord('/room_type/', {{ room_type.id }})">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.5l1-1h3l1 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/></svg> Удалить
+          </button>
         </div></td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 
-  {# ── Modal: создать запись ── #}
+
   <div id="modal-create" class="modal-overlay" onclick="closeOnOverlay(event,'modal-create')">
     <div class="modal-box">
       <div class="modal-header">
@@ -241,8 +40,9 @@ function submitEdit(url, formId, modalId) {
         <div class="modal-body">
           <div class="form-group">
             <label class="form-label">Наименование</label>
-            <input class="form-control" type="text" name="name" placeholder="Введите наименование" required>
-          </div></div>
+            <input class="form-control" type="text" name="name"  placeholder="Введите наименование" required>
+          </div>
+        </div>
         <div class="modal-footer">
           <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
           <button type="submit" class="btn-action btn-create">Сохранить</button>
@@ -250,7 +50,7 @@ function submitEdit(url, formId, modalId) {
       </form>
     </div>
   </div>
-  
+
   <div id="modal-edit" class="modal-overlay" onclick="closeOnOverlay(event,'modal-edit')">
     <div class="modal-box">
       <div class="modal-header">
@@ -260,7 +60,6 @@ function submitEdit(url, formId, modalId) {
       <div class="modal-body">
         <form id="edit-form">
           <input type="hidden" name="id" id="edit-id">
-          
           <div class="form-group">
             <label class="form-label">Наименование</label>
             <input class="form-control" type="text" name="name" id="edit-name" placeholder="Введите наименование" required>
@@ -270,19 +69,19 @@ function submitEdit(url, formId, modalId) {
       <div class="modal-footer">
         <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-edit')">Отмена</button>
         <button type="button" class="btn-action btn-create"
-                onclick="submitEdit('/room_type/','edit-form','modal-edit')">
-          Сохранить
-        </button>
+                onclick="submitEdit('/room_type/','edit-form','modal-edit')">Сохранить</button>
       </div>
     </div>
   </div>
+  {% block scripts %}
   <script>
-    // Данные передаются через data-атрибуты строки таблицы
     function openEditModal(id) {
-      const row = document.querySelector(`tr[data-id="${id}"]`);
+      const r = document.querySelector(`tr[data-id="${id}"]`);
       document.getElementById('edit-id').value   = id;
-      document.getElementById('edit-name').value = row.dataset.name;
+      document.getElementById('edit-name').value = r.dataset.name;
       openModal('modal-edit');
-    }</script>
+    }
+  </script>
+  {% endblock %}
 
 {% endblock %}

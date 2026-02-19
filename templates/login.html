@@ -5,281 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Вход — ГБУЗ МО Коломенская больница</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --blue-deep:    #0a2d5e;
-      --blue-mid:     #1a56a0;
-      --blue-light:   #2d7dd2;
-      --blue-pale:    #e8f1fb;
-      --accent:       #0099cc;
-      --white:        #ffffff;
-      --gray-light:   #f4f7fb;
-      --gray-border:  #cdd8e8;
-      --text-main:    #1a2b3c;
-      --text-muted:   #5a7a99;
-      --danger:       #d93025;
-      --success:      #1a7f4b;
-    }
-
-    html, body {
-      height: 100%;
-      font-family: 'Source Sans 3', sans-serif;
-      background: var(--gray-light);
-      color: var(--text-main);
-    }
-
-    /* ─── Фоновая сетка ─── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background:
-        linear-gradient(135deg, var(--blue-deep) 0%, #103a7a 50%, #0a2d5e 100%);
-      z-index: 0;
-    }
-
-    /* Декоративные круги */
-    body::after {
-      content: '';
-      position: fixed;
-      width: 700px; height: 700px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(45,125,210,.18) 0%, transparent 70%);
-      top: -200px; right: -150px;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .bg-circle-2 {
-      position: fixed;
-      width: 500px; height: 500px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(0,153,204,.13) 0%, transparent 70%);
-      bottom: -150px; left: -100px;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    /* ─── Крест (символ медицины) — фоновый декор ─── */
-    .cross-decor {
-      position: fixed;
-      z-index: 0;
-      opacity: .06;
-      pointer-events: none;
-    }
-    .cross-decor svg { display: block; }
-
-    /* ─── Обёртка ─── */
-    .page-wrapper {
-      position: relative;
-      z-index: 1;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px 16px;
-    }
-
-    /* ─── Карточка входа ─── */
-    .login-card {
-      width: 100%;
-      max-width: 440px;
-      background: var(--white);
-      border-radius: 16px;
-      box-shadow:
-        0 4px 6px rgba(10,45,94,.08),
-        0 20px 60px rgba(10,45,94,.25),
-        0 0 0 1px rgba(255,255,255,.08);
-      overflow: hidden;
-      animation: cardIn .55s cubic-bezier(.22,.61,.36,1) both;
-    }
-
-    @keyframes cardIn {
-      from { opacity: 0; transform: translateY(28px) scale(.97); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    /* ─── Шапка карточки ─── */
-    .card-header {
-      background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-mid) 100%);
-      padding: 36px 40px 32px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card-header::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    }
-
-    .logo-icon {
-      width: 64px; height: 64px;
-      background: rgba(255,255,255,.12);
-      border: 2px solid rgba(255,255,255,.25);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 16px;
-      backdrop-filter: blur(4px);
-    }
-
-    .logo-icon svg { width: 32px; height: 32px; }
-
-    .card-header h1 {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--white);
-      letter-spacing: .02em;
-      line-height: 1.3;
-      margin-bottom: 4px;
-    }
-
-    .card-header p {
-      font-size: .85rem;
-      color: rgba(255,255,255,.65);
-      font-weight: 300;
-      letter-spacing: .03em;
-    }
-
-    /* ─── Тело карточки ─── */
-    .card-body {
-      padding: 36px 40px 40px;
-    }
-
-    .form-label {
-      display: block;
-      font-family: 'Montserrat', sans-serif;
-      font-size: .72rem;
-      font-weight: 600;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 7px;
-    }
-
-    .form-group {
-      margin-bottom: 22px;
-    }
-
-    .input-wrapper {
-      position: relative;
-    }
-
-    .input-icon {
-      position: absolute;
-      left: 14px; top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      display: flex; align-items: center;
-      pointer-events: none;
-      transition: color .2s;
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 11px 14px 11px 42px;
-      border: 1.5px solid var(--gray-border);
-      border-radius: 8px;
-      font-family: 'Source Sans 3', sans-serif;
-      font-size: .97rem;
-      color: var(--text-main);
-      background: var(--gray-light);
-      outline: none;
-      transition: border-color .2s, box-shadow .2s, background .2s;
-    }
-
-    .form-control:focus {
-      border-color: var(--blue-light);
-      background: var(--white);
-      box-shadow: 0 0 0 3px rgba(45,125,210,.15);
-    }
-
-    .form-control:focus + .input-icon,
-    .input-wrapper:focus-within .input-icon {
-      color: var(--blue-light);
-    }
-
-    /* Иконка внутри поля слева (фокус) */
-    .input-wrapper:focus-within .input-icon { color: var(--blue-light); }
-
-    /* ─── Кнопка ─── */
-    .btn-login {
-      width: 100%;
-      padding: 13px;
-      background: linear-gradient(135deg, var(--blue-mid) 0%, var(--blue-light) 100%);
-      color: var(--white);
-      border: none;
-      border-radius: 8px;
-      font-family: 'Montserrat', sans-serif;
-      font-size: .95rem;
-      font-weight: 600;
-      letter-spacing: .04em;
-      cursor: pointer;
-      transition: opacity .2s, transform .15s, box-shadow .2s;
-      box-shadow: 0 4px 14px rgba(26,86,160,.35);
-      margin-top: 4px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn-login::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(rgba(255,255,255,.15), transparent);
-      opacity: 0;
-      transition: opacity .2s;
-    }
-
-    .btn-login:hover { opacity: .92; box-shadow: 0 6px 20px rgba(26,86,160,.45); transform: translateY(-1px); }
-    .btn-login:hover::after { opacity: 1; }
-    .btn-login:active { transform: translateY(0); opacity: 1; }
-
-    /* ─── Уведомления ─── */
-    .alert {
-      border-radius: 8px;
-      padding: 11px 14px;
-      font-size: .9rem;
-      margin-bottom: 20px;
-      display: flex; align-items: center; gap: 10px;
-      animation: fadeIn .3s ease;
-    }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
-
-    .alert-danger  { background: #fdf0ef; border: 1.5px solid #f5c2be; color: var(--danger); }
-    .alert-success { background: #edf7f2; border: 1.5px solid #9dd5b8; color: var(--success); }
-    .alert svg { flex-shrink: 0; }
-
-    /* ─── Нижняя строка ─── */
-    .card-footer-note {
-      text-align: center;
-      margin-top: 20px;
-      font-size: .82rem;
-      color: var(--text-muted);
-    }
-
-    /* ─── Нижняя подпись ─── */
-    .page-footer {
-      margin-top: 24px;
-      font-size: .78rem;
-      color: rgba(255,255,255,.4);
-      text-align: center;
-      letter-spacing: .03em;
-      animation: cardIn .7s .2s cubic-bezier(.22,.61,.36,1) both;
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
 <body>
+<div class="bg-blob"></div>
 
-<div class="bg-circle-2"></div>
-
-<!-- Декоративные кресты -->
 <div class="cross-decor" style="top:60px;left:60px;">
   <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
     <rect x="44" y="0" width="32" height="120" rx="6" fill="white"/>
@@ -294,13 +24,10 @@
 </div>
 
 <div class="page-wrapper">
-
   <div class="login-card">
-
-    <!-- Шапка -->
     <div class="card-header">
       <div class="logo-icon">
-        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 32 32" fill="none">
           <rect x="12" y="2" width="8" height="28" rx="2" fill="white"/>
           <rect x="2" y="12" width="28" height="8" rx="2" fill="white"/>
         </svg>
@@ -309,44 +36,21 @@
       <p>Информационная система</p>
     </div>
 
-    <!-- Тело -->
     <div class="card-body">
-
-      <!-- Flash-сообщения из Flask -->
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">
-              {% if category == 'danger' %}
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.75 10.5h-1.5v-1.5h1.5v1.5zm0-3h-1.5V4h1.5v4.5z"/>
-                </svg>
-              {% else %}
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm3.03 5.47-3.75 3.75a.75.75 0 0 1-1.06 0L4.72 8.72a.75.75 0 1 1 1.06-1.06L6.75 8.63l3.22-3.22a.75.75 0 1 1 1.06 1.06z"/>
-                </svg>
-              {% endif %}
-              {{ message }}
-            </div>
+            <div class="alert alert-{{ category }}">{{ message }}</div>
           {% endfor %}
         {% endif %}
       {% endwith %}
 
       <form method="POST" action="/login">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token is defined else '' }}">
-
         <div class="form-group">
           <label class="form-label" for="username">Логин</label>
           <div class="input-wrapper">
-            <input
-              class="form-control"
-              type="text"
-              id="username"
-              name="username"
-              placeholder="Введите логин"
-              autocomplete="username"
-              required
-            >
+            <input class="form-control" type="text" id="username" name="username"
+                   placeholder="Введите логин" autocomplete="username" required>
             <span class="input-icon">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                 <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 1c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z"/>
@@ -354,19 +58,11 @@
             </span>
           </div>
         </div>
-
         <div class="form-group">
           <label class="form-label" for="password">Пароль</label>
           <div class="input-wrapper">
-            <input
-              class="form-control"
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Введите пароль"
-              autocomplete="current-password"
-              required
-            >
+            <input class="form-control" type="password" id="password" name="password"
+                   placeholder="Введите пароль" autocomplete="current-password" required>
             <span class="input-icon">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                 <path d="M11.5 1A3.5 3.5 0 0 0 8 4.5V6H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-1V4.5A3.5 3.5 0 0 0 11.5 1zm-1 5V4.5a1.5 1.5 0 0 1 3 0V6h-3zM8 10a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
@@ -374,18 +70,13 @@
             </span>
           </div>
         </div>
-
         <button type="submit" class="btn-login">Войти в систему</button>
       </form>
 
-      <div class="card-footer-note">
-        Доступ только для авторизованных сотрудников
-      </div>
+      <div class="card-footer-note">Доступ только для авторизованных сотрудников</div>
     </div>
   </div>
-
   <div class="page-footer">© ГБУЗ МО Коломенская больница · Информационная система</div>
 </div>
-
 </body>
 </html>
