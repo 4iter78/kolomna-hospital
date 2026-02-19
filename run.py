@@ -12,6 +12,7 @@ from controllers.RoomTypeController import room_type_controller
 from controllers.TreatmentTypesController import treatment_types_controller
 from controllers.WorkTimetableController import work_timetable_controller
 from controllers.AuthController import auth_controller
+from controllers.PermissionsController import permissions_controller
 from json import JSONEncoder
 
 
@@ -38,6 +39,7 @@ if __name__ == '__main__':
     app.register_blueprint(room_type_controller)
     app.register_blueprint(treatment_types_controller)
     app.register_blueprint(work_timetable_controller)
+    app.register_blueprint(permissions_controller)
     app.json_encoder = ModelEncoder
     # запуск сервера локально по умолчанию на порту 5000 по протоколу HTTPS
     # app.run(debug=True, ssl_context='adhoc')

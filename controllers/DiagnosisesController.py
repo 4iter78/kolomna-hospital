@@ -1,12 +1,14 @@
 from flask import redirect, url_for, flash, request, Blueprint, render_template
 from models.Diagnosises import Diagnosises
 from app import db_connection
+from decorators import access_control
 
 db = db_connection
 diagnosises_controller = Blueprint('diagnosises_controller', __name__)
 
 
 @diagnosises_controller.route('/diagnosises', methods=['POST', 'GET'])
+@access_control('diagnosises')
 def handle_diagnosises():
     if request.method == 'POST':
         data = request.get_json() if request.is_json else request.form
@@ -25,6 +27,7 @@ def handle_diagnosises():
 
 
 @diagnosises_controller.route('/diagnosises/<diagnosis_id>', methods=['GET', 'PUT', 'DELETE'])
+@access_control('diagnosises')
 def handle_diagnosis(diagnosis_id):
     diagnosis = Diagnosises.query.get_or_404(diagnosis_id)
 

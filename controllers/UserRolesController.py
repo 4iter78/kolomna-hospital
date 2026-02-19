@@ -2,6 +2,7 @@ from flask import redirect, url_for, flash, request, Blueprint, render_template
 
 from app import db_connection
 from models.UserRoles import UserRoles
+from decorators import access_control
 
 db = db_connection
 user_roles_controller = Blueprint('user_roles_controller', __name__)
@@ -9,6 +10,7 @@ user_roles_controller = Blueprint('user_roles_controller', __name__)
 
 # маршрут к пользователям, POST добавляет запись в таблицу, GET выводит все записи
 @user_roles_controller.route('/user-roles', methods=['POST', 'GET'])
+@access_control('user_roles')
 def handle_user_roles():
     if request.method == 'POST':
         data = request.get_json() if request.is_json else request.form
@@ -36,6 +38,7 @@ def handle_user_roles():
 # PUT редактирует данные конкретного пользователя
 # DELETE удаляет конкретного пользователя
 @user_roles_controller.route('/user-roles/<user_role_id>', methods=['GET', 'PUT', 'DELETE'])
+@access_control('user_roles')
 def handle_user_role(user_role_id):
     user_role = UserRoles.query.get_or_404(user_role_id)
 

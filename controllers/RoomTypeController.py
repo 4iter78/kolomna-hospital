@@ -1,12 +1,14 @@
 from flask import redirect, url_for, flash, request, Blueprint, render_template
 from models.RoomType import RoomType
 from app import db_connection
+from decorators import access_control
 
 db = db_connection
 room_type_controller = Blueprint('room_type_controller', __name__)
 
 
 @room_type_controller.route('/room_type', methods=['POST', 'GET'])
+@access_control('room_type')
 def handle_room_types():
     if request.method == 'POST':
         data = request.get_json() if request.is_json else request.form
@@ -25,6 +27,7 @@ def handle_room_types():
 
 
 @room_type_controller.route('/room_type/<room_type_id>', methods=['GET', 'PUT', 'DELETE'])
+@access_control('room_type')
 def handle_room_type(room_type_id):
     room_type = RoomType.query.get_or_404(room_type_id)
 

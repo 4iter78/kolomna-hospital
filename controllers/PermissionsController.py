@@ -34,7 +34,7 @@ def handle_permissions():
                 'perm_id':   perm.id        if perm else None,
             }
 
-    return render_template('admin/permissions.html',
+    return render_template('permissions.html',
                            title='Матрица прав доступа',
                            roles=roles,
                            entities=entities,

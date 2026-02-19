@@ -3,6 +3,7 @@ from models.HealthCards import HealthCards
 from models.Patients import Patients
 from models.Users import Users
 from app import db_connection
+from decorators import access_control
 from datetime import datetime
 
 db = db_connection
@@ -10,6 +11,7 @@ health_cards_controller = Blueprint('health_cards_controller', __name__)
 
 
 @health_cards_controller.route('/health_cards', methods=['POST', 'GET'])
+@access_control('health_cards')
 def handle_health_cards():
     if request.method == 'POST':
         data = request.get_json() if request.is_json else request.form
@@ -53,6 +55,7 @@ def handle_health_cards():
 
 
 @health_cards_controller.route('/health_cards/<health_card_id>', methods=['GET', 'PUT', 'DELETE'])
+@access_control('health_cards')
 def handle_health_card(health_card_id):
     health_card = HealthCards.query.get_or_404(health_card_id)
 

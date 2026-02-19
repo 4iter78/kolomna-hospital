@@ -3,12 +3,14 @@ from models.CleanTimetable import CleanTimetable
 from models.Users import Users
 from models.Rooms import Rooms
 from app import db_connection
+from decorators import access_control
 
 db = db_connection
 clean_timetable_controller = Blueprint('clean_timetable_controller', __name__)
 
 
 @clean_timetable_controller.route('/clean_timetable', methods=['POST', 'GET'])
+@access_control('clean_timetable')
 def handle_clean_timetables():
     if request.method == 'POST':
         data = request.get_json() if request.is_json else request.form
@@ -50,6 +52,7 @@ def handle_clean_timetables():
 
 
 @clean_timetable_controller.route('/clean_timetable/<entry_id>', methods=['GET', 'PUT', 'DELETE'])
+@access_control('clean_timetable')
 def handle_clean_timetable(entry_id):
     entry = CleanTimetable.query.get_or_404(entry_id)
 
