@@ -81,6 +81,12 @@
         Медицинские карты
       </a>
       {% endif %}
+      {% if can_read('appointments') %}
+      <a href="/appointments" class="nav-link-item">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM8.5 9.5H5v-1h3.5V5h1v3.5H13v1H9.5V13h-1V9.5z"/></svg>
+        Приёмы
+      </a>
+      {% endif %}
 
       {% if can_read('work_timetable') or can_read('clean_timetable') %}
       <div class="nav-section-label">Расписание</div>
