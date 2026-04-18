@@ -32,7 +32,7 @@ def upgrade() -> None:
     pass
 def downgrade() -> None:
     op.execute('''
-        DELETE FROM treatment_types WHERE name IN ('Врач',
+        DELETE FROM user_roles WHERE name IN ('Врач',
             'Регистратор',
             'Работник ИТ',
             'Аспирант',
