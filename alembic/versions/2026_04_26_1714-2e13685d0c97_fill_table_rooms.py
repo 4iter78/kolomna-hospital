@@ -21,12 +21,12 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.execute('''
        INSERT INTO rooms (name, room_type_id, special_type_id) VALUES
-            ('Палата №1',(SELECT id FROM room_type WHERE name ='Общее'), 'NULL'),
-            ('Палата №2',(SELECT id FROM room_type WHERE name ='Общее'), 'NULL'),
-            ('Палата №3',(SELECT id FROM room_type WHERE name ='Общее'), 'NULL'),
-            ('Терапевтический каб. 1',(SELECT id FROM room_type WHERE name ='Терапевтический кабинет'), 'NULL'),
-            ('Терапевтический каб. 2', (SELECT id FROM room_type WHERE name ='Терапевтический кабинет'), 'NULL'),
-            ('Терапевтический каб. 3', (SELECT id FROM room_type WHERE name ='Терапевтический кабинет'), 'NULL'),
+            ('Палата №1',(SELECT id FROM room_type WHERE name ='Общее'), NULL),
+            ('Палата №2',(SELECT id FROM room_type WHERE name ='Общее'), NULL),
+            ('Палата №3',(SELECT id FROM room_type WHERE name ='Общее'), NULL),
+            ('Терапевтический каб. 1',(SELECT id FROM room_type WHERE name ='Терапевтический кабинет'), NULL),
+            ('Терапевтический каб. 2', (SELECT id FROM room_type WHERE name ='Терапевтический кабинет'), NULL),
+            ('Терапевтический каб. 3', (SELECT id FROM room_type WHERE name ='Терапевтический кабинет'), NULL),
             ('Процедурная МРТ',(SELECT id FROM room_type WHERE name ='Процедурная'), 
             (SELECT id FROM special_type WHERE name ='МРТ')),
             ('Процедурная Рентген',(SELECT id FROM room_type WHERE name ='Процедурная'), 
