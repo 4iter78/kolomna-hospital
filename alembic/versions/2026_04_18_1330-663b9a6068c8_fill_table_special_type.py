@@ -30,5 +30,5 @@ def downgrade() -> None:
     op.execute('''
         DELETE FROM special_type WHERE name IN ('МРТ',
         'Рентген',
-        'Флюорография';
+        'Флюорография');
     ''')
