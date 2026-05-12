@@ -8,9 +8,7 @@ Create Date: 2026-05-12 17:13:05.492924
 from typing import Sequence, Union
 
 from alembic import op
-import sqlalchemy as sa
 from sqlalchemy import text
-
 
 # revision identifiers, used by Alembic.
 revision: str = '92be3277ce80'
@@ -117,7 +115,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    # Данные для удаления — те же комбинации, что и при вставке
+    # Полный список данных для точного удаления
     records_to_delete = [
         ('Денисов', 'Антон', 'Романович', '2021-02-28', 'Палата №1', '2024-02-01 07:00:00'),
         ('Денисов', 'Антон', 'Романович', '2021-02-28', 'Палата №2', '2024-02-01 07:30:00'),

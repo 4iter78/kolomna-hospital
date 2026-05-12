@@ -8,7 +8,6 @@ Create Date: 2026-05-08 15:25:36.420117
 from typing import Sequence, Union
 
 from alembic import op
-import sqlalchemy as sa
 from sqlalchemy import text
 
 # revision identifiers, used by Alembic.
@@ -195,7 +194,7 @@ def upgrade() -> None:
     pass
 
 def downgrade() -> None:
-    # Полный список данных для точного удаления записей из appointments
+    # Полный список данных для точного удаления
     records_to_delete = [
         ('Смирнов', 'Павел', 'Евгеньевич', '2015-06-01', 'Иванов', 'Иван', 'Иванович', '1980-03-15', '2023-01-10 09:00:00', '2024-01-12 09:00:00'),
         ('Смирнов', 'Павел', 'Евгеньевич', '2015-06-01', 'Петрова', 'Мария', 'Сергеевна', '1975-07-22', '2023-01-15 10:30:00', '2024-01-13 10:00:00'),
