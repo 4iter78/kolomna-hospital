@@ -81,7 +81,6 @@ def upgrade() -> None:
         '17:00'
     );
     ''')
-    pass
 
 
 def downgrade() -> None:

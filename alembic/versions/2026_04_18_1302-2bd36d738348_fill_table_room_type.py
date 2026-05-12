@@ -23,7 +23,7 @@ def upgrade() -> None:
             ('Терапевтический кабинет'),
             ('Процедурная');
     ''')
-    pass
+
 
 def downgrade() -> None:
     op.execute('''

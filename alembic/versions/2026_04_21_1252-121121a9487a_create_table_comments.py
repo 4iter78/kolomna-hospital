@@ -26,7 +26,7 @@ def upgrade() -> None:
             to_user_id      INT NOT NULL REFERENCES users (id)
         );
     ''')
-    pass
+
+
 def downgrade() -> None:
     op.execute('DROP TABLE IF EXISTS comments;')
-    pass

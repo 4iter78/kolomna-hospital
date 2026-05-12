@@ -29,8 +29,7 @@ def upgrade() -> None:
             )
         );
     ''')
-    pass
+
 
 def downgrade() -> None:
     op.execute('DROP TABLE IF EXISTS rooms;')
-    pass

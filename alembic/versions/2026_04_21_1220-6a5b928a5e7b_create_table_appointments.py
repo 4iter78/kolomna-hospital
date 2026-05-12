@@ -27,9 +27,7 @@ def upgrade() -> None:
             diagnosis_id         INT REFERENCES diagnosises (id)
         );
     ''')
-    pass
 
 
 def downgrade() -> None:
     op.execute('DROP TABLE IF EXISTS appointments;')
-    pass

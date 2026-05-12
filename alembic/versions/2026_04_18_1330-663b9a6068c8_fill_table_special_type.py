@@ -23,7 +23,8 @@ def upgrade() -> None:
             ('Рентген'),
             ('Флюорография');
     ''')
-    pass
+
+
 def downgrade() -> None:
     op.execute('''
         DELETE FROM special_type WHERE name IN ('МРТ',

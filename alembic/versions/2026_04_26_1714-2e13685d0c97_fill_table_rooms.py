@@ -34,7 +34,7 @@ def upgrade() -> None:
             ('Процедурная №2 МРТ',(SELECT id FROM room_type WHERE name ='Процедурная'), 
             (SELECT id FROM special_type WHERE name ='МРТ'));
     ''')
-    pass
+
 
 def downgrade() -> None:
     op.execute('''
@@ -49,4 +49,3 @@ def downgrade() -> None:
             'Процедурная Флюорография',
             'Процедурная №2 МРТ');
     ''')
-    pass

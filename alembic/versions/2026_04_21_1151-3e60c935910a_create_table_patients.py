@@ -32,9 +32,7 @@ def upgrade() -> None:
             oms_number   VARCHAR(20)
         );
     ''')
-    pass
 
 
 def downgrade() -> None:
     op.execute('DROP TABLE IF EXISTS patients;')
-    pass

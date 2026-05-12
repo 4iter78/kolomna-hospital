@@ -23,8 +23,7 @@ def upgrade() -> None:
             name VARCHAR(255) NOT NULL
         );
     ''')
-    pass
+
 
 def downgrade() -> None:
     op.execute('DROP TABLE IF EXISTS drugs;')
-    pass

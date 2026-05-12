@@ -30,7 +30,7 @@ def upgrade() -> None:
             ('Амброксол'),
             ('Диклофенак');
     ''')
-    pass
+
 
 def downgrade() -> None:
     op.execute('''
@@ -45,4 +45,3 @@ def downgrade() -> None:
             'Амброксол',
             'Диклофенак');
     ''')
-    pass

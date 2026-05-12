@@ -26,7 +26,7 @@ def upgrade() -> None:
             ('Флюорография: техника проведения',           (SELECT id FROM special_type WHERE name ='Флюорография')),
             ('Флюорография: безопасность и дозиметрия',    (SELECT id FROM special_type WHERE name ='Флюорография'));
     ''')
-    pass
+
 
 def downgrade() -> None:
     op.execute('''
@@ -37,4 +37,3 @@ def downgrade() -> None:
             'Флюорография: техника проведения',
             'Флюорография: безопасность и дозиметрия');
     ''')
-    pass

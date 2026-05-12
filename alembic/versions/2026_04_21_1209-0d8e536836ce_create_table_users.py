@@ -27,8 +27,7 @@ def upgrade() -> None:
             user_role_id    INT NOT NULL REFERENCES user_roles (id)
         );
     ''')
-    pass
+
 
 def downgrade() -> None:
     op.execute('DROP TABLE IF EXISTS users;')
-    pass

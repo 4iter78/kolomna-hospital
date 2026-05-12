@@ -23,8 +23,7 @@ def upgrade() -> None:
             name VARCHAR(100) NOT NULL
         );
     ''')
-    pass
+
 
 def downgrade() -> None:
     op.execute('DROP TABLE IF EXISTS special_type;')
-    pass

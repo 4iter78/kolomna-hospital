@@ -191,7 +191,6 @@ def upgrade() -> None:
            AND a.appointment_datetime = '2024-01-21 15:00:00')
     );
     ''')
-    pass
 
 
 def downgrade() -> None:
@@ -248,4 +247,3 @@ def downgrade() -> None:
             '''),
             params
         )
-

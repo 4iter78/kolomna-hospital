@@ -25,10 +25,7 @@ def upgrade() -> None:
             clean_datetime TIMESTAMP NOT NULL
         );
     ''')
-    pass
-
 
 
 def downgrade() -> None:
     op.execute('DROP TABLE IF EXISTS clean_timetable;')
-    pass

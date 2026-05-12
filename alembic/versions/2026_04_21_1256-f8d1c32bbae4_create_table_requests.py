@@ -23,9 +23,7 @@ def upgrade() -> None:
             request_file TEXT
         );
     ''')
-    pass
 
 
 def downgrade() -> None:
     op.execute('DROP TABLE IF EXISTS requests;')
-    pass

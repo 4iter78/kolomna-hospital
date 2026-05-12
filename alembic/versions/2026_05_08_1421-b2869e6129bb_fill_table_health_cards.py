@@ -152,7 +152,6 @@ def upgrade() -> None:
     );
 
     ''')
-    pass
 
 
 def downgrade() -> None:
@@ -169,8 +168,6 @@ def downgrade() -> None:
         ('Лебедев', 'Андрей', 'Олегович', '1978-04-10', '2023-05-10 09:00:00'),
         ('Козлова', 'Татьяна', 'Ивановна', '1963-08-19', '2023-05-22 11:45:00')
     ]
-
-    user_surname, user_name, user_second_name, user_employment_date = 'Белова', 'Светлана', 'Александровна', '2017-01-10'
 
     for record in records_to_delete:
         surname, name, second_name, birth_date, create_datetime = record

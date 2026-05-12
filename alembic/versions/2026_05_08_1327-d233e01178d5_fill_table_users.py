@@ -30,9 +30,7 @@ def upgrade() -> None:
             ('Яковлева',   'Людмила',    'Борисовна',   '2022-07-15', (SELECT id FROM user_roles WHERE name ='Обслуживающий персонал')),  -- Обслуживающий персонал
             ('Захаров',    'Виктор',     'Геннадьевич', '2014-04-01', (SELECT id FROM user_roles WHERE name ='Администратор')),  -- Администратор
             ('Полякова',   'Кристина',   'Олеговна',    '2023-01-09', (SELECT id FROM user_roles WHERE name ='Гость'));  -- Гость
-
     ''')
-    pass
 
 
 def downgrade() -> None:

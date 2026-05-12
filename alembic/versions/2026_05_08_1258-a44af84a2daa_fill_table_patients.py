@@ -33,7 +33,7 @@ def upgrade() -> None:
 
 
     ''')
-    pass
+
 
 def downgrade() -> None:
     # Список кортежей с полными данными записей, добавленных в upgrade()
@@ -81,4 +81,3 @@ def downgrade() -> None:
               AND passport = :passport
               AND oms_number = :oms_number
         '''), params)
-

@@ -24,7 +24,8 @@ def upgrade() -> None:
             appointment_id INT NOT NULL REFERENCES appointments (id)
         );
     ''')
-    pass
+
+
 def downgrade() -> None:
     op.execute('DROP TABLE IF EXISTS drugs_to_appointment;')
-    pass
+

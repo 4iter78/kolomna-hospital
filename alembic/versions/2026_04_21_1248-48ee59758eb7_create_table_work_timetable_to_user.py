@@ -24,9 +24,7 @@ def upgrade() -> None:
             user_id           INT NOT NULL REFERENCES users (id)
         );
     ''')
-    pass
 
 
 def downgrade() -> None:
     op.execute('DROP TABLE IF EXISTS work_timetable_to_user;')
-    pass

@@ -42,7 +42,6 @@ VALUES
     ((SELECT id FROM training WHERE name = 'Работа с аппаратом МРТ: продвинутый курс'),
      (SELECT id FROM users WHERE surname = 'Федорова' AND name = 'Анна' AND second_name = 'Дмитриевна' AND employment_date = '2018-03-15'));
     ''')
-    pass
 
 
 def downgrade() -> None:

@@ -82,7 +82,6 @@ VALUES
         AND time_to = '17:00'),
      (SELECT id FROM users WHERE surname = 'Смирнов' AND name = 'Павел' AND second_name = 'Евгеньевич' AND employment_date = '2015-06-01'));
      ''')
-    pass
 
 
 def downgrade() -> None:

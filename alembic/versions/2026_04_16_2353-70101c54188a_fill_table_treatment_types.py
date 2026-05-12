@@ -24,7 +24,7 @@ def upgrade() -> None:
             ('Дневной стационар'),
             ('Госпитализация');
     ''')
-    pass
+
 
 def downgrade() -> None:
     op.execute('''
@@ -33,4 +33,3 @@ def downgrade() -> None:
             'Дневной стационар',
             'Госпитализация');
     ''')
-    pass

@@ -27,9 +27,7 @@ def upgrade() -> None:
             CONSTRAINT chk_time CHECK (time_to > time_from)
         );
     ''')
-    pass
 
 
 def downgrade() -> None:
     op.execute('DROP TABLE IF EXISTS work_timetable;')
-    pass

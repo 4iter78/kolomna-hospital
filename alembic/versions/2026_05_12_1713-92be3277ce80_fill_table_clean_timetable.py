@@ -111,7 +111,6 @@ def upgrade() -> None:
         '2024-02-01 10:00:00'
     );
     ''')
-    pass
 
 
 def downgrade() -> None:

@@ -24,10 +24,7 @@ def upgrade() -> None:
             special_type_id INT NOT NULL REFERENCES special_type (id)
         );
     ''')
-    pass
 
 
 def downgrade() -> None:
     op.execute('DROP TABLE IF EXISTS training;')
-    pass
-

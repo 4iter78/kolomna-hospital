@@ -15,6 +15,7 @@ down_revision: Union[str, Sequence[str], None] = '8e0e605d9495'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
+
 def upgrade() -> None:
     op.execute('''
         CREATE TABLE treatment_types (
@@ -22,9 +23,7 @@ def upgrade() -> None:
             name VARCHAR(100) NOT NULL
         );
     ''')
-    pass
+
 
 def downgrade() -> None:
     op.execute('DROP TABLE IF EXISTS treatment_types;')
-    pass
-

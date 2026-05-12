@@ -27,7 +27,8 @@ def upgrade() -> None:
             ('Гость'),
             ('Администратор');
     ''')
-    pass
+
+
 def downgrade() -> None:
     op.execute('''
         DELETE FROM user_roles WHERE name IN ('Врач',
@@ -38,4 +39,3 @@ def downgrade() -> None:
             'Гость',
             'Администратор');
     ''')
-    pass

@@ -191,7 +191,7 @@ def upgrade() -> None:
         (SELECT id FROM diagnosises WHERE name = 'Артрит')
     );
     ''')
-    pass
+
 
 def downgrade() -> None:
     # Полный список данных для точного удаления
@@ -250,5 +250,3 @@ def downgrade() -> None:
         AND appointment_datetime = :appointment_datetime
             '''), params
         )
-
-
