@@ -1,7 +1,7 @@
 """create function users
 
-Revision ID: f9fb52931c5e
-Revises: 7beb1bbe67e7
+Revision ID: 17a3d50bae3f
+Revises: f9fb52931c5e
 Create Date: 2026-05-12 20:17:57.967093
 
 """
@@ -13,8 +13,8 @@ from sqlalchemy import text
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'f9fb52931c5e'
-down_revision: Union[str, Sequence[str], None] = '7beb1bbe67e7'
+revision: str = '17a3d50bae3f'
+down_revision: Union[str, Sequence[str], None] = 'f9fb52931c5e'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

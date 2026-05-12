@@ -21,15 +21,13 @@ def upgrade() -> None:
     ALTER TABLE users
         ADD COLUMN IF NOT EXISTS login VARCHAR(100),
         ADD COLUMN IF NOT EXISTS password VARCHAR(255),
-        ADD COLUMN IF NOT EXISTS hash_password VARCHAR(64),
-        ADD CONSTRAINT uq_users_login UNIQUE (login);
+        ADD COLUMN IF NOT EXISTS hash_password VARCHAR(64);
     ''')
 
 
 def downgrade() -> None:
     op.execute('''
     ALTER TABLE users
-        DROP CONSTRAINT IF EXISTS uq_users_login,
         DROP COLUMN IF EXISTS login,
         DROP COLUMN IF EXISTS password,
         DROP COLUMN IF EXISTS hash_password;

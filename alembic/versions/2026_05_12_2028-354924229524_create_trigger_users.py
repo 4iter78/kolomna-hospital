@@ -1,7 +1,7 @@
 """create trigger users
 
-Revision ID: 17a3d50bae3f
-Revises: f9fb52931c5e
+Revision ID: 354924229524
+Revises: 17a3d50bae3f
 Create Date: 2026-05-12 20:22:59.182944
 
 """
@@ -10,8 +10,8 @@ from typing import Sequence, Union
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = '17a3d50bae3f'
-down_revision: Union[str, Sequence[str], None] = 'f9fb52931c5e'
+revision: str = '354924229524'
+down_revision: Union[str, Sequence[str], None] = '17a3d50bae3f'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
