@@ -9,7 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-
+from sqlalchemy import text
 
 # revision identifiers, used by Alembic.
 revision: str = 'a44af84a2daa'
@@ -53,17 +53,33 @@ def downgrade() -> None:
 
     # Удаляем каждую запись по полному совпадению всех полей
     for patient in patients_to_delete:
-        op.execute('''
+        (surname, name, second_name, birth_date, birth_place, phone, email, address, passport, oms_number) = patient
+
+        # Формируем словарь параметров для именованных плейсхолдеров
+        params = {
+            'surname': surname,
+            'name': name,
+            'second_name': second_name,
+            'birth_date': birth_date,
+            'birth_place': birth_place,
+            'phone': phone,
+            'email': email,
+            'address': address,
+            'passport': passport,
+            'oms_number': oms_number
+        }
+
+        op.get_bind().execute(text('''
             DELETE FROM patients
-                WHERE surname = %s
-                AND name = %s
-                AND second_name = %s
-                AND birth_date = %s
-                AND birth_place = %s
-                AND phone = %s
-                 AND email = %s
-                AND address = %s
-                AND passport = %s
-                AND oms_number = %s
-        ''', patient)
+            WHERE surname = :surname
+              AND name = :name
+              AND second_name = :second_name
+              AND birth_date = :birth_date
+              AND birth_place = :birth_place
+              AND phone = :phone
+              AND email = :email
+              AND address = :address
+              AND passport = :passport
+              AND oms_number = :oms_number
+        '''), params)
 

@@ -9,7 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-
+from sqlalchemy import text
 
 # revision identifiers, used by Alembic.
 revision: str = 'd233e01178d5'
@@ -51,10 +51,19 @@ def downgrade() -> None:
     ]
 
     for user in users_to_delete:
-        op.execute('''
+        (surname, name, second_name, employment_date) = user
+
+        # Формируем словарь параметров для именованных плейсхолдеров
+        params = {
+            'surname': surname,
+            'name': name,
+            'second_name': second_name,
+            'employment_date': employment_date
+        }
+        op.get_bind().execute(text('''
             DELETE FROM users
-            WHERE surname = %s
-              AND name = %s
-              AND second_name = %s
-              AND employment_date = %s
-        ''', user)
+            WHERE surname = :surname
+              AND name = :name
+              AND second_name = :second_name
+              AND employment_date = :employment_date
+        '''), params)

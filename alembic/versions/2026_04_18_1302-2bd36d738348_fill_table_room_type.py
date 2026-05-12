@@ -31,5 +31,5 @@ def downgrade() -> None:
     op.execute('''
         DELETE FROM room_type WHERE name IN ('Общее',
             'Терапевтический кабинет',
-            'Процедурная';
+            'Процедурная');
     ''')
