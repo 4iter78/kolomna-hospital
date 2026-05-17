@@ -28,38 +28,45 @@ def upgrade() -> None:
         )
         VALUES
             (
-                (SELECT id FROM material_issues WHERE notes = 'Выдача в приёмное отделение'),
+                (SELECT id FROM material_issues 
+                WHERE department_id = (SELECT id from departments WHERE name = 'Приёмное отделение')),
                 (SELECT id FROM medical_materials WHERE name = 'Бинт стерильный'),
                 50
             ),
         
             (
-                (SELECT id FROM material_issues WHERE notes = 'Выдача в приёмное отделение'),
+                (SELECT id FROM material_issues 
+                WHERE department_id = (SELECT id from departments WHERE name = 'Приёмное отделение')),
                 (SELECT id FROM medical_materials WHERE name = 'Медицинские перчатки'),
                 30
             ),
             (
-                (SELECT id FROM material_issues WHERE notes = 'Выдача в приёмное отделение'),
+                (SELECT id FROM material_issues 
+                WHERE department_id = (SELECT id from departments WHERE name = 'Приёмное отделение')),
                 (SELECT id FROM medical_materials WHERE name = 'Парацетамол'),
                 20
             ),
             (
-                (SELECT id FROM material_issues WHERE notes = 'Выдача в приёмное отделение'),
+                (SELECT id FROM material_issues 
+                WHERE department_id = (SELECT id from departments WHERE name = 'Приёмное отделение')),
                 (SELECT id FROM medical_materials WHERE name = 'Физраствор 0.9%'),
                 500
             ),
             (
-                (SELECT id FROM material_issues WHERE notes = 'Выдача в реанимацию'),
+                (SELECT id FROM material_issues 
+                WHERE department_id = (SELECT id from departments WHERE name = 'Реанимация')),
                 (SELECT id FROM medical_materials WHERE name = 'Амоксициллин'),
                 15
             ),
             (
-                (SELECT id FROM material_issues WHERE notes = 'Выдача в реанимацию'),
+                (SELECT id FROM material_issues 
+                WHERE department_id = (SELECT id from departments WHERE name = 'Реанимация')),
                 (SELECT id FROM medical_materials WHERE name = 'Лидокаин'),
                 100
             ),
             (
-                (SELECT id FROM material_issues WHERE notes = 'Выдача в реанимацию'),
+                (SELECT id FROM material_issues 
+                WHERE department_id = (SELECT id from departments WHERE name = 'Реанимация')),
                 (SELECT id FROM medical_materials WHERE name = 'Шприц 5 мл'),
                 100
             );
@@ -69,21 +76,21 @@ def upgrade() -> None:
 def downgrade() -> None:
     # Полный список записей issue_items для удаления:
     records_to_delete = [
-        ('Выдача в приёмное отделение', 'Бинт стерильный', 50),
-        ('Выдача в приёмное отделение', 'Медицинские перчатки', 30),
-        ('Выдача в приёмное отделение', 'Парацетамол', 20),
-        ('Выдача в приёмное отделение', 'Физраствор 0.9%', 500),
-        ('Выдача в реанимацию', 'Амоксициллин', 15),
-        ('Выдача в реанимацию', 'Лидокаин', 100),
-        ('Выдача в реанимацию', 'Шприц 5 мл', 100),
+        ('Приёмное отделение', 'Бинт стерильный', 50),
+        ('Приёмное отделение', 'Медицинские перчатки', 30),
+        ('Приёмное отделение', 'Парацетамол', 20),
+        ('Приёмное отделение', 'Физраствор 0.9%', 500),
+        ('Реанимация', 'Амоксициллин', 15),
+        ('Реанимация', 'Лидокаин', 100),
+        ('Реанимация', 'Шприц 5 мл', 100),
     ]
 
     for record in records_to_delete:
-        issue_notes, material_name, quantity = record
+        issue_department_name, material_name, quantity = record
 
         # Параметры для подстановки в SQL-запрос
         params = {
-            'issue_notes': issue_notes,
+            'issue_department_name': issue_department_name,
             'material_name': material_name,
             'quantity': quantity
         }
@@ -94,7 +101,8 @@ def downgrade() -> None:
                 WHERE material_issue_id = (
                     SELECT id
                     FROM material_issues
-                    WHERE notes = :issue_notes
+                    WHERE department_id = 
+                    (SELECT id from departments WHERE name = :issue_department_name)
                 )
                 AND medical_material_id = (
                     SELECT id

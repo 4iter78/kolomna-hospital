@@ -24,6 +24,7 @@ def upgrade() -> None:
             from_user_id       INT NOT NULL REFERENCES users(id),  -- кто выдал
             to_user_id       INT NOT NULL REFERENCES users(id),  -- кому выдал
             issue_date    TIMESTAMP NOT NULL DEFAULT NOW(),
+            department_id    INT REFERENCES departments(id),
             notes         TEXT
         );
     ''')

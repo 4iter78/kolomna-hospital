@@ -24,7 +24,8 @@ def upgrade() -> None:
             medical_material_id INT NOT NULL REFERENCES medical_materials(id),
             current_quantity   INT NOT NULL DEFAULT 0 CHECK (current_quantity >= 0),
             last_updated      TIMESTAMP NOT NULL DEFAULT NOW(),
-            department       INT NOT NULL REFERENCES departments(id)
+            department_id       INT NOT NULL REFERENCES departments(id),
+            UNIQUE (medical_material_id, department_id)
         );
     ''')
 

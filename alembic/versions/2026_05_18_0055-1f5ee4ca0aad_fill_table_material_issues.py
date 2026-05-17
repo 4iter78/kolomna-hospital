@@ -25,6 +25,7 @@ def upgrade() -> None:
             from_user_id,
             to_user_id,
             issue_date,
+            department_id,
             notes
         )
         VALUES
@@ -32,6 +33,7 @@ def upgrade() -> None:
                 (SELECT id FROM users WHERE surname = 'Морозов'),
                 (SELECT id FROM users WHERE surname = 'Смирнов'),
                 NOW() - INTERVAL '5 day',
+                (SELECT id FROM departments WHERE name = 'Приёмное отделение'),
                 'Выдача в приёмное отделение'
             ),
         
@@ -39,6 +41,7 @@ def upgrade() -> None:
                 (SELECT id FROM users WHERE surname = 'Кузнецова'),
                 (SELECT id FROM users WHERE surname = 'Федорова'),
                 NOW() - INTERVAL '2 day',
+                (SELECT id FROM departments WHERE name = 'Реанимация'),
                 'Выдача в реанимацию'
             );
     ''')
@@ -50,22 +53,25 @@ def downgrade() -> None:
         (
             'Морозов',
             'Смирнов',
+            'Приёмное отделение',
             'Выдача в приёмное отделение'
         ),
         (
             'Кузнецова',
             'Федорова',
+            'Реанимация',
             'Выдача в реанимацию'
         )
     ]
 
     for record in records_to_delete:
-        from_user_surname, to_user_surname, notes = record
+        from_user_surname, to_user_surname, department_name, notes = record
 
         # Параметры для подстановки в SQL-запрос
         params = {
             'from_user_surname': from_user_surname,
             'to_user_surname': to_user_surname,
+            'department_name': department_name,
             'notes': notes
         }
 
@@ -81,6 +87,11 @@ def downgrade() -> None:
                     SELECT id
                     FROM users
                     WHERE surname = :to_user_surname
+                )
+                AND department_id = (
+                    SELECT id
+                    FROM departments
+                    WHERE name = :department_name
                 )
                 AND notes = :notes
             '''),
