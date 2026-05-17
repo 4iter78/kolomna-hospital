@@ -8,9 +8,6 @@ Create Date: 2026-05-17 22:50:00.284185
 from typing import Sequence, Union
 
 from alembic import op
-import sqlalchemy as sa
-from sqlalchemy import text
-
 
 # revision identifiers, used by Alembic.
 revision: str = '23d44e0dff61'
@@ -27,7 +24,6 @@ def upgrade() -> None:
             name VARCHAR(255) NOT NULL
         );
     ''')
-    pass
 
 
 def downgrade() -> None:
@@ -35,4 +31,3 @@ def downgrade() -> None:
     op.execute('''
         DROP TABLE IF EXISTS departments;
     ''')
-    pass
