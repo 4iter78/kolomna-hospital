@@ -14,6 +14,9 @@ from controllers.WorkTimetableController import work_timetable_controller
 from controllers.AuthController import auth_controller
 from controllers.PermissionsController import permissions_controller
 from controllers.AppointmentsController import appointments_controller
+from controllers.MaterialBalancesController import material_balances_controller
+from controllers.MaterialIssuesController import material_issues_controller
+from controllers.StockDeliveriesController import stock_deliveries_controller
 from json import JSONEncoder
 
 
@@ -42,6 +45,9 @@ if __name__ == '__main__':
     app.register_blueprint(work_timetable_controller)
     app.register_blueprint(permissions_controller)
     app.register_blueprint(appointments_controller)
+    app.register_blueprint(material_balances_controller)
+    app.register_blueprint(material_issues_controller)
+    app.register_blueprint(stock_deliveries_controller)
     app.json_encoder = ModelEncoder
     # запуск сервера локально по умолчанию на порту 5000 по протоколу HTTPS
     # app.run(debug=True, ssl_context='adhoc')

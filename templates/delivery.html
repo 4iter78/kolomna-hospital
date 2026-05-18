@@ -1,0 +1,372 @@
+{% extends "main.html" %}
+{% block content %}
+
+<div class="table-toolbar">
+  {%- if can_write('delivery') %}
+  <button class="btn-action btn-create"
+          onclick="openModal('modal-create')">
+    <svg width="14" height="14"
+         viewBox="0 0 16 16"
+         fill="currentColor">
+      <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2z"/>
+    </svg>
+    Создать запись
+  </button>
+  {%- endif %}
+
+  <span class="record-count">
+    Записей: {{count}}
+  </span>
+</div>
+
+
+<table class="table table-striped">
+
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Поставщик</th>
+      <th>Дата приёма</th>
+      <th>№ документа</th>
+      <th>Комментарий</th>
+      <th>Действия</th>
+    </tr>
+  </thead>
+
+  <tbody>
+
+    {% for delivery in deliveries %}
+
+    <tr
+      data-id="{{ delivery.id }}"
+      data-supplier_id="{{ delivery.supplier_id }}"
+      data-delivery_date="{{ delivery.delivery_date }}"
+      data-document_number="{{ delivery.document_number }}"
+      data-notes="{{ delivery.notes }}"
+    >
+
+      <td>{{ delivery.id }}</td>
+
+      <td>{{ delivery.supplier }}</td>
+
+      <td>{{ delivery.delivery_date }}</td>
+
+      <td>{{ delivery.document_number }}</td>
+
+      <td>{{ delivery.notes }}</td>
+
+      <td>
+
+        <div class="actions-cell">
+
+          {%- if can_write('delivery') %}
+
+          <button class="btn-action btn-edit"
+                  onclick="openEditModal({{ delivery.id }})">
+
+            Изменить
+
+          </button>
+
+          <button class="btn-action btn-delete"
+                  onclick="deleteRecord('/delivery/', {{ delivery.id }})">
+
+            Удалить
+
+          </button>
+
+          {%- endif %}
+
+        </div>
+
+      </td>
+
+    </tr>
+
+    {% endfor %}
+
+  </tbody>
+
+</table>
+
+
+{%- if can_write('delivery') %}
+
+<div id="modal-create"
+     class="modal-overlay"
+     onclick="closeOnOverlay(event,'modal-create')">
+
+  <div class="modal-box">
+
+    <div class="modal-header">
+
+      <h3>Создать: Приём</h3>
+
+      <button class="modal-close"
+              onclick="closeModal('modal-create')">
+        ✕
+      </button>
+
+    </div>
+
+    <form method="POST" action="/delivery">
+
+      <div class="modal-body">
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Поставщик
+          </label>
+
+          <select class="form-control"
+                  name="supplier_id"
+                  required>
+
+            <option value="">
+              — Выберите —
+            </option>
+
+            {% for supplier in suppliers %}
+
+            <option value="{{ supplier.id }}">
+              {{ supplier.name }}
+            </option>
+
+            {% endfor %}
+
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Дата приёма
+          </label>
+
+          <input class="form-control"
+                 type="date"
+                 name="delivery_date"
+                 required>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+            № документа
+          </label>
+
+          <input class="form-control"
+                 type="text"
+                 name="document_number"
+                 required>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Комментарий
+          </label>
+
+          <textarea class="form-control"
+                    name="notes"></textarea>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button type="button"
+                class="btn-action btn-edit"
+                onclick="closeModal('modal-create')">
+
+          Отмена
+
+        </button>
+
+        <button type="submit"
+                class="btn-action btn-create">
+
+          Сохранить
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+{%- endif %}
+
+
+
+{%- if can_write('delivery') %}
+
+<div id="modal-edit"
+     class="modal-overlay"
+     onclick="closeOnOverlay(event,'modal-edit')">
+
+  <div class="modal-box">
+
+    <div class="modal-header">
+
+      <h3>Редактировать: Приём</h3>
+
+      <button class="modal-close"
+              onclick="closeModal('modal-edit')">
+
+        ✕
+
+      </button>
+
+    </div>
+
+    <div class="modal-body">
+
+      <form id="edit-form">
+
+        <input type="hidden"
+               name="id"
+               id="edit-id">
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Поставщик
+          </label>
+
+          <select class="form-control"
+                  name="supplier_id"
+                  id="edit-supplier_id"
+                  required>
+
+            {% for supplier in suppliers %}
+
+            <option value="{{ supplier.id }}">
+              {{ supplier.name }}
+            </option>
+
+            {% endfor %}
+
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Дата приёма
+          </label>
+
+          <input class="form-control"
+                 type="date"
+                 name="delivery_date"
+                 id="edit-delivery_date"
+                 required>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+            № документа
+          </label>
+
+          <input class="form-control"
+                 type="text"
+                 name="document_number"
+                 id="edit-document_number"
+                 required>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Комментарий
+          </label>
+
+          <textarea class="form-control"
+                    name="notes"
+                    id="edit-notes"></textarea>
+
+        </div>
+
+      </form>
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button type="button"
+              class="btn-action btn-edit"
+              onclick="closeModal('modal-edit')">
+
+        Отмена
+
+      </button>
+
+      <button type="button"
+              class="btn-action btn-create"
+              onclick="submitEdit('/delivery/','edit-form','modal-edit')">
+
+        Сохранить
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+{%- endif %}
+
+
+{% block scripts %}
+
+<script>
+
+function openEditModal(id) {
+
+  const r = document.querySelector(
+    `tr[data-id="${id}"]`
+  );
+
+  document.getElementById('edit-id').value =
+    id;
+
+  document.getElementById('edit-supplier_id').value =
+    r.dataset.supplier_id;
+
+  document.getElementById('edit-delivery_date').value =
+    r.dataset.delivery_date;
+
+  document.getElementById('edit-document_number').value =
+    r.dataset.document_number;
+
+  document.getElementById('edit-notes').value =
+    r.dataset.notes;
+
+  openModal('modal-edit');
+}
+
+</script>
+
+{% endblock %}
+
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends "main.html" %}
+{% block content %}
+
+<h2>В наличии</h2>
+
+<table class="table table-striped">
+
+  <thead>
+
+    <tr>
+
+      <th>ID</th>
+
+      <th>Медицинский материал</th>
+
+      <th>Количество</th>
+
+      <th>Отделение</th>
+
+      <th>Дата обновления</th>
+
+    </tr>
+
+  </thead>
+
+  <tbody>
+
+    {% for item in available %}
+
+    <tr>
+
+      <td>{{ item.id }}</td>
+
+      <td>{{ item.medical_material }}</td>
+
+      <td>{{ item.current_quantity }}</td>
+
+      <td>{{ item.department }}</td>
+
+      <td>{{ item.last_updated }}</td>
+
+    </tr>
+
+    {% endfor %}
+
+  </tbody>
+
+</table>
+
+
+
+<h2>Выдано</h2>
+
+<table class="table table-striped">
+
+  <thead>
+
+    <tr>
+
+      <th>ID</th>
+
+      <th>Медицинский материал</th>
+
+      <th>Количество</th>
+
+      <th>№ документа</th>
+
+      <th>Дата операции</th>
+
+    </tr>
+
+  </thead>
+
+  <tbody>
+
+    {% for item in issued %}
+
+    <tr>
+
+      <td>{{ item.id }}</td>
+
+      <td>{{ item.medical_material }}</td>
+
+      <td>{{ item.quantity }}</td>
+
+      <td>{{ item.document_number }}</td>
+
+      <td>{{ item.operation_date }}</td>
+
+    </tr>
+
+    {% endfor %}
+
+  </tbody>
+
+</table>
+
+
+
+<h2>Списано</h2>
+
+<table class="table table-striped">
+
+  <thead>
+
+    <tr>
+
+      <th>ID</th>
+
+      <th>Медицинский материал</th>
+
+      <th>Количество</th>
+
+      <th>№ документа</th>
+
+      <th>Дата операции</th>
+
+    </tr>
+
+  </thead>
+
+  <tbody>
+
+    {% for item in written_off %}
+
+    <tr>
+
+      <td>{{ item.id }}</td>
+
+      <td>{{ item.medical_material }}</td>
+
+      <td>{{ item.quantity }}</td>
+
+      <td>{{ item.document_number }}</td>
+
+      <td>{{ item.operation_date }}</td>
+
+    </tr>
+
+    {% endfor %}
+
+  </tbody>
+
+</table>
+
+{% endblock %}
