@@ -40,16 +40,12 @@ def handle_storage():
 
         txt_balance = {
             "id": balance.id,
-
             "medical_material":
                 material.name if material else '',
-
             "current_quantity":
                 balance.current_quantity,
-
             "department":
                 department.name if department else '',
-
             "last_updated":
                 balance.last_updated
         }
@@ -70,15 +66,11 @@ def handle_storage():
 
         txt_operation = {
             "id": operation.id,
-
             "medical_material":
                 material.name if material else '',
-
             "quantity": operation.quantity,
-
             "document_number":
                 operation.document_number,
-
             "operation_date":
                 operation.operation_date
         }
@@ -99,15 +91,11 @@ def handle_storage():
 
         txt_operation = {
             "id": operation.id,
-
             "medical_material":
                 material.name if material else '',
-
             "quantity": operation.quantity,
-
             "document_number":
                 operation.document_number,
-
             "operation_date":
                 operation.operation_date
         }
@@ -117,16 +105,10 @@ def handle_storage():
     return render_template(
         'storage.html',
         title='Хранение',
-
         available=available,
-
         issued=issued,
-
         written_off=written_off,
-
         available_count=len(available),
-
         issued_count=len(issued),
-
         written_off_count=len(written_off)
     )
