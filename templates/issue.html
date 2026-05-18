@@ -15,10 +15,13 @@
   {%- endif %}
 
   <span class="record-count">
-    Записей: {{count}}
+
+    Записей: {{ count }}
+
   </span>
 
 </div>
+
 
 
 <table class="table table-striped">
@@ -29,15 +32,17 @@
 
       <th>ID</th>
 
-      <th>Кто выдал</th>
+      <th>Выдал</th>
 
-      <th>Кто принял</th>
+      <th>Принял</th>
 
-      <th>Отделение</th>
+      <th>Место хранения</th>
 
       <th>Дата выдачи</th>
 
       <th>Комментарий</th>
+
+      <th>Материалы</th>
 
       <th>Действия</th>
 
@@ -49,14 +54,7 @@
 
     {% for issue in issues %}
 
-    <tr
-      data-id="{{ issue.id }}"
-      data-from_user_id="{{ issue.from_user_id }}"
-      data-to_user_id="{{ issue.to_user_id }}"
-      data-department_id="{{ issue.department_id }}"
-      data-issue_date="{{ issue.issue_date }}"
-      data-notes="{{ issue.notes }}"
-    >
+    <tr>
 
       <td>{{ issue.id }}</td>
 
@@ -70,6 +68,60 @@
 
       <td>{{ issue.notes }}</td>
 
+
+      <!-- ================================= -->
+      <!-- MATERIALS -->
+      <!-- ================================= -->
+
+      <td>
+
+        <table class="table table-sm table-bordered">
+
+          <thead>
+
+            <tr>
+
+              <th>Материал</th>
+
+              <th>Количество</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            {% for item in issue.issue_items %}
+
+            <tr>
+
+              <td>
+
+                {{ item.medical_material }}
+
+              </td>
+
+              <td>
+
+                {{ item.quantity }}
+
+              </td>
+
+            </tr>
+
+            {% endfor %}
+
+          </tbody>
+
+        </table>
+
+      </td>
+
+
+      <!-- ================================= -->
+      <!-- ACTIONS -->
+      <!-- ================================= -->
+
       <td>
 
         <div class="actions-cell">
@@ -82,6 +134,7 @@
             Изменить
 
           </button>
+
 
           <button class="btn-action btn-delete"
                   onclick="deleteRecord('/issue/', {{ issue.id }})">
@@ -106,11 +159,17 @@
 
 
 
+<!-- ========================================= -->
+<!-- CREATE MODAL -->
+<!-- ========================================= -->
+
+{%- if can_write('issue') %}
+
 <div id="modal-create"
      class="modal-overlay"
      onclick="closeOnOverlay(event,'modal-create')">
 
-  <div class="modal-box">
+  <div class="modal-box modal-xl">
 
     <div class="modal-header">
 
@@ -125,16 +184,23 @@
 
     </div>
 
+
     <form method="POST"
           action="/issue">
 
       <div class="modal-body">
 
 
+        <!-- ================================= -->
+        <!-- MAIN DATA -->
+        <!-- ================================= -->
+
         <div class="form-group">
 
           <label class="form-label">
-            Кто выдал
+
+            Выдал
+
           </label>
 
           <select class="form-control"
@@ -144,7 +210,9 @@
             {% for user in users %}
 
             <option value="{{ user.id }}">
+
               {{ user.name }}
+
             </option>
 
             {% endfor %}
@@ -157,7 +225,9 @@
         <div class="form-group">
 
           <label class="form-label">
-            Кто принял
+
+            Принял
+
           </label>
 
           <select class="form-control"
@@ -167,7 +237,9 @@
             {% for user in users %}
 
             <option value="{{ user.id }}">
+
               {{ user.name }}
+
             </option>
 
             {% endfor %}
@@ -180,7 +252,9 @@
         <div class="form-group">
 
           <label class="form-label">
-            Отделение
+
+            Место хранения
+
           </label>
 
           <select class="form-control"
@@ -190,7 +264,9 @@
             {% for department in departments %}
 
             <option value="{{ department.id }}">
+
               {{ department.name }}
+
             </option>
 
             {% endfor %}
@@ -203,7 +279,9 @@
         <div class="form-group">
 
           <label class="form-label">
+
             Дата выдачи
+
           </label>
 
           <input class="form-control"
@@ -217,13 +295,63 @@
         <div class="form-group">
 
           <label class="form-label">
+
             Комментарий
+
           </label>
 
           <textarea class="form-control"
                     name="notes"></textarea>
 
         </div>
+
+
+        <!-- ================================= -->
+        <!-- MATERIALS -->
+        <!-- ================================= -->
+
+        <hr>
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+
+          <h4>
+
+            Выданные материалы
+
+          </h4>
+
+          <button type="button"
+                  class="btn-action btn-create"
+                  onclick="addIssueMaterialRow()">
+
+            Добавить материал
+
+          </button>
+
+        </div>
+
+
+        <table class="table table-bordered">
+
+          <thead>
+
+            <tr>
+
+              <th>Материал</th>
+
+              <th>Количество</th>
+
+              <th width="120"></th>
+
+            </tr>
+
+          </thead>
+
+          <tbody id="issue-materials-body">
+
+          </tbody>
+
+        </table>
 
       </div>
 
@@ -252,5 +380,534 @@
   </div>
 
 </div>
+
+{%- endif %}
+
+
+
+<!-- ========================================= -->
+<!-- EDIT MODAL -->
+<!-- ========================================= -->
+
+{%- if can_write('issue') %}
+
+<div id="modal-edit"
+     class="modal-overlay"
+     onclick="closeOnOverlay(event,'modal-edit')">
+
+  <div class="modal-box modal-xl">
+
+    <div class="modal-header">
+
+      <h3>Редактировать: Выдача</h3>
+
+      <button class="modal-close"
+              onclick="closeModal('modal-edit')">
+
+        ✕
+
+      </button>
+
+    </div>
+
+
+    <div class="modal-body">
+
+      <form id="edit-form">
+
+        <input type="hidden"
+               id="edit-id">
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+
+            Выдал
+
+          </label>
+
+          <select class="form-control"
+                  id="edit-from_user_id">
+
+            {% for user in users %}
+
+            <option value="{{ user.id }}">
+
+              {{ user.name }}
+
+            </option>
+
+            {% endfor %}
+
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+
+            Принял
+
+          </label>
+
+          <select class="form-control"
+                  id="edit-to_user_id">
+
+            {% for user in users %}
+
+            <option value="{{ user.id }}">
+
+              {{ user.name }}
+
+            </option>
+
+            {% endfor %}
+
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+
+            Место хранения
+
+          </label>
+
+          <select class="form-control"
+                  id="edit-department_id">
+
+            {% for department in departments %}
+
+            <option value="{{ department.id }}">
+
+              {{ department.name }}
+
+            </option>
+
+            {% endfor %}
+
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+
+            Дата выдачи
+
+          </label>
+
+          <input class="form-control"
+                 type="datetime-local"
+                 id="edit-issue_date">
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+
+            Комментарий
+
+          </label>
+
+          <textarea class="form-control"
+                    id="edit-notes"></textarea>
+
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- MATERIALS -->
+        <!-- ================================= -->
+
+        <hr>
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+
+          <h4>
+
+            Выданные материалы
+
+          </h4>
+
+          <button type="button"
+                  class="btn-action btn-create"
+                  onclick="addEditIssueMaterialRow()">
+
+            Добавить материал
+
+          </button>
+
+        </div>
+
+
+        <table class="table table-bordered">
+
+          <thead>
+
+            <tr>
+
+              <th>Материал</th>
+
+              <th>Количество</th>
+
+              <th width="120"></th>
+
+            </tr>
+
+          </thead>
+
+          <tbody id="edit-issue-materials-body">
+
+          </tbody>
+
+        </table>
+
+      </form>
+
+    </div>
+
+
+    <div class="modal-footer">
+
+      <button type="button"
+              class="btn-action btn-edit"
+              onclick="closeModal('modal-edit')">
+
+        Отмена
+
+      </button>
+
+      <button type="button"
+              class="btn-action btn-create"
+              onclick="submitIssueEdit()">
+
+        Сохранить
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+{%- endif %}
+
+
+
+{% block scripts %}
+
+<script>
+
+function removeRow(btn) {
+
+    btn.closest('tr').remove();
+}
+
+
+
+//
+// CREATE ROW
+//
+
+function addIssueMaterialRow() {
+
+    const tbody =
+        document.getElementById(
+            'issue-materials-body'
+        );
+
+    const row =
+        document.createElement('tr');
+
+    row.innerHTML = `
+
+        <td>
+
+            <select
+                class="form-control"
+                name="medical_material_id[]"
+                required>
+
+                {% for material in materials %}
+
+                <option value="{{ material.id }}">
+
+                    {{ material.name }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </td>
+
+        <td>
+
+            <input type="number"
+                   class="form-control"
+                   name="quantity[]"
+                   required>
+
+        </td>
+
+        <td>
+
+            <button type="button"
+                    class="btn-action btn-delete"
+                    onclick="removeRow(this)">
+
+                Удалить
+
+            </button>
+
+        </td>
+    `;
+
+    tbody.appendChild(row);
+}
+
+
+
+//
+// OPEN EDIT
+//
+
+async function openEditModal(id) {
+
+    const response = await fetch(
+        `/issue/${id}`
+    );
+
+    const data = await response.json();
+
+    const issue = data.issue;
+
+    document.getElementById(
+        'edit-id'
+    ).value = issue.id;
+
+    document.getElementById(
+        'edit-from_user_id'
+    ).value = issue.from_user_id;
+
+    document.getElementById(
+        'edit-to_user_id'
+    ).value = issue.to_user_id;
+
+    document.getElementById(
+        'edit-department_id'
+    ).value = issue.department_id;
+
+    document.getElementById(
+        'edit-issue_date'
+    ).value = issue.issue_date;
+
+    document.getElementById(
+        'edit-notes'
+    ).value = issue.notes || '';
+
+    const tbody =
+        document.getElementById(
+            'edit-issue-materials-body'
+        );
+
+    tbody.innerHTML = '';
+
+    for (const item of issue.issue_items) {
+
+        addEditIssueMaterialRow(item);
+    }
+
+    openModal('modal-edit');
+}
+
+
+
+//
+// ADD EDIT ROW
+//
+
+function addEditIssueMaterialRow(item = null) {
+
+    const tbody =
+        document.getElementById(
+            'edit-issue-materials-body'
+        );
+
+    const row =
+        document.createElement('tr');
+
+    row.innerHTML = `
+
+        <td>
+
+            <select
+                class="form-control material-select">
+
+                {% for material in materials %}
+
+                <option value="{{ material.id }}">
+
+                    {{ material.name }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </td>
+
+        <td>
+
+            <input type="number"
+                   class="form-control quantity-input">
+
+        </td>
+
+        <td>
+
+            <button type="button"
+                    class="btn-action btn-delete"
+                    onclick="removeRow(this)">
+
+                Удалить
+
+            </button>
+
+        </td>
+    `;
+
+    tbody.appendChild(row);
+
+    if (item) {
+
+        row.querySelector(
+            '.material-select'
+        ).value = item.medical_material_id;
+
+        row.querySelector(
+            '.quantity-input'
+        ).value = item.quantity;
+    }
+}
+
+
+
+//
+// SUBMIT EDIT
+//
+
+async function submitIssueEdit() {
+
+    const id =
+        document.getElementById(
+            'edit-id'
+        ).value;
+
+    const rows = document.querySelectorAll(
+        '#edit-issue-materials-body tr'
+    );
+
+    const issue_items = [];
+
+    rows.forEach(row => {
+
+        issue_items.push({
+
+            medical_material_id:
+                row.querySelector(
+                    '.material-select'
+                ).value,
+
+            quantity:
+                row.querySelector(
+                    '.quantity-input'
+                ).value
+        });
+    });
+
+    const payload = {
+
+        from_user_id:
+            document.getElementById(
+                'edit-from_user_id'
+            ).value,
+
+        to_user_id:
+            document.getElementById(
+                'edit-to_user_id'
+            ).value,
+
+        department_id:
+            document.getElementById(
+                'edit-department_id'
+            ).value,
+
+        issue_date:
+            document.getElementById(
+                'edit-issue_date'
+            ).value,
+
+        notes:
+            document.getElementById(
+                'edit-notes'
+            ).value,
+
+        issue_items:
+            issue_items
+    };
+
+    const response = await fetch(
+
+        `/issue/${id}`,
+
+        {
+
+            method: 'PUT',
+
+            headers: {
+
+                'Content-Type':
+                    'application/json'
+            },
+
+            body:
+                JSON.stringify(payload)
+        }
+    );
+
+    const result = await response.json();
+
+    showToast(
+        result.message || 'Запись обновлена',
+        'success'
+    );
+
+    closeModal('modal-edit');
+
+    setTimeout(function () {
+
+        location.reload();
+
+    }, 800);
+}
+
+</script>
+
+{% endblock %}
 
 {% endblock %}

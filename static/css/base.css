@@ -233,7 +233,12 @@ td a:hover { color: var(--blue-deep); text-decoration: underline; }
   padding: 2px 6px; border-radius: 5px; transition: background .15s, color .15s;
 }
 .modal-close:hover { background: var(--gray-border); color: var(--text-main); }
-.modal-body { padding: 22px 24px; max-height: 65vh; overflow-y: auto; }
+.modal-body { padding: 22px 24px; max-height: 65vh; overflow-y: auto; overflow-x: auto;}
+/* Широкое модальное окно */
+.modal-box.modal-xl {
+  max-width: 1400px;
+  width: 95%;
+}
 .modal-footer {
   display: flex; gap: 10px; justify-content: flex-end;
   padding: 16px 24px; border-top: 1px solid var(--gray-border); background: var(--gray-light);
