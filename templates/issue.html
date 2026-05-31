@@ -68,256 +68,137 @@
 
       <td>{{ issue.notes }}</td>
 
-
-      <!-- ================================= -->
-      <!-- MATERIALS -->
-      <!-- ================================= -->
-
       <td>
+        <details>
+          <summary>
 
-        <table class="table table-sm table-bordered">
-
-          <thead>
-
-            <tr>
-
-              <th>Материал</th>
-
-              <th>Количество</th>
-
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            {% for item in issue.issue_items %}
-
-            <tr>
-
-              <td>
-
-                {{ item.medical_material }}
-
-              </td>
-
-              <td>
-
-                {{ item.quantity }}
-
-              </td>
-
-            </tr>
-
-            {% endfor %}
-
-          </tbody>
-
-        </table>
-
+          </summary>
+          <table class="table table-sm table-bordered">
+            <thead>
+              <tr>
+                <th>Материал</th>
+                <th>Количество</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in issue.issue_items %}
+              <tr>
+                <td>
+                  {{ item.medical_material }}
+                </td>
+                <td>
+                  {{ item.quantity }}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </details>
       </td>
-
-
-      <!-- ================================= -->
-      <!-- ACTIONS -->
-      <!-- ================================= -->
 
       <td>
 
         <div class="actions-cell">
-
           {%- if can_write('issue') %}
-
           <button class="btn-action btn-edit"
                   onclick="openEditModal({{ issue.id }})">
-
             Изменить
-
           </button>
-
 
           <button class="btn-action btn-delete"
                   onclick="deleteRecord('/issue/', {{ issue.id }})">
-
             Удалить
-
           </button>
-
           {%- endif %}
-
         </div>
-
       </td>
-
     </tr>
-
     {% endfor %}
-
   </tbody>
-
 </table>
 
-
-
-<!-- ========================================= -->
-<!-- CREATE MODAL -->
-<!-- ========================================= -->
-
 {%- if can_write('issue') %}
-
 <div id="modal-create"
      class="modal-overlay"
      onclick="closeOnOverlay(event,'modal-create')">
-
   <div class="modal-box modal-xl">
-
     <div class="modal-header">
-
       <h3>Создать: Выдача</h3>
-
       <button class="modal-close"
               onclick="closeModal('modal-create')">
-
         ✕
-
       </button>
-
     </div>
 
-
-    <form method="POST"
-          action="/issue">
-
+    <form method="POST" action="/issue">
       <div class="modal-body">
-
-
-        <!-- ================================= -->
-        <!-- MAIN DATA -->
-        <!-- ================================= -->
-
         <div class="form-group">
-
           <label class="form-label">
-
             Выдал
-
           </label>
-
-          <select class="form-control"
-                  name="from_user_id"
-                  required>
-
+          <select class="form-control" name="from_user_id" required>
             {% for user in users %}
-
             <option value="{{ user.id }}">
-
               {{ user.name }}
-
             </option>
-
             {% endfor %}
-
           </select>
-
         </div>
 
-
         <div class="form-group">
-
           <label class="form-label">
-
             Принял
-
           </label>
 
           <select class="form-control"
                   name="to_user_id"
                   required>
-
             {% for user in users %}
-
             <option value="{{ user.id }}">
-
               {{ user.name }}
-
             </option>
-
             {% endfor %}
-
           </select>
-
         </div>
 
-
         <div class="form-group">
-
           <label class="form-label">
-
             Место хранения
-
           </label>
-
           <select class="form-control"
                   name="department_id"
                   required>
-
             {% for department in departments %}
-
             <option value="{{ department.id }}">
-
               {{ department.name }}
-
             </option>
-
             {% endfor %}
-
           </select>
-
         </div>
 
-
         <div class="form-group">
-
           <label class="form-label">
-
             Дата выдачи
-
           </label>
-
           <input class="form-control"
                  type="datetime-local"
                  name="issue_date"
                  required>
-
         </div>
-
 
         <div class="form-group">
-
           <label class="form-label">
-
             Комментарий
-
           </label>
-
           <textarea class="form-control"
                     name="notes"></textarea>
-
         </div>
-
-
-        <!-- ================================= -->
-        <!-- MATERIALS -->
-        <!-- ================================= -->
 
         <hr>
 
         <div class="d-flex justify-content-between align-items-center mb-2">
-
           <h4>
-
             Выданные материалы
-
           </h4>
 
           <button type="button"
@@ -325,32 +206,21 @@
                   onclick="addIssueMaterialRow()">
 
             Добавить материал
-
           </button>
-
         </div>
 
 
         <table class="table table-bordered">
 
           <thead>
-
             <tr>
-
               <th>Материал</th>
-
               <th>Количество</th>
-
               <th width="120"></th>
-
             </tr>
-
           </thead>
-
           <tbody id="issue-materials-body">
-
           </tbody>
-
         </table>
 
       </div>
