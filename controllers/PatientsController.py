@@ -88,9 +88,9 @@ def handle_patient(patient_id):
         patient.oms_number = data.get('oms_number')
         db.session.add(patient)
         db.session.commit()
-        return {"message": f"patient {patient.surname} {patient.name} successfully updated"}
+        return {"message": f"Пациент {patient.surname} {patient.name} успешно обновлен"}
 
     elif request.method == 'DELETE':
         db.session.delete(patient)
         db.session.commit()
-        return {"message": f"patient {patient.surname} {patient.name} successfully deleted."}
+        return {"message": f"Пациент {patient.surname} {patient.name} успешно удален."}

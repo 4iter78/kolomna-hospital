@@ -39,9 +39,9 @@ def handle_room_type(room_type_id):
         room_type.name = data['name']
         db.session.add(room_type)
         db.session.commit()
-        return {"message": f"room_type {room_type.name} successfully updated"}
+        return {"message": f"Тип помещения {room_type.name} успешно обновлен"}
 
     elif request.method == 'DELETE':
         db.session.delete(room_type)
         db.session.commit()
-        return {"message": f"room_type {room_type.name} successfully deleted."}
+        return {"message": f"Тип помещения {room_type.name} успешно удален."}

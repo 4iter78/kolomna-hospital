@@ -104,7 +104,7 @@ def handle_storage():
 
     return render_template(
         'storage.html',
-        title='Хранение',
+        title='Хранение медицинских материалов',
         available=available,
         issued=issued,
         written_off=written_off,

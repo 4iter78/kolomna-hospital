@@ -38,10 +38,6 @@ material_issues_controller = Blueprint(
 @access_control('issue')
 def handle_issue():
 
-    # =================================================
-    # CREATE
-    # =================================================
-
     if request.method == 'POST':
 
         data = request.form
@@ -57,10 +53,6 @@ def handle_issue():
         db.session.add(new_issue)
 
         db.session.commit()
-
-        # =============================================
-        # ISSUE ITEMS
-        # =============================================
 
         material_ids = request.form.getlist(
             'medical_material_id[]'
@@ -91,10 +83,6 @@ def handle_issue():
             )
         )
 
-    # =================================================
-    # GET LIST
-    # =================================================
-
     issues = MaterialIssues.query.all()
 
     result = []
@@ -112,10 +100,6 @@ def handle_issue():
         department = Departments.query.get(
             issue.department_id
         )
-
-        # =============================================
-        # ISSUE ITEMS
-        # =============================================
 
         issue_items = IssueItems.query.filter_by(
             material_issue_id=issue.id
@@ -142,10 +126,6 @@ def handle_issue():
 
             items.append(txt_item)
 
-        # =============================================
-        # ISSUE OBJECT
-        # =============================================
-
         txt_issue = {
             "id":
                 issue.id,
@@ -171,10 +151,6 @@ def handle_issue():
 
         result.append(txt_issue)
 
-    # =================================================
-    # USERS
-    # =================================================
-
     users = [
         {
             "id": user.id,
@@ -184,10 +160,6 @@ def handle_issue():
         for user in Users.query.all()
     ]
 
-    # =================================================
-    # DEPARTMENTS
-    # =================================================
-
     departments = [
         {
             "id": department.id,
@@ -196,10 +168,6 @@ def handle_issue():
 
         for department in Departments.query.all()
     ]
-
-    # =================================================
-    # MATERIALS
-    # =================================================
 
     materials = [
         {
@@ -212,7 +180,7 @@ def handle_issue():
 
     return render_template(
         'issue.html',
-        title='Выдача',
+        title='Выдача медицинских материалов',
         issues=result,
         users=users,
         departments=departments,
@@ -220,25 +188,13 @@ def handle_issue():
         count=len(result)
     )
 
-
-# =====================================================
-# ISSUE ITEM
-# =====================================================
-
-@material_issues_controller.route(
-    '/issue/<issue_id>',
-    methods=['GET', 'PUT', 'DELETE']
-)
+@material_issues_controller.route('/issue/<issue_id>',methods=['GET', 'PUT', 'DELETE'])
 @access_control('issue')
 def handle_issue_item(issue_id):
 
     issue = MaterialIssues.query.get_or_404(
         issue_id
     )
-
-    # =================================================
-    # GET ONE
-    # =================================================
 
     if request.method == 'GET':
 
@@ -288,10 +244,6 @@ def handle_issue_item(issue_id):
             "issue": response
         }
 
-    # =================================================
-    # UPDATE
-    # =================================================
-
     elif request.method == 'PUT':
         data = request.get_json()
         issue.from_user_id = data[
@@ -311,10 +263,6 @@ def handle_issue_item(issue_id):
         ]
         db.session.add(issue)
 
-        # =============================================
-        # DELETE OLD ITEMS
-        # =============================================
-
         old_items = IssueItems.query.filter_by(
             material_issue_id=issue.id
         ).all()
@@ -323,10 +271,6 @@ def handle_issue_item(issue_id):
             db.session.delete(item)
 
         db.session.commit()
-
-        # =============================================
-        # ADD NEW ITEMS
-        # =============================================
 
         for item_data in data['issue_items']:
             new_item = IssueItems(
@@ -344,13 +288,8 @@ def handle_issue_item(issue_id):
         db.session.commit()
 
         return {
-            "message":
-                f"Issue {issue.id} updated"
+            "message": f"Выдача {issue.id} успешно обновлена"
         }
-
-    # =================================================
-    # DELETE
-    # =================================================
 
     elif request.method == 'DELETE':
         issue_items = IssueItems.query.filter_by(
@@ -365,6 +304,5 @@ def handle_issue_item(issue_id):
         db.session.commit()
 
         return {
-            "message":
-                f"Issue {issue.id} successfully deleted"
+            "message": f"Выдача {issue.id} успешно удалена"
         }

@@ -39,9 +39,9 @@ def handle_diagnosis(diagnosis_id):
         diagnosis.name = data['name']
         db.session.add(diagnosis)
         db.session.commit()
-        return {"message": f"diagnosis {diagnosis.name} successfully updated"}
+        return {"message": f"Диагноз {diagnosis.name} успешно обновлен"}
 
     elif request.method == 'DELETE':
         db.session.delete(diagnosis)
         db.session.commit()
-        return {"message": f"diagnosis {diagnosis.name} successfully deleted."}
+        return {"message": f"Диагноз {diagnosis.name} успешно удален."}

@@ -98,7 +98,7 @@ def handle_work_timetable(entry_id):
         entry.time_to   = data['time_to']
         db.session.add(entry)
         db.session.commit()
-        return {"message": f"work_timetable {entry.id} successfully updated"}
+        return {"message": f"Расписание {entry.id} успешно обновлено"}
 
     elif request.method == 'DELETE':
         # Сначала удаляем связь, потом саму запись
@@ -106,4 +106,4 @@ def handle_work_timetable(entry_id):
             work_timetable_id=entry.id).delete()
         db.session.delete(entry)
         db.session.commit()
-        return {"message": f"work_timetable {entry.id} successfully deleted."}
+        return {"message": f"Расписание {entry.id} успешно удалено."}

@@ -40,9 +40,9 @@ def handle_treatment_type(treatment_type_id):
         treatment_type.name = data['name']
         db.session.add(treatment_type)
         db.session.commit()
-        return {"message": f"treatment_type {treatment_type.name} successfully updated"}
+        return {"message": f"Тип лечения {treatment_type.name} успешно обновлен"}
 
     elif request.method == 'DELETE':
         db.session.delete(treatment_type)
         db.session.commit()
-        return {"message": f"treatment_type {treatment_type.name} successfully deleted."}
+        return {"message": f"Тип лечения {treatment_type.name} успешно удален."}

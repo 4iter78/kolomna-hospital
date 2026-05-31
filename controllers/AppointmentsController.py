@@ -117,7 +117,7 @@ def handle_appointment(appointment_id):
         db.session.add(appointment)
         db.session.commit()
 
-        return {"message": f"Приём {appointment.id} успешно обновлён"}
+        return {"message": f"Приём {appointment.id} успешно обновлен"}
 
     # ── DELETE ──────────────────────────────────
     elif request.method == 'DELETE':

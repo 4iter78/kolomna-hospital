@@ -237,7 +237,7 @@ def handle_delivery():
 
     return render_template(
         'delivery.html',
-        title='Приём',
+        title='Поступление медицинских материалов',
         deliveries=result,
         suppliers=suppliers,
         materials=materials,
@@ -399,13 +399,8 @@ def handle_delivery_item(delivery_id):
 
         return {
 
-            "message":
-                f"Delivery {delivery.id} updated"
+            "message": f"Поступление {delivery.id} успешно обновлено"
         }
-
-    # =================================================
-    # DELETE
-    # =================================================
 
     elif request.method == 'DELETE':
 
@@ -421,6 +416,5 @@ def handle_delivery_item(delivery_id):
         db.session.commit()
 
         return {
-            "message":
-                f"Delivery {delivery.id} successfully deleted"
+            "message": f"Поступление {delivery.id} успешно удалено"
         }

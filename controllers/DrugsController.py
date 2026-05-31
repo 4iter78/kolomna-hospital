@@ -39,9 +39,9 @@ def handle_drug(drug_id):
         drug.name = data['name']
         db.session.add(drug)
         db.session.commit()
-        return {"message": f"drug {drug.name} successfully updated"}
+        return {"message": f"Препарат {drug.name} успешно обновлен"}
 
     elif request.method == 'DELETE':
         db.session.delete(drug)
         db.session.commit()
-        return {"message": f"drug {drug.name} successfully deleted."}
+        return {"message": f"Препарат {drug.name} успешно удален."}

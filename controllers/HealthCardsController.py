@@ -79,9 +79,9 @@ def handle_health_card(health_card_id):
         health_card.user_id = data['user_id']
         db.session.add(health_card)
         db.session.commit()
-        return {"message": f"health_card {health_card.id} successfully updated"}
+        return {"message": f"Карта {health_card.id} успешно обновлена"}
 
     elif request.method == 'DELETE':
         db.session.delete(health_card)
         db.session.commit()
-        return {"message": f"health_card {health_card.id} successfully deleted."}
+        return {"message": f"Карта {health_card.id} успешно удалена."}

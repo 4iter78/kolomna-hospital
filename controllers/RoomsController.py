@@ -66,9 +66,9 @@ def handle_room(room_id):
         room.special_type_id = data.get('special_type_id')
         db.session.add(room)
         db.session.commit()
-        return {"message": f"room {room.name} successfully updated"}
+        return {"message": f"Помещение {room.name} успешно обновлено"}
 
     elif request.method == 'DELETE':
         db.session.delete(room)
         db.session.commit()
-        return {"message": f"room {room.name} successfully deleted."}
+        return {"message": f"Помещение {room.name} успешно удален."}

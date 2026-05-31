@@ -55,10 +55,10 @@ def handle_user_role(user_role_id):
         db.session.add(user_role)
         db.session.commit()
 
-        return {"message": f"user_role {user_role.name} successfully updated"}
+        return {"message": f"Роль {user_role.name} успешно обновлена"}
 
     elif request.method == 'DELETE':
         db.session.delete(user_role)
         db.session.commit()
 
-        return {"message": f"Customer {user_role.name} successfully deleted."}
+        return {"message": f"Роль {user_role.name} успешно удалена."}

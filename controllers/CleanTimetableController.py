@@ -74,9 +74,9 @@ def handle_clean_timetable(entry_id):
         entry.clean_datetime = data['clean_datetime']
         db.session.add(entry)
         db.session.commit()
-        return {"message": f"clean_timetable {entry.id} successfully updated"}
+        return {"message": f"Расписание {entry.id} успешно обновлено"}
 
     elif request.method == 'DELETE':
         db.session.delete(entry)
         db.session.commit()
-        return {"message": f"clean_timetable {entry.id} successfully deleted."}
+        return {"message": f"Расписание {entry.id} успешно удалено."}
