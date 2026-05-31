@@ -39,17 +39,9 @@ stock_deliveries_controller = Blueprint(
 @access_control('delivery')
 def handle_delivery():
 
-    # =================================================
-    # CREATE DELIVERY
-    # =================================================
-
     if request.method == 'POST':
 
         data = request.form
-
-        # =============================================
-        # CREATE DELIVERY
-        # =============================================
 
         new_delivery = StockDeliveries(
             supplier_id=data['supplier_id'],
@@ -61,10 +53,6 @@ def handle_delivery():
         db.session.add(new_delivery)
 
         db.session.commit()
-
-        # =============================================
-        # CREATE DELIVERY ITEMS
-        # =============================================
 
         material_ids = request.form.getlist(
             'medical_material_id[]'
@@ -102,10 +90,6 @@ def handle_delivery():
             )
         )
 
-    # =================================================
-    # GET LIST
-    # =================================================
-
     deliveries = StockDeliveries.query.all()
 
     result = []
@@ -115,10 +99,6 @@ def handle_delivery():
         supplier = Suppliers.query.get(
             delivery.supplier_id
         )
-
-        # =============================================
-        # DELIVERY ITEMS
-        # =============================================
 
         delivery_items = DeliveryItems.query.filter_by(
             stock_delivery_id=delivery.id
@@ -142,7 +122,6 @@ def handle_delivery():
                     material.material_unit_id
                 )
 
-
             txt_item = {
                 "id": item.id,
                 "medical_material_id":
@@ -158,16 +137,12 @@ def handle_delivery():
                 "material_unit":
                     material_unit.short_name if material else '',
                 "quantity":
-                    item.quantity,
+                    f'{item.quantity} {material_unit.short_name}' if material else '',
                 "unit_price":
                     item.unit_price
             }
 
             items.append(txt_item)
-
-        # =============================================
-        # DELIVERY OBJECT
-        # =============================================
 
         txt_delivery = {
             "id": delivery.id,
@@ -200,10 +175,6 @@ def handle_delivery():
 
         for supplier in Suppliers.query.all()
     ]
-
-    # =================================================
-    # MATERIALS
-    # =================================================
 
     materials = [
 
@@ -247,10 +218,6 @@ def handle_delivery():
     )
 
 
-# =====================================================
-# DELIVERY ITEM
-# =====================================================
-
 @stock_deliveries_controller.route(
     '/delivery/<delivery_id>',
     methods=['GET', 'PUT', 'DELETE']
@@ -261,10 +228,6 @@ def handle_delivery_item(delivery_id):
     delivery = StockDeliveries.query.get_or_404(
         delivery_id
     )
-
-    # =================================================
-    # GET ONE
-    # =================================================
 
     if request.method == 'GET':
 
@@ -339,10 +302,6 @@ def handle_delivery_item(delivery_id):
             "delivery": response
         }
 
-    # =================================================
-    # UPDATE
-    # =================================================
-
     elif request.method == 'PUT':
 
         data = request.get_json()
@@ -361,10 +320,6 @@ def handle_delivery_item(delivery_id):
 
         db.session.add(delivery)
 
-        # =============================================
-        # DELETE OLD ITEMS
-        # =============================================
-
         old_items = DeliveryItems.query.filter_by(
             stock_delivery_id=delivery.id
         ).all()
@@ -373,10 +328,6 @@ def handle_delivery_item(delivery_id):
             db.session.delete(item)
 
         db.session.commit()
-
-        # =============================================
-        # ADD NEW ITEMS
-        # =============================================
 
         for item_data in data['delivery_items']:
 
