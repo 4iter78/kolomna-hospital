@@ -10,6 +10,8 @@ from flask import (
 from app import db_connection
 
 from decorators import access_control
+from models.MaterialTypes import MaterialTypes
+from models.MaterialUnits import MaterialUnits
 
 from models.StockDeliveries import StockDeliveries
 from models.DeliveryItems import DeliveryItems
@@ -129,6 +131,17 @@ def handle_delivery():
             material = MedicalMaterials.query.get(
                 item.medical_material_id
             )
+            material_type = None
+            material_unit = None
+
+            if material:
+                material_type = MaterialTypes.query.get(
+                    material.material_type_id
+                )
+                material_unit = MaterialUnits.query.get(
+                    material.material_unit_id
+                )
+
 
             txt_item = {
                 "id": item.id,
@@ -136,6 +149,14 @@ def handle_delivery():
                     item.medical_material_id,
                 "medical_material":
                     material.name if material else '',
+                "material_type_id":
+                    material.material_type_id if material else '',
+                "material_type":
+                    material_type.name if material else '',
+                "material_unit_id":
+                    material.material_unit_id if material else '',
+                "material_unit":
+                    material_unit.short_name if material else '',
                 "quantity":
                     item.quantity,
                 "unit_price":
@@ -194,12 +215,34 @@ def handle_delivery():
         for material in MedicalMaterials.query.all()
     ]
 
+    material_types = [
+
+        {
+            "id": material_type.id,
+            "name": material_type.name
+        }
+
+        for material_type in MaterialTypes.query.all()
+    ]
+
+    material_units = [
+
+        {
+            "id": material_unit.id,
+            "name": material_unit.short_name
+        }
+
+        for material_unit in MaterialUnits.query.all()
+    ]
+
     return render_template(
         'delivery.html',
         title='Приём',
         deliveries=result,
         suppliers=suppliers,
         materials=materials,
+        material_types=material_types,
+        material_units=material_units,
         count=len(result)
     )
 
@@ -240,6 +283,16 @@ def handle_delivery_item(delivery_id):
             material = MedicalMaterials.query.get(
                 item.medical_material_id
             )
+            material_type = None
+            material_unit = None
+
+            if material:
+                material_type = MaterialTypes.query.get(
+                    material.material_type_id
+                )
+                material_unit = MaterialUnits.query.get(
+                    material.material_unit_id
+                )
 
             txt_item = {
                 "id": item.id,
@@ -247,6 +300,14 @@ def handle_delivery_item(delivery_id):
                     item.medical_material_id,
                 "medical_material":
                     material.name if material else '',
+                "material_type_id":
+                    material.material_type_id if material else '',
+                "material_type":
+                    material_type.name if material else '',
+                "material_unit_id":
+                    material.material_unit_id if material else '',
+                "material_unit":
+                    material_unit.short_name if material else '',
                 "quantity":
                     item.quantity,
                 "unit_price":

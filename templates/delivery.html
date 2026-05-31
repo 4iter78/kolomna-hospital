@@ -2,9 +2,7 @@
 {% block content %}
 
 <div class="table-toolbar">
-
   {%- if can_write('delivery') %}
-
   <button class="btn-action btn-create"
           onclick="openModal('modal-create')">
     <svg width="14" height="14"
@@ -13,49 +11,78 @@
       <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2z"/>
     </svg>
     Создать запись
-
   </button>
-
   {%- endif %}
-
-  <span class="record-count">
-
+  <span class="record-count" id="record-count">
     Записей: {{ count }}
-
   </span>
-
 </div>
 
+<div class="filter-panel mb-3">
+    <div class="row">
 
+        <div class="col">
+            <select id="filter-supplier" class="form-control">
+                <option value="">Все поставщики</option>
+                {% for supplier in suppliers %}
+                <option value="{{ supplier.name }}">
+                    {{ supplier.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col">
+            <input type="date"
+                   id="filter-date-from"
+                   class="form-control">
+        </div>
+
+        <div class="col">
+            <input type="date"
+                   id="filter-date-to"
+                   class="form-control">
+        </div>
+
+        <div class="col">
+            <input type="text"
+                   id="filter-document"
+                   class="form-control"
+                   placeholder="№ документа">
+        </div>
+
+        <div class="col">
+            <input type="text"
+                   id="filter-notes"
+                   class="form-control"
+                   placeholder="Комментарий">
+        </div>
+
+        <div class="col-auto">
+            <button type="button"
+                    class="btn-action btn-edit"
+                    onclick="resetFilters()">
+                Сбросить
+            </button>
+        </div>
+
+    </div>
+</div>
 
 <table class="table table-striped">
-
   <thead>
-
     <tr>
-
       <th>ID</th>
-
       <th>Поставщик</th>
-
       <th>Дата приёма</th>
-
       <th>№ документа</th>
-
       <th>Комментарий</th>
-
       <th>Материалы</th>
-
       <th>Действия</th>
-
     </tr>
-
   </thead>
-
   <tbody>
-
     {% for delivery in deliveries %}
-
     <tr
       data-id="{{ delivery.id }}"
       data-supplier_id="{{ delivery.supplier_id }}"
@@ -63,132 +90,77 @@
       data-document_number="{{ delivery.document_number }}"
       data-notes="{{ delivery.notes }}"
     >
-
       <td>
-
         {{ delivery.id }}
-
       </td>
-
       <td>
-
         {{ delivery.supplier }}
-
       </td>
-
       <td>
-
         {{ delivery.delivery_date }}
-
       </td>
-
       <td>
-
         {{ delivery.document_number }}
-
       </td>
-
       <td>
-
         {{ delivery.notes }}
-
       </td>
-
-
-      <!-- ===================================== -->
-      <!-- MATERIALS -->
-      <!-- ===================================== -->
-
       <td>
-
-        <table class="table table-sm table-bordered">
-
-          <thead>
-
-            <tr>
-
-              <th>Материал</th>
-
-              <th>Количество</th>
-
-              <th>Цена</th>
-
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            {% for item in delivery.delivery_items %}
-
-            <tr>
-
-              <td>
-
-                {{ item.medical_material }}
-
-              </td>
-
-              <td>
-
-                {{ item.quantity }}
-
-              </td>
-
-              <td>
-
-                {{ item.unit_price }}
-
-              </td>
-
-            </tr>
-
-            {% endfor %}
-
-          </tbody>
-
-        </table>
-
+        <details>
+          <summary>
+              Показать материалы
+          </summary>
+          <table class="table table-sm table-bordered">
+            <thead>
+              <tr>
+                <th>Тип материала</th>
+                <th>Материал</th>
+                <th>Количество</th>
+                <th>Ед измерения</th>
+                <th>Цена</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in delivery.delivery_items %}
+              <tr>
+                <td>
+                  {{ item.material_type }}
+                </td>
+                <td>
+                  {{ item.medical_material }}
+                </td>
+                <td>
+                  {{ item.quantity }}
+                </td>
+                <td>
+                  {{ item.material_unit }}
+                </td>
+                <td>
+                  {{ item.unit_price }}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </details>
       </td>
-
-
-      <!-- ===================================== -->
-      <!-- ACTIONS -->
-      <!-- ===================================== -->
-
       <td>
-
         <div class="actions-cell">
-
           {%- if can_write('delivery') %}
-
           <button class="btn-action btn-edit"
                   onclick="openEditModal({{ delivery.id }})">
-
             Изменить
-
           </button>
-
-
           <button class="btn-action btn-delete"
                   onclick="deleteRecord('/delivery/', {{ delivery.id }})">
-
             Удалить
-
           </button>
-
           {%- endif %}
-
         </div>
-
       </td>
-
     </tr>
-
     {% endfor %}
-
   </tbody>
-
 </table>
 
 
@@ -325,8 +297,10 @@
         <table class="table table-bordered">
           <thead>
             <tr>
+              <th>Тип материала</th>
               <th>Материал</th>
               <th>Количество</th>
+              <th>Ед измерения</th>
               <th>Цена</th>
               <th width="120"></th>
             </tr>
@@ -431,8 +405,10 @@
         <table class="table table-bordered">
           <thead>
             <tr>
+              <th>Тип материала</th>
               <th>Материал</th>
               <th>Количество</th>
+              <th>Ед измерения</th>
               <th>Цена</th>
               <th width="120"></th>
             </tr>
@@ -463,6 +439,99 @@
 
 <script>
 
+  document.addEventListener('DOMContentLoaded', () => {
+
+    const filters = [
+        'filter-supplier',
+        'filter-date-from',
+        'filter-date-to',
+        'filter-document',
+        'filter-notes'
+    ];
+
+    filters.forEach(id => {
+        document.getElementById(id)
+            .addEventListener('input', applyFilters);
+    });
+
+});
+
+function applyFilters() {
+
+    const supplier =
+        document.getElementById('filter-supplier')
+            .value.toLowerCase();
+
+    const dateFrom =
+        document.getElementById('filter-date-from')
+            .value;
+
+    const dateTo =
+        document.getElementById('filter-date-to')
+            .value;
+
+    const documentNumber =
+        document.getElementById('filter-document')
+            .value.toLowerCase();
+
+    const notes =
+        document.getElementById('filter-notes')
+            .value.toLowerCase();
+
+    let visibleCount = 0;
+
+    document.querySelectorAll(
+        '.table tbody > tr[data-id]'
+    ).forEach(row => {
+
+        const cells = row.children;
+
+        const supplierText =
+            cells[1].innerText.toLowerCase();
+
+        const dateText =
+            row.dataset.delivery_date;
+
+        const docText =
+            row.dataset.document_number
+                .toLowerCase();
+
+        const notesText =
+            (row.dataset.notes || '')
+                .toLowerCase();
+
+        let visible = true;
+
+        if (supplier &&
+            !supplierText.includes(supplier))
+            visible = false;
+
+        if (documentNumber &&
+            !docText.includes(documentNumber))
+            visible = false;
+
+        if (notes &&
+            !notesText.includes(notes))
+            visible = false;
+
+        if (dateFrom && dateText < dateFrom)
+            visible = false;
+
+        if (dateTo && dateText > dateTo)
+            visible = false;
+
+        row.style.display =
+            visible ? '' : 'none';
+
+        if (visible) {
+          visibleCount++;
+        }
+    });
+
+    document.getElementById('record-count').textContent =
+        `Записей: ${visibleCount}`;
+}
+
 //
 // CREATE MATERIAL ROW
 //
@@ -478,6 +547,31 @@ function addMaterialRow() {
         document.createElement('tr');
 
     row.innerHTML = `
+
+        <td>
+
+            <select
+                class="form-control"
+                name="material_type_id[]"
+                required>
+
+                <option value="">
+                    — Выберите —
+                </option>
+
+                {% for material_type in material_types %}
+
+                <option value="{{ material_type.id }}">
+
+                    {{ material_type.name }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </td>
 
         <td>
 
@@ -510,6 +604,31 @@ function addMaterialRow() {
                    class="form-control"
                    name="quantity[]"
                    required>
+
+        </td>
+
+        <td>
+
+            <select
+                class="form-control"
+                name="material_unit_id[]"
+                required>
+
+                <option value="">
+                    — Выберите —
+                </option>
+
+                {% for material_unit in material_units %}
+
+                <option value="{{ material_unit.id }}">
+
+                    {{ material_unit.name }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
 
         </td>
 
@@ -605,7 +724,20 @@ async function openEditModal(id) {
     openModal('modal-edit');
 }
 
+function resetFilters() {
 
+    document.getElementById('filter-supplier').value = '';
+
+    document.getElementById('filter-date-from').value = '';
+
+    document.getElementById('filter-date-to').value = '';
+
+    document.getElementById('filter-document').value = '';
+
+    document.getElementById('filter-notes').value = '';
+
+    applyFilters();
+}
 
 //
 // ADD EDIT MATERIAL ROW
@@ -622,6 +754,29 @@ function addEditMaterialRow(item = null) {
         document.createElement('tr');
 
     row.innerHTML = `
+        <td>
+
+            <select
+                class="form-control material-type-select"
+                required>
+
+                <option value="">
+                    — Выберите —
+                </option>
+
+                {% for material_type in material_types %}
+
+                <option value="{{ material_type.id }}">
+
+                    {{ material_type.name }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </td>
 
         <td>
 
@@ -653,6 +808,30 @@ function addEditMaterialRow(item = null) {
 
         <td>
 
+            <select
+                class="form-control material-unit-select"
+                required>
+
+                <option value="">
+                    — Выберите —
+                </option>
+
+                {% for material_unit in material_units %}
+
+                <option value="{{ material_unit.id }}">
+
+                    {{ material_unit.name }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </td>
+
+        <td>
+
             <input type="number"
                    step="0.01"
                    class="form-control price-input"
@@ -678,12 +857,20 @@ function addEditMaterialRow(item = null) {
     if (item) {
 
         row.querySelector(
+            '.material-type-select'
+        ).value = item.material_type_id;
+
+        row.querySelector(
             '.material-select'
         ).value = item.medical_material_id;
 
         row.querySelector(
             '.quantity-input'
         ).value = item.quantity;
+
+        row.querySelector(
+            '.material-unit-select'
+        ).value = item.material_unit_id;
 
         row.querySelector(
             '.price-input'
@@ -714,6 +901,11 @@ async function submitDeliveryEdit() {
 
         delivery_items.push({
 
+            material_type_id:
+                row.querySelector(
+                    '.material-type-select'
+                ).value,
+
             medical_material_id:
                 row.querySelector(
                     '.material-select'
@@ -722,6 +914,11 @@ async function submitDeliveryEdit() {
             quantity:
                 row.querySelector(
                     '.quantity-input'
+                ).value,
+
+            material_unit_id:
+                row.querySelector(
+                    '.material-unit-select'
                 ).value,
 
             unit_price:
