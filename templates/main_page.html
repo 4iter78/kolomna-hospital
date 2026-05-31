@@ -6,19 +6,54 @@
 </p>
 
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
-
+  {% if can_read('users') %}
   <a href="/users"          class="btn-action btn-create">Пользователи</a>
+  {% endif %}
+  {% if can_read('user_roles') %}
   <a href="/user-roles"     class="btn-action btn-create">Роли пользователей</a>
+  {% endif %}
+  {% if can_read('suppliers') %}
+  <a href="/suppliers"     class="btn-action btn-create">Поставщики</a>
+  {% endif %}
+  {% if can_read('delivery') %}
+  <a href="/delivery"     class="btn-action btn-create">Поступление медпрепаратов</a>
+  {% endif %}
+  {% if can_read('issue') %}
+  <a href="/issues"     class="btn-action btn-create">Выдача медпрепаратов</a>
+  {% endif %}
+  {% if can_read('storage') %}
+  <a href="/storage"     class="btn-action btn-create">Хранение медпрепаратов</a>
+  {% endif %}
+  {% if can_read('patients') %}
   <a href="/patients"       class="btn-action btn-create">Пациенты</a>
+  {% endif %}
+  {% if can_read('health_cards') %}
   <a href="/health_cards"   class="btn-action btn-create">Медицинские карты</a>
+  {% endif %}
+  {% if can_read('appointments') %}
   <a href="/appointments"   class="btn-action btn-create">Приёмы</a>
+  {% endif %}
+  {% if can_read('work_timetable') %}
   <a href="/work_timetable" class="btn-action btn-create">Расписание работы</a>
+  {% endif %}
+  {% if can_read('clean_timetable') %}
   <a href="/clean_timetable"class="btn-action btn-create">Расписание уборки</a>
+  {% endif %}
+  {% if can_read('diagnosises') %}
   <a href="/diagnosises"    class="btn-action btn-create">Диагнозы</a>
+  {% endif %}
+  {% if can_read('drugs') %}
   <a href="/drugs"          class="btn-action btn-create">Препараты</a>
+  {% endif %}
+  {% if can_read('treatment_types') %}
   <a href="/treatment_types"class="btn-action btn-create">Типы лечения</a>
+  {% endif %}
+  {% if can_read('room_type') %}
   <a href="/room_type"      class="btn-action btn-create">Типы помещений</a>
+  {% endif %}
+  {% if can_read('rooms') %}
   <a href="/rooms"          class="btn-action btn-create">Помещения</a>
+  {% endif %}
 
 </div>
 {% endblock %}
