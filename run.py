@@ -18,6 +18,8 @@ from controllers.MaterialBalancesController import material_balances_controller
 from controllers.MaterialIssuesController import material_issues_controller
 from controllers.StockDeliveriesController import stock_deliveries_controller
 from controllers.SuppliersController import suppliers_controller
+from controllers.MaterialTypesController import material_types_controller
+from controllers.MaterialUnitsController import material_units_controller
 from json import JSONEncoder
 
 
@@ -50,6 +52,8 @@ if __name__ == '__main__':
     app.register_blueprint(material_issues_controller)
     app.register_blueprint(stock_deliveries_controller)
     app.register_blueprint(suppliers_controller)
+    app.register_blueprint(material_types_controller)
+    app.register_blueprint(material_units_controller)
     app.json_encoder = ModelEncoder
     # запуск сервера локально по умолчанию на порту 5000 по протоколу HTTPS
     # app.run(debug=True, ssl_context='adhoc')

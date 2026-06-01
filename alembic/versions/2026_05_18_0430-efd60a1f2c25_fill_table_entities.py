@@ -25,7 +25,9 @@ def upgrade() -> None:
             ('issue',            'Выдача медицинских материалов'),
             ('storage',          'Хранение медицинских материалов'),
             ('issued',           'Выданные медицинские материалы'),
-            ('written_off',      'Списанные медицинские материалы');
+            ('written_off',      'Списанные медицинские материалы'),
+            ('material_types',   'Типы медицинских материалов'),
+            ('material_units',   'Единицы измерения материалов');
     ''')
 
 
@@ -39,6 +41,8 @@ def downgrade() -> None:
             'issue',
             'storage',
             'issued',
-            'written_off'
+            'written_off',
+            'material_types',
+            'material_unit'
         );
     ''')

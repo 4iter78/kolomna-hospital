@@ -181,7 +181,9 @@
       {% endif %}
       {% if can_read('drugs') %}
       <a href="/drugs" class="nav-link-item">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5V5c0 1.098.352 2.112.94 2.939l2.9-2.9A1.5 1.5 0 0 1 6.5 4.5h3A1.5 1.5 0 0 1 11 6v.5a.5.5 0 0 1-1 0V6a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-.5a.5.5 0 0 1 1 0v.5a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 5 10v-.94A5.002 5.002 0 0 1 2.5 2z"/></svg>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M11.02 5.364a3 3 0 0 0-4.242-4.243L1.121 6.778a3 3 0 1 0 4.243 4.243l5.657-5.657Zm-6.413-.657 2.878-2.879a2 2 0 1 1 2.829 2.829L7.435 7.536zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8m-.5 1.042a3 3 0 0 0 0 5.917zm1 5.917a3 3 0 0 0 0-5.917z"/>
+        </svg>
         Препараты
       </a>
       {% endif %}
@@ -201,6 +203,20 @@
       <a href="/rooms" class="nav-link-item">
         <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v1h.5a.5.5 0 0 1 0 1H14v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4H1.5a.5.5 0 0 1 0-1H2V2zm1 2v11h10V4H2zm5 2a.5.5 0 0 1 .5.5v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2v-2A.5.5 0 0 1 7 6z"/></svg>
         Помещения
+      </a>
+      {% endif %}
+      {% if can_read('material_types') %}
+      <a href="/material_types" class="nav-link-item">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M2.5 2A1.5 1.5 0 0 0 1 3.5V5c0 1.098.352 2.112.94 2.939l2.9-2.9A1.5 1.5 0 0 1 6.5 4.5h3A1.5 1.5 0 0 1 11 6v.5a.5.5 0 0 1-1 0V6a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-.5a.5.5 0 0 1 1 0v.5a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 5 10v-.94A5.002 5.002 0 0 1 2.5 2z"/>
+        </svg>
+        Типы материалов
+      </a>
+      {% endif %}
+      {% if can_read('material_units') %}
+      <a href="/material_units" class="nav-link-item">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v1h.5a.5.5 0 0 1 0 1H14v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4H1.5a.5.5 0 0 1 0-1H2V2zm1 2v11h10V4H2zm5 2a.5.5 0 0 1 .5.5v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2v-2A.5.5 0 0 1 7 6z"/></svg>
+        Единицы измерения
       </a>
       {% endif %}
     </nav>

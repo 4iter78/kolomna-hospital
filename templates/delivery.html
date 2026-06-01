@@ -20,7 +20,6 @@
 
 <div class="filter-panel mb-3">
     <div class="row">
-
         <div class="col">
             <select id="filter-supplier" class="form-control">
                 <option value="">Все поставщики</option>
@@ -31,33 +30,28 @@
                 {% endfor %}
             </select>
         </div>
-
         <div class="col">
             <input type="date"
                    id="filter-date-from"
                    class="form-control">
         </div>
-
         <div class="col">
             <input type="date"
                    id="filter-date-to"
                    class="form-control">
         </div>
-
         <div class="col">
             <input type="text"
                    id="filter-document"
                    class="form-control"
                    placeholder="№ документа">
         </div>
-
         <div class="col">
             <input type="text"
                    id="filter-notes"
                    class="form-control"
                    placeholder="Комментарий">
         </div>
-
         <div class="col-auto">
             <button type="button"
                     class="btn-action btn-edit"
@@ -453,108 +447,67 @@ function applyFilters() {
         `Записей: ${visibleCount}`;
 }
 
-//
-// CREATE MATERIAL ROW
-//
-
 function addMaterialRow() {
-
     const tbody =
         document.getElementById(
             'materials-body'
         );
-
     const row =
         document.createElement('tr');
 
     row.innerHTML = `
-
         <td>
-
             <select
                 class="form-control"
                 name="material_type_id[]"
                 required>
-
                 <option value="">
                     — Выберите —
                 </option>
-
                 {% for material_type in material_types %}
-
                 <option value="{{ material_type.id }}">
-
                     {{ material_type.name }}
-
                 </option>
-
                 {% endfor %}
-
             </select>
-
         </td>
-
         <td>
-
             <select
                 class="form-control"
                 name="medical_material_id[]"
                 required>
-
                 <option value="">
                     — Выберите —
                 </option>
-
                 {% for material in materials %}
-
                 <option value="{{ material.id }}">
-
                     {{ material.name }}
-
                 </option>
-
                 {% endfor %}
-
             </select>
-
         </td>
-
         <td>
-
             <input type="number"
                    class="form-control"
                    name="quantity[]"
                    required>
-
         </td>
-
         <td>
-
             <select
                 class="form-control"
                 name="material_unit_id[]"
                 required>
-
                 <option value="">
                     — Выберите —
                 </option>
-
                 {% for material_unit in material_units %}
-
                 <option value="{{ material_unit.id }}">
-
                     {{ material_unit.name }}
-
                 </option>
-
                 {% endfor %}
-
             </select>
-
         </td>
-
         <td>
-
             <input type="number"
                    step="0.01"
                    class="form-control"
@@ -562,51 +515,27 @@ function addMaterialRow() {
                    required>
 
         </td>
-
         <td>
-
             <button type="button"
                     class="btn-action btn-delete"
                     onclick="removeRow(this)">
-
                 Удалить
-
             </button>
-
         </td>
     `;
-
     tbody.appendChild(row);
 }
 
-
-
-//
-// REMOVE ROW
-//
-
 function removeRow(btn) {
-
     btn.closest('tr').remove();
 }
 
-
-
-//
-// OPEN EDIT
-//
-
 async function openEditModal(id) {
-
     const response = await fetch(
         `/delivery/${id}`
     );
-
     const data = await response.json();
-
     const delivery = data.delivery;
-
-    // MAIN DATA
 
     document.getElementById(
         'edit-id'
@@ -628,8 +557,6 @@ async function openEditModal(id) {
         'edit-notes'
     ).value = delivery.notes || '';
 
-    // MATERIALS
-
     const tbody =
         document.getElementById(
             'edit-materials-body'
@@ -638,138 +565,84 @@ async function openEditModal(id) {
     tbody.innerHTML = '';
 
     for (const item of delivery.delivery_items) {
-
         addEditMaterialRow(item);
     }
-
     openModal('modal-edit');
 }
 
 function resetFilters() {
-
     document.getElementById('filter-supplier').value = '';
-
     document.getElementById('filter-date-from').value = '';
-
     document.getElementById('filter-date-to').value = '';
-
     document.getElementById('filter-document').value = '';
-
     document.getElementById('filter-notes').value = '';
-
     applyFilters();
 }
 
-//
-// ADD EDIT MATERIAL ROW
-//
-
 function addEditMaterialRow(item = null) {
-
     const tbody =
         document.getElementById(
             'edit-materials-body'
         );
-
     const row =
         document.createElement('tr');
-
     row.innerHTML = `
         <td>
-
             <select
                 class="form-control material-type-select"
                 required>
-
                 <option value="">
                     — Выберите —
                 </option>
-
                 {% for material_type in material_types %}
-
                 <option value="{{ material_type.id }}">
-
                     {{ material_type.name }}
-
                 </option>
-
                 {% endfor %}
-
             </select>
-
         </td>
-
         <td>
-
             <select
                 class="form-control material-select"
                 required>
-
                 {% for material in materials %}
-
                 <option value="{{ material.id }}">
-
                     {{ material.name }}
-
                 </option>
-
                 {% endfor %}
-
             </select>
-
         </td>
-
         <td>
-
             <input type="number"
                    class="form-control quantity-input"
                    required>
-
         </td>
-
         <td>
-
             <select
                 class="form-control material-unit-select"
                 required>
-
                 <option value="">
                     — Выберите —
                 </option>
-
                 {% for material_unit in material_units %}
-
                 <option value="{{ material_unit.id }}">
-
                     {{ material_unit.name }}
-
                 </option>
-
                 {% endfor %}
-
             </select>
-
         </td>
-
         <td>
-
             <input type="number"
                    step="0.01"
                    class="form-control price-input"
                    required>
-
         </td>
-
         <td>
-
             <button type="button"
                     class="btn-action btn-delete"
                     onclick="removeRow(this)">
-
                 Удалить
-
             </button>
-
         </td>
     `;
 
@@ -798,12 +671,6 @@ function addEditMaterialRow(item = null) {
         ).value = item.unit_price;
     }
 }
-
-
-
-//
-// CUSTOM DELIVERY EDIT
-//
 
 async function submitDeliveryEdit() {
 
@@ -876,42 +743,29 @@ async function submitDeliveryEdit() {
     };
 
     const response = await fetch(
-
         `/delivery/${id}`,
-
         {
-
             method: 'PUT',
-
             headers: {
-
                 'Content-Type':
                     'application/json'
             },
-
             body:
                 JSON.stringify(payload)
         }
     );
 
     const result = await response.json();
-
     showToast(
         result.message || 'Запись обновлена',
         'success'
     );
-
     closeModal('modal-edit');
-
     setTimeout(function () {
-
         location.reload();
-
     }, 800);
 }
-
 </script>
-
 {% endblock %}
 
 {% endblock %}

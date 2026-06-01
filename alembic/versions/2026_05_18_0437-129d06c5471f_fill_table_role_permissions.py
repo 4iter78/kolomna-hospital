@@ -39,12 +39,16 @@ def upgrade() -> None:
                 ('Кладовщик', 'issue', TRUE, TRUE, FALSE),
                 ('Кладовщик', 'storage', TRUE, TRUE, TRUE),
                 ('Кладовщик', 'written_off', TRUE, TRUE, TRUE),
+                ('Кладовщик', 'material_types', TRUE, TRUE, TRUE),
+                ('Кладовщик', 'material_units', TRUE, TRUE, TRUE),
                 ('Администратор', 'suppliers', TRUE, TRUE, FALSE),
                 ('Администратор', 'delivery', TRUE, TRUE, FALSE),
                 ('Администратор', 'issue', TRUE, TRUE, FALSE),
                 ('Администратор', 'storage', TRUE, TRUE, FALSE),
                 ('Администратор', 'issued', TRUE, TRUE, FALSE),
-                ('Администратор', 'written_off', TRUE, TRUE, FALSE)
+                ('Администратор', 'written_off', TRUE, TRUE, FALSE),
+                ('Администратор', 'material_types', TRUE, TRUE, FALSE),
+                ('Администратор', 'material_units', TRUE, TRUE, FALSE)
             )
         INSERT INTO role_permissions (role_id, entity_id, can_read, can_write, own_only)
         SELECT
@@ -82,12 +86,16 @@ def downgrade() -> None:
         ('Кладовщик', 'issue'),
         ('Кладовщик', 'storage'),
         ('Кладовщик', 'written_off'),
+        ('Кладовщик', 'material_types'),
+        ('Кладовщик', 'material_units'),
         ('Администратор', 'suppliers'),
         ('Администратор', 'delivery'),
         ('Администратор', 'issue'),
         ('Администратор', 'storage'),
         ('Администратор', 'issued'),
-        ('Администратор', 'written_off')
+        ('Администратор', 'written_off'),
+        ('Администратор', 'material_types'),
+        ('Администратор', 'material_units')
     ]
 
     for record in records_to_delete:
