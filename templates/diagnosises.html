@@ -10,6 +10,25 @@
     <span class="record-count">Записей: {{count}}</span>
   </div>
 
+  <div class="filter-panel mb-3">
+      <div class="row">
+          <div class="col">
+              <input type="text"
+                     id="filter-name"
+                     class="form-control"
+                     placeholder="Наименование">
+          </div>
+
+          <div class="col-auto">
+              <button type="button"
+                      class="btn-action btn-edit"
+                      onclick="resetNameFilter()">
+                  Сбросить
+              </button>
+          </div>
+      </div>
+  </div>
+
   <table class="table table-striped">
     <thead><tr>
       <th class="sortable">ID</th>
@@ -89,6 +108,11 @@
   {%- endif %}
   {%- block scripts %}
   <script>
+    document.addEventListener(
+      'DOMContentLoaded',
+      initNameFilter
+    );
+
     function openEditModal(id) {
       const r = document.querySelector(`tr[data-id="${id}"]`);
       document.getElementById('edit-id').value   = id;

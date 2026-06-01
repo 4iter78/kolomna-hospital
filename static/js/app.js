@@ -78,3 +78,73 @@ function submitEdit(url, formId, modalId) {
     })
     .catch(function () { showToast('Ошибка при сохранении', 'error'); });
 }
+
+function initNameFilter() {
+
+    const filter =
+        document.getElementById('filter-name');
+
+    if (!filter)
+        return;
+
+    filter.addEventListener(
+        'input',
+        applyNameFilter
+    );
+
+    applyNameFilter();
+}
+
+function applyNameFilter() {
+
+    const name =
+        document.getElementById('filter-name')
+            .value
+            .toLowerCase();
+
+    let visibleCount = 0;
+
+    document.querySelectorAll(
+        '.table tbody > tr[data-id]'
+    ).forEach(row => {
+
+        const rowName =
+            (row.dataset.name || '')
+                .toLowerCase();
+
+        const visible =
+            !name ||
+            rowName.includes(name);
+
+        row.style.display =
+            visible ? '' : 'none';
+
+        if (visible) {
+            visibleCount++;
+        }
+    });
+
+    const counter =
+        document.getElementById(
+            'record-count'
+        );
+
+    if (counter) {
+        counter.textContent =
+            `Записей: ${visibleCount}`;
+    }
+}
+
+function resetNameFilter() {
+
+    const filter =
+        document.getElementById(
+            'filter-name'
+        );
+
+    if (filter) {
+        filter.value = '';
+    }
+
+    applyNameFilter();
+}
