@@ -51,8 +51,9 @@
       {% endfor %}
     </tbody>
   </table>
+{% endblock %}
 
-
+{% block modals %}
   {%- if can_write('suppliers') %}
   <div id="modal-create" class="modal-overlay" onclick="closeOnOverlay(event,'modal-create')">
     <div class="modal-box">
@@ -60,8 +61,8 @@
         <h3>Создать: Поставщик</h3>
         <button class="modal-close" onclick="closeModal('modal-create')">✕</button>
       </div>
-      <form method="POST" action="/suppliers">
-        <div class="modal-body">
+      <div class="modal-body">
+        <form method="POST" action="/suppliers">
           <div class="form-group">
             <label class="form-label">Наименование</label>
             <input class="form-control" type="text" name="name"  placeholder="" required>
@@ -82,12 +83,12 @@
             <label class="form-label">Адрес</label>
             <input class="form-control" type="text" name="address"  placeholder="" >
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
-          <button type="submit" class="btn-action btn-create">Сохранить</button>
-        </div>
-      </form>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
+        <button type="submit" class="btn-action btn-create">Сохранить</button>
+      </div>
     </div>
   </div>
   {%- endif %}
@@ -137,12 +138,12 @@
   <script>
     function openEditModal(id) {
       const r = document.querySelector(`tr[data-id="${id}"]`);
-      document.getElementById('edit-id').value              = id;
-      document.getElementById('edit-name').value            = r.dataset.name;
-      document.getElementById('edit-contact_person').value     = r.dataset.contact_person;
+      document.getElementById('edit-id').value = id;
+      document.getElementById('edit-name').value = r.dataset.name;
+      document.getElementById('edit-contact_person').value = r.dataset.contact_person;
       document.getElementById('edit-phone').value = r.dataset.phone;
       document.getElementById('edit-email').value = r.dataset.email;
-      document.getElementById('edit-address').value    = r.dataset.address;
+      document.getElementById('edit-address').value = r.dataset.address;
       openModal('modal-edit');
     }
   </script>

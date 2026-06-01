@@ -33,7 +33,9 @@
     </tbody>
   </table>
 
+{% endblock %}
 
+{% block modals %}
   {%- if can_write('work_timetable') %}
   <div id="modal-create" class="modal-overlay" onclick="closeOnOverlay(event,'modal-create')">
     <div class="modal-box">
@@ -41,8 +43,8 @@
         <h3>Создать: Расписание работы</h3>
         <button class="modal-close" onclick="closeModal('modal-create')">✕</button>
       </div>
-      <form method="POST" action="/work_timetable">
-        <div class="modal-body">
+      <div class="modal-body">
+        <form method="POST" action="/work_timetable">
           <div class="form-group">
             <label class="form-label">Помещение</label>
             <select class="form-control" name="room_id"  required>
@@ -54,19 +56,22 @@
             <label class="form-label">Дата работы</label>
             <input class="form-control" type="date" name="work_date"  placeholder="" required>
           </div>
-          <div class="form-grid-2">          <div class="form-group">
-            <label class="form-label">Начало</label>
-            <input class="form-control" type="time" name="time_from"  placeholder="" required>
-          </div>          <div class="form-group">
-            <label class="form-label">Конец</label>
-            <input class="form-control" type="time" name="time_to"  placeholder="" required>
-          </div>          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
-          <button type="submit" class="btn-action btn-create">Сохранить</button>
-        </div>
-      </form>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Начало</label>
+              <input class="form-control" type="time" name="time_from"  placeholder="" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Конец</label>
+              <input class="form-control" type="time" name="time_to"  placeholder="" required>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
+        <button type="submit" class="btn-action btn-create">Сохранить</button>
+      </div>
     </div>
   </div>
   {%- endif %}

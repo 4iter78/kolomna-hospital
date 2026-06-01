@@ -33,7 +33,9 @@
     </tbody>
   </table>
 
+{% endblock %}
 
+{% block modals %}
   {%- if can_write('health_cards') %}
   <div id="modal-create" class="modal-overlay" onclick="closeOnOverlay(event,'modal-create')">
     <div class="modal-box">
@@ -41,8 +43,8 @@
         <h3>Создать: Медицинская карта</h3>
         <button class="modal-close" onclick="closeModal('modal-create')">✕</button>
       </div>
-      <form method="POST" action="/health_cards">
-        <div class="modal-body">
+      <div class="modal-body">
+        <form method="POST" action="/health_cards">
           <div class="form-group">
             <label class="form-label">Пациент</label>
             <select class="form-control" name="patient_id"  required>
@@ -57,12 +59,12 @@
               {% for u in users %}<option value="{{ u.id }}">{{ u.fio }}</option>{% endfor %}
             </select>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
-          <button type="submit" class="btn-action btn-create">Сохранить</button>
-        </div>
-      </form>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
+        <button type="submit" class="btn-action btn-create">Сохранить</button>
+      </div>
     </div>
   </div>
   {%- endif %}

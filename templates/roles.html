@@ -33,26 +33,28 @@
     </tbody>
   </table>
 
+{% endblock %}
 
-  {%- if can_write('user-roles') %}
+{% block modals %}
+  {%- if can_write('user_roles') %}
   <div id="modal-create" class="modal-overlay" onclick="closeOnOverlay(event,'modal-create')">
     <div class="modal-box">
       <div class="modal-header">
         <h3>Создать: Роль</h3>
         <button class="modal-close" onclick="closeModal('modal-create')">✕</button>
       </div>
-      <form method="POST" action="/user-roles">
-        <div class="modal-body">
+      <div class="modal-body">
+        <form method="POST" action="/user-roles">
           <div class="form-group">
             <label class="form-label">Наименование</label>
             <input class="form-control" type="text" name="name"  placeholder="Введите наименование" required>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
-          <button type="submit" class="btn-action btn-create">Сохранить</button>
-        </div>
-      </form>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
+        <button type="submit" class="btn-action btn-create">Сохранить</button>
+      </div>
     </div>
   </div>
   {%- endif %}

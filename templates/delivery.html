@@ -158,132 +158,64 @@
     {% endfor %}
   </tbody>
 </table>
+{% endblock %}
 
-
-
-<!-- ========================================= -->
-<!-- CREATE MODAL -->
-<!-- ========================================= -->
-
+{% block modals %}
 {%- if can_write('delivery') %}
-
 <div id="modal-create"
      class="modal-overlay"
      onclick="closeOnOverlay(event,'modal-create')">
-
   <div class="modal-box modal-xl">
-
     <div class="modal-header">
-
-      <h3>Создать: Поступление</h3>
-
+      <h3>Создать: Поступление медицинских материалов</h3>
       <button class="modal-close"
               onclick="closeModal('modal-create')">
-
         ✕
-
       </button>
-
     </div>
-
-
-    <form method="POST"
-          action="/delivery">
-
-      <div class="modal-body">
-
-
-        <!-- ================================= -->
-        <!-- DELIVERY DATA -->
-        <!-- ================================= -->
-
+    <div class="modal-body">
+      <form method="POST" action="/delivery">
         <div class="form-group">
-
           <label class="form-label">
-
             Поставщик
-
           </label>
-
           <select class="form-control"
                   name="supplier_id"
                   required>
-
-            <option value="">
-              — Выберите —
-            </option>
-
+            <option value="">— Выберите —</option>
             {% for supplier in suppliers %}
-
-            <option value="{{ supplier.id }}">
-
-              {{ supplier.name }}
-
-            </option>
-
+            <option value="{{ supplier.id }}">{{ supplier.name }}</option>
             {% endfor %}
-
           </select>
-
         </div>
-
-
         <div class="form-group">
-
           <label class="form-label">
-
             Дата поставки
-
           </label>
-
           <input class="form-control"
                  type="date"
                  name="delivery_date"
                  required>
-
         </div>
-
-
         <div class="form-group">
-
           <label class="form-label">
-
             № документа
-
           </label>
-
           <input class="form-control"
                  type="text"
                  name="document_number"
                  required>
-
         </div>
-
-
         <div class="form-group">
-
           <label class="form-label">
-
             Комментарий
-
           </label>
-
           <textarea class="form-control"
                     name="notes"></textarea>
-
         </div>
-
-
-        <!-- ================================= -->
-        <!-- MATERIALS -->
-        <!-- ================================= -->
-
         <hr>
-
         <div class="d-flex justify-content-between align-items-center mb-2">
-
           <h4>Медицинские материалы</h4>
-
           <button type="button"
                   class="btn-action btn-create"
                   onclick="addMaterialRow()">
@@ -304,36 +236,30 @@
           <tbody id="materials-body">
           </tbody>
         </table>
-      </div>
+      </form>
+    </div>
       <div class="modal-footer">
         <button type="button"
                 class="btn-action btn-edit"
                 onclick="closeModal('modal-create')">
           Отмена
         </button>
-
         <button type="submit"
                 class="btn-action btn-create">
           Сохранить
         </button>
       </div>
-    </form>
   </div>
 </div>
 {%- endif %}
 
-<!-- ========================================= -->
-<!-- EDIT MODAL -->
-<!-- ========================================= -->
-
 {%- if can_write('delivery') %}
-
 <div id="modal-edit"
      class="modal-overlay"
      onclick="submitDeliveryEdit()">
   <div class="modal-box modal-xl">
     <div class="modal-header">
-      <h3>Редактировать: Поступление</h3>
+      <h3>Редактировать: Поступление медицинских материалов</h3>
       <button class="modal-close"
               onclick="closeModal('modal-edit')">
         ✕
@@ -428,7 +354,6 @@
     </div>
   </div>
 </div>
-
 {%- endif %}
 
 {% block scripts %}

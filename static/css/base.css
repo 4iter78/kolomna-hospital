@@ -216,7 +216,7 @@ td a:hover { color: var(--blue-deep); text-decoration: underline; }
   padding: 40px 16px;
 
   background: rgba(10,45,94,.55);
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(1px);
 
   opacity: 0;
   visibility: hidden;
@@ -259,7 +259,7 @@ td a:hover { color: var(--blue-deep); text-decoration: underline; }
   padding: 2px 6px; border-radius: 5px; transition: background .15s, color .15s;
 }
 .modal-close:hover { background: var(--gray-border); color: var(--text-main); }
-.modal-body { flex: 1; overflow-y: auto; }
+.modal-body { flex: 1; overflow-y: auto; min-height: 0;}
 /* Широкое модальное окно */
 .modal-box.modal-xl {
   max-width: 1400px;

@@ -37,7 +37,6 @@
         <td>{{ entry.patient }}</td>
         <td>{{ entry.user }}</td>
         <td>{{ entry.appointment_datetime }}</td>
-
         <td>
           <div class="actions-cell">
             {%- if can_write('appointments') %}
@@ -49,7 +48,6 @@
               </svg>
               Изменить
             </button>
-
             <button class="btn-action btn-delete"
                     onclick="deleteRecord('/appointments/', {{ entry.id }})">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
@@ -67,7 +65,9 @@
       {% endfor %}
     </tbody>
   </table>
+{% endblock %}
 
+{% block modals %}
   {%- if can_write('appointments') %}
   <!-- CREATE -->
   <div id="modal-create" class="modal-overlay" onclick="closeOnOverlay(event,'modal-create')">
@@ -76,10 +76,8 @@
         <h3>Создать: Приём</h3>
         <button class="modal-close" onclick="closeModal('modal-create')">✕</button>
       </div>
-
-      <form method="POST" action="/appointments">
-        <div class="modal-body">
-
+      <div class="modal-body">
+        <form method="POST" action="/appointments">
           <div class="form-group">
             <label class="form-label">Врач</label>
             <select class="form-control" name="user_id" required>
@@ -89,7 +87,6 @@
               {% endfor %}
             </select>
           </div>
-
           <div class="form-group">
             <label class="form-label">Пациент</label>
             <select class="form-control" name="patient_id" required>
@@ -99,24 +96,20 @@
               {% endfor %}
             </select>
           </div>
-
           <div class="form-group">
             <label class="form-label">Дата</label>
             <input class="form-control" type="datetime-local"
                    name="appointment_datetime" placeholder="" required>
           </div>
-
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
-          <button type="submit" class="btn-action btn-create">Сохранить</button>
-        </div>
-      </form>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
+        <button type="submit" class="btn-action btn-create">Сохранить</button>
+      </div>
     </div>
   </div>
   {%- endif %}
-
 
   {%- if can_write('appointments') %}
   <!-- EDIT -->
@@ -126,11 +119,9 @@
         <h3>Редактировать: Приём</h3>
         <button class="modal-close" onclick="closeModal('modal-edit')">✕</button>
       </div>
-
       <div class="modal-body">
         <form id="edit-form">
           <input type="hidden" name="id" id="edit-id">
-
           <div class="form-group">
             <label class="form-label">Врач</label>
             <select class="form-control" name="user_id" id="edit-user_id" required>
@@ -140,7 +131,6 @@
               {% endfor %}
             </select>
           </div>
-
           <div class="form-group">
             <label class="form-label">Пациент</label>
             <select class="form-control" name="patient_id" id="edit-patient_id" required>
@@ -150,7 +140,6 @@
               {% endfor %}
             </select>
           </div>
-
           <div class="form-group">
             <label class="form-label">Дата</label>
             <input type="datetime-local" class="form-control"
@@ -158,7 +147,6 @@
           </div>
         </form>
       </div>
-
       <div class="modal-footer">
         <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-edit')">Отмена</button>
         <button type="button" class="btn-action btn-create"
@@ -170,17 +158,14 @@
   </div>
   {%- endif %}
 
-
   {% block scripts %}
   <script>
     function openEditModal(id) {
       const r = document.querySelector(`tr[data-id="${id}"]`);
-
       document.getElementById('edit-id').value = id;
       document.getElementById('edit-user_id').value = r.dataset.user_id;
       document.getElementById('edit-patient_id').value = r.dataset.patient_id;
       document.getElementById('edit-datetime').value = r.dataset.appointment_datetime;
-
       openModal('modal-edit');
     }
   </script>
