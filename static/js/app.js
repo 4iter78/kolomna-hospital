@@ -9,11 +9,15 @@ function openModal(id) {
 }
 
 function closeModal(id) {
+  console.log('closing', id);
+  const modal = document.getElementById(id);
+  console.log(modal);
   document.getElementById(id || 'modal-create').classList.remove('open');
   document.body.style.overflow = '';
 }
 
 function closeOnOverlay(e, id) {
+  console.log('closing overlay', id);
   if (e.target === e.currentTarget) closeModal(id);
 }
 
@@ -67,6 +71,9 @@ function submitEdit(url, formId, modalId) {
     .then(function (resp) {
       showToast(resp.message || 'Запись обновлена', 'success');
       closeModal(modalId || 'modal-edit');
+
+      const modal = document.getElementById(modalId);
+      console.log(modal);
       setTimeout(function () { location.reload(); }, 800);
     })
     .catch(function () { showToast('Ошибка при сохранении', 'error'); });

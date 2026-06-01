@@ -72,7 +72,7 @@ def handle_issue():
 
             db.session.commit()
 
-            flash(f'Выдача #{new_issue.id} создана.','success')
+            flash(f'Выдача #{new_issue.id} успешно создана.','success')
 
         except Exception as e:
             db.session.rollback()

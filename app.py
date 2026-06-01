@@ -1,4 +1,5 @@
-from flask import Flask, session, redirect, url_for, request, render_template
+from flask import Flask, session, redirect, url_for, request, render_template, send_from_directory
+import os
 from flask_sqlalchemy import SQLAlchemy
 from permissions import can_read, can_write, is_own_only
 
@@ -12,10 +13,15 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:cfvfz78!@localhost:5432/kolomna_hospital"
     db_connection.init_app(app)
 
+    @app.route('/favicon.ico')
+    def favicon():
+        return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico',
+                                   mimetype='image/vnd.microsoft.icon')
+
     # ── Защита всех маршрутов ────────────────────────────────────
     @app.before_request
     def require_login():
-        public_routes = ['auth_controller.login', 'static']
+        public_routes = ['auth_controller.login', 'static', 'favicon']
         if request.endpoint not in public_routes and not session.get('user_id'):
             return redirect(url_for('auth_controller.login', next=request.path))
 
