@@ -1,6 +1,44 @@
 {% extends "main.html" %}
 {% block content %}
 
+  <div class="filter-panel mb-3">
+      <div class="row">
+          <div class="col">
+              <select class="form-control table-filter"
+                      data-filter-field="medical_material">
+                  <option value="">
+                      Все материалы
+                  </option>
+
+                  {% for material in materials %}
+                  <option value="{{ material.name }}">
+                      {{ material.name }}
+                  </option>
+                  {% endfor %}
+              </select>
+          </div>
+          <div class="col">
+              <input type="text"
+                     class="form-control table-filter"
+                     data-filter-field="document_number"
+                     placeholder="№ документа">
+          </div>
+          <div class="col">
+              <input type="date"
+                     class="form-control table-filter"
+                     data-filter-field="operation_date">
+          </div>
+          <div class="col-auto">
+              <button type="button"
+                      class="btn-action btn-edit"
+                      onclick="resetTableFilters()">
+                  Сбросить
+              </button>
+          </div>
+
+      </div>
+  </div>
+
 <table class="table table-striped">
   <thead>
     <tr>
@@ -14,7 +52,11 @@
   </thead>
   <tbody>
     {% for item in written_off %}
-    <tr>
+    <tr
+    data-id="{{ item.id }}"
+    data-medical_material="{{ item.medical_material }}"
+    data-document_number="{{ item.document_number }}"
+    data-operation_date="{{ item.operation_date }}">
       <td>{{ item.id }}</td>
       <td>{{ item.medical_material }}</td>
       <td>{{ item.quantity }}</td>

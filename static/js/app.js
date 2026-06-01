@@ -148,3 +148,103 @@ function resetNameFilter() {
 
     applyNameFilter();
 }
+
+document.addEventListener(
+    'DOMContentLoaded',
+    initTableFilters
+);
+
+function initTableFilters() {
+
+    const filters =
+        document.querySelectorAll(
+            '.table-filter'
+        );
+
+    if (!filters.length)
+        return;
+
+    filters.forEach(filter => {
+
+        filter.addEventListener(
+            'input',
+            applyTableFilters
+        );
+
+        filter.addEventListener(
+            'change',
+            applyTableFilters
+        );
+    });
+
+    applyTableFilters();
+}
+
+function applyTableFilters() {
+
+    let visibleCount = 0;
+
+    const filters =
+        document.querySelectorAll(
+            '.table-filter'
+        );
+
+    document.querySelectorAll(
+        '.table tbody > tr[data-id]'
+    ).forEach(row => {
+
+        let visible = true;
+
+        filters.forEach(filter => {
+
+            const field =
+                filter.dataset.filterField;
+
+            const filterValue =
+                filter.value
+                    .toLowerCase()
+                    .trim();
+
+            const rowValue =
+                (row.dataset[field] || '')
+                    .toLowerCase();
+
+            if (
+                filterValue &&
+                !rowValue.includes(
+                    filterValue
+                )
+            ) {
+                visible = false;
+            }
+        });
+
+        row.style.display =
+            visible ? '' : 'none';
+
+        if (visible) {
+            visibleCount++;
+        }
+    });
+
+    const counter =
+        document.getElementById(
+            'record-count'
+        );
+
+    if (counter) {
+        counter.textContent =
+            `Записей: ${visibleCount}`;
+    }
+}
+
+function resetTableFilters() {
+
+    document.querySelectorAll(
+        '.table-filter'
+    ).forEach(filter => {
+        filter.value = '';
+    });
+
+    applyTableFilters();
+}
