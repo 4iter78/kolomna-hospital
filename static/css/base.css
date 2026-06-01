@@ -310,3 +310,12 @@ td a:hover { color: var(--blue-deep); text-decoration: underline; }
   .sidebar.open { transform: translateX(0); }
   .main-area { margin-left: 0; padding: 20px 16px; }
 }
+
+.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.sortable:hover {
+    background-color: #e6f4ff;
+}

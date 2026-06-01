@@ -11,7 +11,13 @@
   </div>
 
   <table class="table table-striped">
-    <thead><tr><th>ID</th><th>Помещение</th><th>Дата работы</th><th>Начало</th><th>Конец</th><th>Действия</th></tr></thead>
+    <thead><tr>
+      <th class="sortable">ID</th>
+      <th class="sortable">Помещение</th>
+      <th class="sortable">Дата работы</th>
+      <th class="sortable">Начало</th>
+      <th class="sortable">Конец</th>
+      <th>Действия</th></tr></thead>
     <tbody>
       {% for entry in work_timetable %}
       <tr data-id="{{ entry.id }}" data-room_id="{{ entry.room_id }}" data-work_date="{{ entry.work_date }}" data-time_from="{{ entry.time_from }}" data-time_to="{{ entry.time_to }}" data-user_id="{{ entry.user_id }}">

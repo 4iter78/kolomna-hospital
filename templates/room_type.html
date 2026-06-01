@@ -11,7 +11,10 @@
   </div>
 
   <table class="table table-striped">
-    <thead><tr><th>ID</th><th>Наименование</th><th>Действия</th></tr></thead>
+    <thead><tr>
+      <th class="sortable">ID</th>
+      <th class="sortable">Наименование</th>
+      <th>Действия</th></tr></thead>
     <tbody>
       {% for room_type in room_types %}
       <tr data-id="{{ room_type.id }}" data-name="{{ room_type.name }}">

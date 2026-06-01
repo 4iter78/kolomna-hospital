@@ -11,7 +11,14 @@
   </div>
 
   <table class="table table-striped">
-    <thead><tr><th>ID</th><th>ФИО</th><th>Дата рождения</th><th>Телефон</th><th>Email</th><th>Полис ОМС</th><th>Действия</th></tr></thead>
+    <thead><tr>
+      <th class="sortable">ID</th>
+      <th class="sortable">ФИО</th>
+      <th class="sortable">Дата рождения</th>
+      <th class="sortable">Телефон</th>
+      <th class="sortable">Email</th>
+      <th class="sortable">Полис ОМС</th>
+      <th>Действия</th></tr></thead>
     <tbody>
       {% for patient in patients %}
       <tr data-id="{{ patient.id }}" data-surname="{{ patient.surname }}" data-name="{{ patient.name }}" data-second_name="{{ patient.second_name or '' }}" data-birth_date="{{ patient.birth_date }}" data-phone="{{ patient.phone or '' }}" data-email="{{ patient.email or '' }}" data-passport="{{ patient.passport or '' }}" data-oms_number="{{ patient.oms_number or '' }}">

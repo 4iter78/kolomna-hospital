@@ -1,21 +1,12 @@
 {% extends "main.html" %}
 {% block content %}
 
+  <div class="table-toolbar">
+    <span class="record-count" id="record-count">Записей: {{count}}</span>
+  </div>
+
 <div class="filter-panel mb-3">
     <div class="row">
-        <div class="col">
-            <select id="filter-material"
-                    class="form-control">
-                <option value="">
-                    Все материалы
-                </option>
-                {% for material in materials %}
-                <option value="{{ material.name }}">
-                    {{ material.name }}
-                </option>
-                {% endfor %}
-            </select>
-        </div>
         <div class="col">
             <select id="filter-department"
                     class="form-control">
@@ -25,6 +16,19 @@
                 {% for department in departments %}
                 <option value="{{ department.name }}">
                     {{ department.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <select id="filter-material"
+                    class="form-control">
+                <option value="">
+                    Все материалы
+                </option>
+                {% for material in materials %}
+                <option value="{{ material.name }}">
+                    {{ material.name }}
                 </option>
                 {% endfor %}
             </select>
@@ -58,11 +62,11 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th>ID</th>
-      <th>Медицинский материал</th>
-      <th>Количество</th>
-      <th>Отделение</th>
-      <th>Дата обновления</th>
+      <th class="sortable">ID</th>
+      <th class="sortable">Отделение</th>
+      <th class="sortable">Медицинский материал</th>
+      <th class="sortable">Количество</th>
+      <th class="sortable">Дата обновления</th>
       <th>Действия</th>
       <td>
     </tr>
@@ -73,17 +77,17 @@
       data-id="{{ item.id }}"
       data-medical_material_id="{{ item.medical_material_id }}"
       data-medical_material="{{ item.medical_material }}"
+      data-department_id="{{ item.department_id }}"
+      data-department="{{ item.department }}"
       data-quantity="{{ item.current_quantity }}"
       data-document_number="{{ item.document_number }}"
-      data-department_id="{{ item.department_id }}"
       data-operation_date="{{ item.operation_date }}"
-      data-department="{{ item.department }}"
       data-description="{{ item.description }}">
       <td>{{ item.id }}</td>
+      <td>{{ item.department }}</td>
       <td>{{ item.medical_material }}</td>
       <td>{{ item.current_quantity }}</td>
-      <td>{{ item.department }}</td>
-      <td>{{ item.last_updated }}</td>
+      <td>{{ item.last_updated.strftime('%d.%m.%Y %H:%M') }}</td>
       <td><div class="actions-cell">
           {%- if can_write('written_off')  %}
           <button class="btn-action btn-delete"
@@ -120,6 +124,10 @@
         <form id="edit-form">
           <input type="hidden" name="id" id="edit-id">
           <div class="form-group">
+            <label class="form-label">Отделение</label>
+            <input class="form-control" type="text" name="department" id="edit-department"  placeholder="" readonly required>
+          </div>
+          <div class="form-group">
             <label class="form-label">Наименование</label>
             <input class="form-control" type="text" name="medical_material" id="edit-medical_material"
                    placeholder="" readonly required>
@@ -131,10 +139,6 @@
           <div class="form-group">
             <label class="form-label">№ документа</label>
             <input class="form-control" type="text" name="document_number" id="edit-document_number"  placeholder="" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Отделение</label>
-            <input class="form-control" type="text" name="department" id="edit-department"  placeholder="" readonly required>
           </div>
           <div class="form-group">
             <label class="form-label">Дата операции</label>
@@ -166,6 +170,10 @@
         <form id="edit-form-2">
           <input type="hidden" name="id" id="edit-id-2">
           <div class="form-group">
+            <label class="form-label">Отделение</label>
+            <input class="form-control" type="text" name="department" id="edit-department-2"  placeholder="" readonly required>
+          </div>
+          <div class="form-group">
             <label class="form-label">Наименование</label>
             <input class="form-control" type="text" name="medical_material" id="edit-medical_material-2"
                    placeholder="" readonly required>
@@ -177,10 +185,6 @@
           <div class="form-group">
             <label class="form-label">№ документа</label>
             <input class="form-control" type="text" name="document_number" id="edit-document_number-2"  placeholder="" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Отделение</label>
-            <input class="form-control" type="text" name="department" id="edit-department-2"  placeholder="" readonly required>
           </div>
           <div class="form-group">
             <label class="form-label">Дата операции</label>
@@ -253,19 +257,19 @@ function applyFilters() {
         const cells = row.children;
 
         const materialText =
-            cells[1].innerText.toLowerCase();
+            cells[2].innerText.toLowerCase();
+        console.log("materialText", materialText)
 
         const quantityText =
-            cells[2].innerText.trim();
+            cells[3].innerText.trim();
+        console.log("quantityText", quantityText)
 
         const departmentText =
-            cells[3].innerText.toLowerCase();
+            cells[1].innerText.toLowerCase();
+        console.log("departmentText", departmentText)
 
         const updateDate =
             row.dataset.lastUpdated || '';
-
-        const idText =
-            row.dataset.id.toLowerCase();
 
         let visible = true;
 
@@ -336,6 +340,7 @@ function applyFilters() {
       document.getElementById('edit-description-2').value = r.dataset.description;
       openModal('modal-edit-2');
     }
+
   </script>
   {%- endblock %}
 {% endblock %}

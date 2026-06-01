@@ -11,7 +11,12 @@
   </div>
 
   <table class="table table-striped">
-    <thead><tr><th>ID</th><th>Пациент</th><th>Дата создания</th><th>Ответственный</th><th>Действия</th></tr></thead>
+    <thead><tr>
+      <th class="sortable">ID</th>
+      <th class="sortable">Пациент</th>
+      <th class="sortable">Дата создания</th>
+      <th class="sortable">Ответственный</th>
+      <th>Действия</th></tr></thead>
     <tbody>
       {% for hc in health_cards %}
       <tr data-id="{{ hc.id }}" data-patient_id="{{ hc.patient_id }}" data-user_id="{{ hc.user_id }}">

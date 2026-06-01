@@ -11,7 +11,12 @@
   </div>
 
   <table class="table table-striped">
-    <thead><tr><th>ID</th><th>Сотрудник</th><th>Помещение</th><th>Дата и время</th><th>Действия</th></tr></thead>
+    <thead><tr>
+      <th class="sortable">ID</th>
+      <th class="sortable">Сотрудник</th>
+      <th class="sortable">Помещение</th>
+      <th class="sortable">Дата и время</th>
+      <th>Действия</th></tr></thead>
     <tbody>
       {% for entry in clean_timetable %}
       <tr data-id="{{ entry.id }}" data-user_id="{{ entry.user_id }}" data-room_id="{{ entry.room_id }}" data-clean_datetime="{{ entry.clean_datetime }}">
