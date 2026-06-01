@@ -2,72 +2,110 @@
 {% block content %}
 
 <div class="table-toolbar">
-
   {%- if can_write('issue') %}
-
   <button class="btn-action btn-create"
           onclick="openModal('modal-create')">
-
     Создать запись
-
   </button>
-
   {%- endif %}
-
-  <span class="record-count">
-
+  <span class="record-count" id="record-count">
     Записей: {{ count }}
-
   </span>
-
 </div>
 
-
+<div class="filter-panel mb-3">
+    <div class="row">
+        <div class="col">
+            <select id="filter-from-user"
+                    class="form-control">
+                <option value="">
+                    Все выдавшие
+                </option>
+                {% for user in users %}
+                <option value="{{ user.surname }} {{ user.name }} {{ user.second_name }}">
+                    {{ user.surname }} {{ user.name }} {{ user.second_name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <select id="filter-to-user"
+                    class="form-control">
+                <option value="">
+                    Все получатели
+                </option>
+                {% for user in users %}
+                <option value="{{ user.surname }} {{ user.name }} {{ user.second_name }}">
+                    {{ user.surname }} {{ user.name }} {{ user.second_name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <select id="filter-department"
+                    class="form-control">
+                <option value="">
+                    Все места хранения
+                </option>
+                {% for department in departments %}
+                <option value="{{ department.name }}">
+                    {{ department.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <input type="date"
+                   id="filter-date-from"
+                   class="form-control">
+        </div>
+        <div class="col">
+            <input type="date"
+                   id="filter-date-to"
+                   class="form-control">
+        </div>
+        <div class="col">
+            <input type="text"
+                   id="filter-notes"
+                   class="form-control"
+                   placeholder="Комментарий">
+        </div>
+        <div class="col-auto">
+            <button type="button"
+                    class="btn-action btn-edit"
+                    onclick="resetFilters()">
+                Сбросить
+            </button>
+        </div>
+    </div>
+</div>
 
 <table class="table table-striped">
-
   <thead>
-
-    <tr>
-
       <th>ID</th>
-
       <th>Выдал</th>
-
       <th>Принял</th>
-
       <th>Место хранения</th>
-
       <th>Дата выдачи</th>
-
       <th>Комментарий</th>
-
       <th>Материалы</th>
-
       <th>Действия</th>
-
     </tr>
-
   </thead>
-
   <tbody>
-
     {% for issue in issues %}
-
-    <tr>
-
+    <tr
+    data-id="{{ issue.id }}"
+    data-from_user="{{ issue.from_user }}"
+    data-to_user="{{ issue.to_user }}"
+    data-issue-date="{{ issue.issue_date.strftime('%Y-%m-%d') if issue.issue_date else '' }}"
+    data-notes="{{ issue.notes or '' }}">
       <td>{{ issue.id }}</td>
-
       <td>{{ issue.from_user }}</td>
-
       <td>{{ issue.to_user }}</td>
-
       <td>{{ issue.department }}</td>
-
       <td>{{ issue.issue_date }}</td>
-
       <td>{{ issue.notes }}</td>
-
       <td>
         <details>
           <summary>
@@ -344,8 +382,134 @@
 
 {% block scripts %}
 <script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    const filters = [
+        'filter-from-user',
+        'filter-to-user',
+        'filter-department',
+        'filter-date-from',
+        'filter-date-to',
+        'filter-notes'
+    ];
+
+    filters.forEach(id => {
+        document.getElementById(id)
+            .addEventListener('input', applyFilters);
+    });
+    filters.forEach(id => {
+        document.getElementById(id)
+            .addEventListener('change', applyFilters);
+    });
+
+});
+
+function applyFilters() {
+
+    const fromUser =
+        document.getElementById('filter-from-user')
+            .value.toLowerCase();
+
+    const toUser =
+        document.getElementById('filter-to-user')
+            .value.toLowerCase();
+
+    const department =
+        document.getElementById('filter-department')
+            .value.toLowerCase();
+
+    const dateFrom =
+        document.getElementById('filter-date-from')
+            .value;
+
+    const dateTo =
+        document.getElementById('filter-date-to')
+            .value;
+
+    const notes =
+        document.getElementById('filter-notes')
+            .value.toLowerCase();
+
+    let visibleCount = 0;
+
+    document.querySelectorAll(
+        '.table tbody > tr[data-id]'
+    ).forEach(row => {
+
+        const cells = row.children;
+
+        const fromUserText =
+            cells[1].innerText.toLowerCase();
+
+        const toUserText =
+            cells[2].innerText.toLowerCase();
+
+        const departmentText =
+            cells[3].innerText.toLowerCase();
+
+        const issueDate =
+            row.dataset.issueDate;
+
+        const notesText =
+            (row.dataset.notes || '')
+                .toLowerCase();
+
+        let visible = true;
+
+        if (fromUser &&
+            !fromUserText.includes(fromUser))
+            visible = false;
+
+        if (toUser &&
+            !toUserText.includes(toUser))
+            visible = false;
+
+        if (department &&
+            !departmentText.includes(department))
+            visible = false;
+
+        if (notes &&
+            !notesText.includes(notes))
+            visible = false;
+
+        if (dateFrom &&
+            issueDate < dateFrom)
+            visible = false;
+
+        if (dateTo &&
+            issueDate > dateTo)
+            visible = false;
+
+        row.style.display =
+            visible ? '' : 'none';
+
+        if (visible) {
+            visibleCount++;
+        }
+    });
+
+    document.getElementById('record-count')
+        .textContent =
+        `Записей: ${visibleCount}`;
+}
+
 function removeRow(btn) {
     btn.closest('tr').remove();
+}
+
+function resetFilters() {
+    [
+        'filter-from-user',
+        'filter-to-user',
+        'filter-department',
+        'filter-date-from',
+        'filter-date-to',
+        'filter-notes'
+    ].forEach(id => {
+        document.getElementById(id).value = '';
+    });
+
+    applyFilters();
 }
 
 function addIssueMaterialRow() {

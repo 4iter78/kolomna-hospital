@@ -133,12 +133,12 @@ def handle_issue():
                 issue.from_user_id,
             "to_user_id":
                 issue.to_user_id,
+            "from_user": f'{from_user.surname} {from_user.name} {from_user.second_name}'
+            if from_user else ''            ,
+            "to_user": f'{to_user.surname} {to_user.name} {to_user.second_name}'
+            if to_user else ''            ,
             "department_id":
                 issue.department_id,
-            "from_user":
-                from_user.name if from_user else '',
-            "to_user":
-                to_user.name if to_user else '',
             "department":
                 department.name if department else '',
             "issue_date":
@@ -154,7 +154,9 @@ def handle_issue():
     users = [
         {
             "id": user.id,
-            "name": user.name
+            "surname": user.surname,
+            "name": user.name,
+            "second_name": user.second_name
         }
 
         for user in Users.query.all()
