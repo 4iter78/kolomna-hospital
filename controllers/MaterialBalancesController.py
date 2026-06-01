@@ -89,7 +89,7 @@ def handle_storage():
 
     return render_template(
         'storage.html',
-        title='Медицинские материалы в наличии',
+        title='Медицинские материалы в наличии (Хранение)',
         available=available,
         materials=materials,
         departments=departments,

@@ -12,6 +12,53 @@
     <span class="record-count">Записей: {{count}}</span>
   </div>
 
+  <div class="filter-panel mb-3">
+      <div class="row">
+          <div class="col">
+              <input type="text"
+                     id="filter-name"
+                     class="form-control"
+                     placeholder="Наименование">
+          </div>
+
+          <div class="col">
+              <input type="text"
+                     id="filter-contact"
+                     class="form-control"
+                     placeholder="Контактное лицо">
+          </div>
+
+          <div class="col">
+              <input type="text"
+                     id="filter-phone"
+                     class="form-control"
+                     placeholder="Телефон">
+          </div>
+
+          <div class="col">
+              <input type="text"
+                     id="filter-email"
+                     class="form-control"
+                     placeholder="Эл. почта">
+          </div>
+
+          <div class="col">
+              <input type="text"
+                     id="filter-address"
+                     class="form-control"
+                     placeholder="Адрес">
+          </div>
+
+          <div class="col-auto">
+              <button type="button"
+                      class="btn-action btn-edit"
+                      onclick="resetFilters()">
+                  Сбросить
+              </button>
+          </div>
+      </div>
+  </div>
+
   <table class="table table-striped">
     <thead><tr>
       <th class="sortable">ID</th>
@@ -93,7 +140,6 @@
   </div>
   {%- endif %}
 
-
   {%- if can_write('suppliers') %}
   <div id="modal-edit" class="modal-overlay" onclick="closeOnOverlay(event,'modal-edit')">
     <div class="modal-box">
@@ -136,6 +182,93 @@
   {%- endif %}
   {%- block scripts %}
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const filters = [
+        'filter-name',
+        'filter-contact',
+        'filter-phone',
+        'filter-email',
+        'filter-address'
+    ];
+    filters.forEach(id => {
+        document.getElementById(id)
+            .addEventListener('input', applyFilters);
+    });
+    applyFilters();
+});
+
+function applyFilters() {
+    const name =
+        document.getElementById('filter-name')
+            .value.toLowerCase();
+    const contact =
+        document.getElementById('filter-contact')
+            .value.toLowerCase();
+    const phone =
+        document.getElementById('filter-phone')
+            .value.toLowerCase();
+    const email =
+        document.getElementById('filter-email')
+            .value.toLowerCase();
+    const address =
+        document.getElementById('filter-address')
+            .value.toLowerCase();
+    let visibleCount = 0;
+    document.querySelectorAll(
+        '.table tbody > tr[data-id]'
+    ).forEach(row => {
+        const rowName =
+            (row.dataset.name || '')
+                .toLowerCase();
+        const rowContact =
+            (row.dataset.contact_person || '')
+                .toLowerCase();
+        const rowPhone =
+            (row.dataset.phone || '')
+                .toLowerCase();
+        const rowEmail =
+            (row.dataset.email || '')
+                .toLowerCase();
+        const rowAddress =
+            (row.dataset.address || '')
+                .toLowerCase();
+        let visible = true;
+        if (name &&
+            !rowName.includes(name))
+            visible = false;
+        if (contact &&
+            !rowContact.includes(contact))
+            visible = false;
+        if (phone &&
+            !rowPhone.includes(phone))
+            visible = false;
+        if (email &&
+            !rowEmail.includes(email))
+            visible = false;
+        if (address &&
+            !rowAddress.includes(address))
+            visible = false;
+        row.style.display =
+            visible ? '' : 'none';
+        if (visible) {
+            visibleCount++;
+        }
+    });
+    document.querySelector(
+        '.record-count'
+    ).textContent =
+        `Записей: ${visibleCount}`;
+}
+
+function resetFilters() {
+    document.getElementById('filter-name').value = '';
+    document.getElementById('filter-contact').value = '';
+    document.getElementById('filter-phone').value = '';
+    document.getElementById('filter-email').value = '';
+    document.getElementById('filter-address').value = '';
+    applyFilters();
+}
+
     function openEditModal(id) {
       const r = document.querySelector(`tr[data-id="${id}"]`);
       document.getElementById('edit-id').value = id;
