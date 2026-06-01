@@ -20,21 +20,27 @@ def handle_appointments():
 
     # ── CREATE ──────────────────────────────────
     if request.method == 'POST':
-        data = request.get_json() if request.is_json else request.form
-        health_card = HealthCards.query.get({"patient_id": data.patient_id})
+        try:
+            data = request.get_json() if request.is_json else request.form
+            health_card = HealthCards.query.get({"patient_id": data.patient_id})
 
-        new_appointment = Appointments(
-            user_id=data['user_id'],
-            health_card_id=health_card['id'],
-            treatment_type_id=data['treatment_type_id'],
-            appointment_datetime=data['appointment_datetime'],
-            diagnosis_id=data['diagnosis_id']
-        )
+            new_appointment = Appointments(
+                user_id=data['user_id'],
+                health_card_id=health_card['id'],
+                treatment_type_id=data['treatment_type_id'],
+                appointment_datetime=data['appointment_datetime'],
+                diagnosis_id=data['diagnosis_id']
+            )
 
-        db.session.add(new_appointment)
-        db.session.commit()
+            db.session.add(new_appointment)
+            db.session.commit()
 
-        flash(f"Приём с идентификатором {new_appointment.id} успешно создан.", 'success')
+            flash(f"Приём с идентификатором {new_appointment.id} успешно создан.", 'success')
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"{str(e)}", "danger")
+
         return redirect(url_for('appointments_controller.handle_appointments'))
 
     # ── GET ─────────────────────────────────────

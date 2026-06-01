@@ -21,7 +21,7 @@ def upgrade() -> None:
     op.execute('''
         CREATE TABLE suppliers (
             id          SERIAL PRIMARY KEY,
-            name        VARCHAR(255) NOT NULL,
+            name        VARCHAR(255) NOT NULL UNIQUE,
             contact_person VARCHAR(255),
             phone       VARCHAR(20),
             email       VARCHAR(150),

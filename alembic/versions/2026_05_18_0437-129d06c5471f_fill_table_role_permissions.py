@@ -27,9 +27,11 @@ def upgrade() -> None:
                 ('Провизор', 'storage', TRUE, TRUE, TRUE),
                 ('Медсестра', 'storage', TRUE, TRUE, TRUE),
                 ('Фельдшер', 'storage', TRUE, TRUE, TRUE),
+                ('Кладовщик', 'suppliers', TRUE, TRUE, FALSE),
                 ('Кладовщик', 'delivery', TRUE, TRUE, FALSE),
                 ('Кладовщик', 'issue', TRUE, TRUE, FALSE),
                 ('Кладовщик', 'storage', TRUE, TRUE, TRUE),
+                ('Администратор', 'suppliers', TRUE, TRUE, FALSE),
                 ('Администратор', 'delivery', TRUE, TRUE, FALSE),
                 ('Администратор', 'issue', TRUE, TRUE, FALSE),
                 ('Администратор', 'storage', TRUE, TRUE, FALSE)
@@ -58,9 +60,11 @@ def downgrade() -> None:
         ('Провизор', 'storage'),
         ('Медсестра', 'storage'),
         ('Фельдшер', 'storage'),
+        ('Кладовщик', 'suppliers'),
         ('Кладовщик', 'delivery'),
         ('Кладовщик', 'issue'),
         ('Кладовщик', 'storage'),
+        ('Администратор', 'suppliers'),
         ('Администратор', 'delivery'),
         ('Администратор', 'issue'),
         ('Администратор', 'storage')

@@ -22,25 +22,31 @@ def _get_owner(entry_id):
 @access_control('work_timetable')
 def handle_work_timetables():
     if request.method == 'POST':
-        data = request.get_json() if request.is_json else request.form
-        new_entry = WorkTimetable(
-            room_id=data['room_id'],
-            work_date=data['work_date'],
-            time_from=data['time_from'],
-            time_to=data['time_to']
-        )
-        db.session.add(new_entry)
-        db.session.commit()
+        try:
+            data = request.get_json() if request.is_json else request.form
+            new_entry = WorkTimetable(
+                room_id=data['room_id'],
+                work_date=data['work_date'],
+                time_from=data['time_from'],
+                time_to=data['time_to']
+            )
+            db.session.add(new_entry)
+            db.session.commit()
 
-        # Привязываем запись к текущему пользователю
-        link = WorkTimetableToUser(
-            work_timetable_id=new_entry.id,
-            user_id=session.get('user_id')
-        )
-        db.session.add(link)
-        db.session.commit()
+            # Привязываем запись к текущему пользователю
+            link = WorkTimetableToUser(
+                work_timetable_id=new_entry.id,
+                user_id=session.get('user_id')
+            )
+            db.session.add(link)
+            db.session.commit()
 
-        flash(f"Расписание с идентификатором {new_entry.id} успешно создано.", 'success')
+            flash(f"Расписание с идентификатором {new_entry.id} успешно создано.", 'success')
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"{str(e)}", "danger")
+
         return redirect(url_for('work_timetable_controller.handle_work_timetables'))
 
     role    = session.get('user_role')

@@ -13,16 +13,22 @@ clean_timetable_controller = Blueprint('clean_timetable_controller', __name__)
 @access_control('clean_timetable')
 def handle_clean_timetables():
     if request.method == 'POST':
-        data = request.get_json() if request.is_json else request.form
-        new_entry = CleanTimetable(
-            user_id=data['user_id'],
-            room_id=data['room_id'],
-            clean_datetime=data['clean_datetime']
-        )
-        db.session.add(new_entry)
-        db.session.commit()
-        flash(f"Расписание уборки помещений с идентификатором {new_entry.id} успешно создано.",
+        try:
+            data = request.get_json() if request.is_json else request.form
+            new_entry = CleanTimetable(
+                user_id=data['user_id'],
+                room_id=data['room_id'],
+                clean_datetime=data['clean_datetime']
+            )
+            db.session.add(new_entry)
+            db.session.commit()
+            flash(f"Расписание уборки помещений с идентификатором {new_entry.id} успешно создано.",
               'success')
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"{str(e)}", "danger")
+
         return redirect(url_for('clean_timetable_controller.handle_clean_timetables'))
 
     elif request.method == 'GET':

@@ -14,16 +14,22 @@ health_cards_controller = Blueprint('health_cards_controller', __name__)
 @access_control('health_cards')
 def handle_health_cards():
     if request.method == 'POST':
-        data = request.get_json() if request.is_json else request.form
-        new_health_card = HealthCards(
-            patient_id=data['patient_id'],
-            create_datetime=data.get('create_datetime', datetime.now()),
-            user_id=data['user_id']
-        )
-        db.session.add(new_health_card)
-        db.session.commit()
-        flash(f"Медицинская карта с идентификатором {new_health_card.id} успешно создана.",
-              'success')
+        try:
+            data = request.get_json() if request.is_json else request.form
+            new_health_card = HealthCards(
+                patient_id=data['patient_id'],
+                create_datetime=data.get('create_datetime', datetime.now()),
+                user_id=data['user_id']
+            )
+            db.session.add(new_health_card)
+            db.session.commit()
+            flash(f"Медицинская карта с идентификатором {new_health_card.id} успешно создана.",
+                  'success')
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"{str(e)}", "danger")
+
         return redirect(url_for('health_cards_controller.handle_health_cards'))
 
     elif request.method == 'GET':

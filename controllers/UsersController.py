@@ -14,21 +14,23 @@ users_controller = Blueprint('users_controller', __name__)
 @access_control('users')
 def handle_users():
     if request.method == 'POST':
-        data = request.get_json() if request.is_json else request.form
-        new_user = Users(surname=data['surname'],
-                         name=data['name'],
-                         second_name=data['second_name'],
-                         employment_date=data['employment_date'],
-                         user_role_id=data['user_role_id'])
-        db.session.add(new_user)
-        db.session.commit()
-        flash(f"Пользователь {new_user.surname} {new_user.name} {new_user.second_name} с идентификатором "
-              f"{new_user.id} успешно создан.",
-              'success')
+        try:
+            data = request.get_json() if request.is_json else request.form
+            new_user = Users(surname=data['surname'],
+                             name=data['name'],
+                             second_name=data['second_name'],
+                             employment_date=data['employment_date'],
+                             user_role_id=data['user_role_id'])
+            db.session.add(new_user)
+            db.session.commit()
+            flash(f"Пользователь {new_user.surname} {new_user.name} {new_user.second_name} с идентификатором "
+                  f"{new_user.id} успешно создан.", 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f"{str(e)}", "danger")
         return redirect(url_for('users_controller.handle_users'))
 
     elif request.method == 'GET':
-        # db.session.query(Users, Profiles).join(Profiles, Users.id == Profiles.user_id).all()
         users = Users.query.all()
         results = []
         for user in users:
@@ -86,10 +88,10 @@ def handle_user(user_id):
         db.session.add(user)
         db.session.commit()
 
-        return {"message": f"user {user.surname} {user.name} {user.second_name} successfully updated"}
+        return {"message": f"Пользователь {user.surname} {user.name} {user.second_name} успешно обновлен"}
 
     elif request.method == 'DELETE':
         db.session.delete(user)
         db.session.commit()
 
-        return {"message": f"Customer {user.surname} {user.name} {user.second_name} successfully deleted."}
+        return {"message": f"Пользователь {user.surname} {user.name} {user.second_name} успешно удален."}

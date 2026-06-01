@@ -11,12 +11,18 @@ diagnosises_controller = Blueprint('diagnosises_controller', __name__)
 @access_control('diagnosises')
 def handle_diagnosises():
     if request.method == 'POST':
-        data = request.get_json() if request.is_json else request.form
-        new_diagnosis = Diagnosises(name=data['name'])
-        db.session.add(new_diagnosis)
-        db.session.commit()
-        flash(f"Диагноз {new_diagnosis.name} с идентификатором {new_diagnosis.id} успешно создан.",
+        try:
+            data = request.get_json() if request.is_json else request.form
+            new_diagnosis = Diagnosises(name=data['name'])
+            db.session.add(new_diagnosis)
+            db.session.commit()
+            flash(f"Диагноз {new_diagnosis.name} с идентификатором {new_diagnosis.id} успешно создан.",
               'success')
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"{str(e)}", "danger")
+
         return redirect(url_for('diagnosises_controller.handle_diagnosises'))
 
     elif request.method == 'GET':

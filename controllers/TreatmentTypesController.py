@@ -11,13 +11,17 @@ treatment_types_controller = Blueprint('treatment_types_controller', __name__)
 @access_control('treatment_types')
 def handle_treatment_types():
     if request.method == 'POST':
-        data = request.get_json() if request.is_json else request.form
-        new_treatment_type = TreatmentTypes(name=data['name'])
-        db.session.add(new_treatment_type)
-        db.session.commit()
-        flash(f"Тип лечения {new_treatment_type.name} с идентификатором {new_treatment_type.id} "
-              f"успешно создан.",
-              'success')
+        try:
+            data = request.get_json() if request.is_json else request.form
+            new_treatment_type = TreatmentTypes(name=data['name'])
+            db.session.add(new_treatment_type)
+            db.session.commit()
+            flash(f"Тип лечения {new_treatment_type.name} с идентификатором {new_treatment_type.id} "
+                  f"успешно создан.",
+                  'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f"{str(e)}", "danger")
         return redirect(url_for('treatment_types_controller.handle_treatment_types'))
 
     elif request.method == 'GET':

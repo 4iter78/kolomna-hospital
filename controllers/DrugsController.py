@@ -11,12 +11,18 @@ drugs_controller = Blueprint('drugs_controller', __name__)
 @access_control('drugs')
 def handle_drugs():
     if request.method == 'POST':
-        data = request.get_json() if request.is_json else request.form
-        new_drug = Drugs(name=data['name'])
-        db.session.add(new_drug)
-        db.session.commit()
-        flash(f"Препарат {new_drug.name} с идентификатором {new_drug.id} успешно создан.",
-              'success')
+        try:
+            data = request.get_json() if request.is_json else request.form
+            new_drug = Drugs(name=data['name'])
+            db.session.add(new_drug)
+            db.session.commit()
+            flash(f"Препарат {new_drug.name} с идентификатором {new_drug.id} успешно создан.",
+                  'success')
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"{str(e)}", "danger")
+
         return redirect(url_for('drugs_controller.handle_drugs'))
 
     elif request.method == 'GET':

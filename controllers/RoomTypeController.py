@@ -11,12 +11,17 @@ room_type_controller = Blueprint('room_type_controller', __name__)
 @access_control('room_type')
 def handle_room_types():
     if request.method == 'POST':
-        data = request.get_json() if request.is_json else request.form
-        new_room_type = RoomType(name=data['name'])
-        db.session.add(new_room_type)
-        db.session.commit()
-        flash(f"Тип помещения {new_room_type.name} с идентификатором {new_room_type.id} успешно создан.",
+        try:
+            data = request.get_json() if request.is_json else request.form
+            new_room_type = RoomType(name=data['name'])
+            db.session.add(new_room_type)
+            db.session.commit()
+            flash(f"Тип помещения {new_room_type.name} с идентификатором {new_room_type.id} успешно создан.",
               'success')
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"{str(e)}", "danger")
         return redirect(url_for('room_type_controller.handle_room_types'))
 
     elif request.method == 'GET':

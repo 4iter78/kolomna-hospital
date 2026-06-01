@@ -39,44 +39,44 @@ material_issues_controller = Blueprint(
 def handle_issue():
 
     if request.method == 'POST':
+        try:
+            data = request.form
 
-        data = request.form
-
-        new_issue = MaterialIssues(
-            from_user_id=data['from_user_id'],
-            to_user_id=data['to_user_id'],
-            department_id=data['department_id'],
-            issue_date=data['issue_date'],
-            notes=data['notes']
-        )
-
-        db.session.add(new_issue)
-
-        db.session.commit()
-
-        material_ids = request.form.getlist(
-            'medical_material_id[]'
-        )
-        quantities = request.form.getlist(
-            'quantity[]'
-        )
-
-        for i in range(len(material_ids)):
-            item = IssueItems(
-                material_issue_id=new_issue.id,
-                medical_material_id=material_ids[i],
-                quantity=quantities[i]
+            new_issue = MaterialIssues(
+                from_user_id=data['from_user_id'],
+                to_user_id=data['to_user_id'],
+                department_id=data['department_id'],
+                issue_date=data['issue_date'],
+                notes=data['notes']
             )
 
-            db.session.add(item)
+            db.session.add(new_issue)
 
-        db.session.commit()
+            db.session.commit()
 
-        flash(
-            f'Выдача #{new_issue.id} создана.',
-            'success'
-        )
+            material_ids = request.form.getlist(
+                'medical_material_id[]'
+            )
+            quantities = request.form.getlist(
+                'quantity[]'
+            )
 
+            for i in range(len(material_ids)):
+                item = IssueItems(
+                    material_issue_id=new_issue.id,
+                    medical_material_id=material_ids[i],
+                    quantity=quantities[i]
+                )
+
+                db.session.add(item)
+
+            db.session.commit()
+
+            flash(f'Выдача #{new_issue.id} создана.','success')
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"{str(e)}", "danger")
         return redirect(
             url_for(
                 'material_issues_controller.handle_issue'

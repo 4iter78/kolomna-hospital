@@ -20,7 +20,7 @@ def upgrade() -> None:
     op.execute('''
         CREATE TABLE treatment_types (
             id   SERIAL PRIMARY KEY,
-            name VARCHAR(100) NOT NULL
+            name VARCHAR(100) NOT NULL UNIQUE
         );
     ''')
 

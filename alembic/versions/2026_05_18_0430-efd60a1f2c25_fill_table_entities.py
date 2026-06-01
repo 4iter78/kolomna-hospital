@@ -20,7 +20,8 @@ def upgrade() -> None:
     """Upgrade schema."""
     op.execute('''
         INSERT INTO entities (code, name) VALUES
-            ('delivery',         'Приём медицинских материалов'),
+            ('suppliers',        'Поставщики'),
+            ('delivery',         'Поступление медицинских материалов'),
             ('issue',            'Выдача медицинских материалов'),
             ('storage',          'Хранение медицинских материалов');
     ''')

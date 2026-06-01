@@ -112,7 +112,7 @@ def downgrade() -> None:
         op.get_bind().execute(
             text('''
                 DELETE FROM delivery_items
-                WHERE stock_delivery_id = (
+                WHERE stock_delivery_id in (
                     SELECT id
                     FROM stock_deliveries
                     WHERE supplier_id = (
@@ -121,13 +121,6 @@ def downgrade() -> None:
                         WHERE name = :supplier_name
                     )
                 )
-                AND medical_material_id = (
-                    SELECT id
-                    FROM medical_materials
-                    WHERE name = :material_name
-                )
-                AND quantity = :quantity
-                AND unit_price = :unit_price
             '''),
             params
         )

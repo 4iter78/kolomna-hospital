@@ -28,10 +28,6 @@ stock_deliveries_controller = Blueprint(
 )
 
 
-# =====================================================
-# DELIVERY LIST + CREATE
-# =====================================================
-
 @stock_deliveries_controller.route(
     '/delivery',
     methods=['GET', 'POST']
@@ -40,49 +36,53 @@ stock_deliveries_controller = Blueprint(
 def handle_delivery():
 
     if request.method == 'POST':
+        try:
+            data = request.form
 
-        data = request.form
-
-        new_delivery = StockDeliveries(
-            supplier_id=data['supplier_id'],
-            delivery_date=data['delivery_date'],
-            document_number=data['document_number'],
-            notes=data['notes']
-        )
-
-        db.session.add(new_delivery)
-
-        db.session.commit()
-
-        material_ids = request.form.getlist(
-            'medical_material_id[]'
-        )
-
-        quantities = request.form.getlist(
-            'quantity[]'
-        )
-
-        prices = request.form.getlist(
-            'unit_price[]'
-        )
-
-        for i in range(len(material_ids)):
-
-            item = DeliveryItems(
-                stock_delivery_id=new_delivery.id,
-                medical_material_id=material_ids[i],
-                quantity=quantities[i],
-                unit_price=prices[i]
+            new_delivery = StockDeliveries(
+                supplier_id=data['supplier_id'],
+                delivery_date=data['delivery_date'],
+                document_number=data['document_number'],
+                notes=data['notes']
             )
 
-            db.session.add(item)
+            db.session.add(new_delivery)
 
-        db.session.commit()
+            db.session.commit()
 
-        flash(
-            f'Поставка #{new_delivery.id} успешно создана.',
-            'success'
-        )
+            material_ids = request.form.getlist(
+                'medical_material_id[]'
+            )
+
+            quantities = request.form.getlist(
+                'quantity[]'
+            )
+
+            prices = request.form.getlist(
+                'unit_price[]'
+            )
+
+            for i in range(len(material_ids)):
+
+                item = DeliveryItems(
+                    stock_delivery_id=new_delivery.id,
+                    medical_material_id=material_ids[i],
+                    quantity=quantities[i],
+                    unit_price=prices[i]
+                )
+
+                db.session.add(item)
+
+            db.session.commit()
+
+            flash(
+                f'Поставка #{new_delivery.id} успешно создана.',
+                'success'
+            )
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"{str(e)}", "danger")
 
         return redirect(
             url_for(

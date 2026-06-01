@@ -3,6 +3,7 @@ from flask import redirect, url_for, flash, request, Blueprint, render_template
 from app import db_connection
 from decorators import access_control
 from models.Suppliers import Suppliers
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 db = db_connection
 suppliers_controller = Blueprint('suppliers_controller', __name__)
@@ -13,19 +14,25 @@ suppliers_controller = Blueprint('suppliers_controller', __name__)
 @access_control('suppliers')
 def handle_suppliers():
     if request.method == 'POST':
-        data = request.get_json() if request.is_json else request.form
-        new_supplier = Suppliers(
-                         name=data['name'],
-                         contact_person=data['contact_person'],
-                         phone=data['phone'],
-                         email=data['email'],
-                         address=data['address'])
-        db.session.add(new_supplier)
-        db.session.commit()
-        flash(f"Поставщик {new_supplier.surname} {new_supplier.name} с идентификатором "
-              f"{new_supplier.id} успешно создан.",
-              'success')
-        return redirect(url_for('users_controller.handle_users'))
+        try:
+            data = request.get_json() if request.is_json else request.form
+            new_supplier = Suppliers(
+                             name=data['name'],
+                             contact_person=data['contact_person'],
+                             phone=data['phone'],
+                             email=data['email'],
+                             address=data['address'])
+            db.session.add(new_supplier)
+            db.session.commit()
+            flash(f"Поставщик {new_supplier.name} с идентификатором "
+                  f"{new_supplier.id} успешно создан.",
+                  'success')
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"{str(e)}", "danger")
+
+        return redirect(url_for('suppliers_controller.handle_suppliers'))
 
     elif request.method == 'GET':
         suppliers = Suppliers.query.all()
@@ -57,27 +64,32 @@ def handle_supplier(supplier_id):
     if request.method == 'GET':
         response = {
             "id": supplier.id,
-            "surname": supplier.surname,
             "name": supplier.name,
-            "second_name": supplier.second_name,
-            "employment_date": supplier.employment_date
+            "contact_person": supplier.contact_person,
+            "phone": supplier.phone,
+            "email": supplier.email,
+            "address": supplier.address
         }
-        return {"message": "success", "user": response}
+        return {"message": "success", "supplier": response}
 
     elif request.method == 'PUT':
+
         data = request.get_json()
-        supplier.surname = data['surname']
         supplier.name = data['name']
-        supplier.second_name = data['second_name']
-        supplier.employment_date = data['employment_date']
+        supplier.contact_person = data['contact_person']
+        supplier.phone = data['phone']
+        supplier.email = data['email']
+        supplier.address = data['address']
 
         db.session.add(supplier)
+
         db.session.commit()
 
         return {"message": f"Поставщик {supplier.name} успешно обновлен"}
+
 
     elif request.method == 'DELETE':
         db.session.delete(supplier)
         db.session.commit()
 
-        return {"message": f"Поставщик {supplier.surname} {supplier.name} {supplier.second_name} успешно удален."}
+        return {"message": f"Поставщик {supplier.name} успешно удален."}

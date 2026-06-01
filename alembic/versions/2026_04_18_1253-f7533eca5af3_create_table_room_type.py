@@ -20,7 +20,7 @@ def upgrade() -> None:
     op.execute('''
         CREATE TABLE room_type (
             id   SERIAL PRIMARY KEY,
-            name VARCHAR(100) NOT NULL
+            name VARCHAR(100) NOT NULL UNIQUE
         );
     ''')
 

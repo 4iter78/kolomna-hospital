@@ -21,7 +21,7 @@ def upgrade() -> None:
     op.execute('''
         CREATE TABLE material_units (
             id   SERIAL PRIMARY KEY,
-            name VARCHAR(50) NOT NULL,  -- шт., упаковка, мл, г и т. д.
+            name VARCHAR(50) NOT NULL UNIQUE,  -- шт., упаковка, мл, г и т. д.
             short_name VARCHAR(20) NOT NULL  -- шт, уп, мл, г
         );
     ''')
