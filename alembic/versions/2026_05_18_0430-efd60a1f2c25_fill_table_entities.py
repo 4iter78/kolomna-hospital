@@ -21,9 +21,11 @@ def upgrade() -> None:
     op.execute('''
         INSERT INTO entities (code, name) VALUES
             ('suppliers',        'Поставщики'),
-            ('delivery',         'Поступление медицинских материалов'),
+            ('delivery',         'Поступление медицинских материалов на склад'),
             ('issue',            'Выдача медицинских материалов'),
-            ('storage',          'Хранение медицинских материалов');
+            ('storage',          'Хранение медицинских материалов'),
+            ('issued',           'Выданные медицинские материалы'),
+            ('written_off',      'Списанные медицинские материалы');
     ''')
 
 
@@ -35,6 +37,8 @@ def downgrade() -> None:
             'suppliers',
             'delivery',
             'issue',
-            'storage'
+            'storage',
+            'issued',
+            'written_off'
         );
     ''')

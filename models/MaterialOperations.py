@@ -13,7 +13,7 @@ class MaterialOperations(db.Model):
 
     document_number = db.Column(db.String())
 
-    user_id = db.Column(db.Integer)
+    current_user_id = db.Column(db.Integer)
 
     operation_date = db.Column(db.DateTime())
 

@@ -7,20 +7,21 @@
       <th>ID</th>
       <th>Медицинский материал</th>
       <th>Количество</th>
-      <th>Отделение</th>
-      <th>Дата обновления</th>
+      <th>№ документа</th>
+      <th>Дата операции</th>
     </tr>
   </thead>
   <tbody>
-    {% for item in available %}
+    {% for item in issued %}
     <tr>
       <td>{{ item.id }}</td>
       <td>{{ item.medical_material }}</td>
-      <td>{{ item.current_quantity }}</td>
-      <td>{{ item.department }}</td>
-      <td>{{ item.last_updated }}</td>
+      <td>{{ item.quantity }}</td>
+      <td>{{ item.document_number }}</td>
+      <td>{{ item.operation_date }}</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+
 {% endblock %}

@@ -1,13 +1,11 @@
 from flask import Blueprint, render_template
 
 from app import db_connection
-
+from decorators import access_control
+from models.Departments import Departments
 from models.MaterialBalances import MaterialBalances
 from models.MaterialOperations import MaterialOperations
 from models.MedicalMaterials import MedicalMaterials
-from models.Departments import Departments
-
-from decorators import access_control
 
 db = db_connection
 
@@ -17,10 +15,7 @@ material_balances_controller = Blueprint(
 )
 
 
-@material_balances_controller.route(
-    '/storage',
-    methods=['GET']
-)
+@material_balances_controller.route('/storage',methods=['GET'])
 @access_control('storage')
 def handle_storage():
 
@@ -52,6 +47,18 @@ def handle_storage():
 
         available.append(txt_balance)
 
+    return render_template(
+        'storage.html',
+        title='Медицинские материалы в наличии',
+        available=available,
+        available_count=len(available)
+    )
+
+
+@material_balances_controller.route('/issued',methods=['GET'])
+@access_control('issued')
+def handle_issued():
+
     issued_operations = MaterialOperations.query.filter_by(
         is_issued=True
     ).all()
@@ -76,6 +83,18 @@ def handle_storage():
         }
 
         issued.append(txt_operation)
+
+    return render_template(
+        'issued.html',
+        title='Выданные медицинские материалы',
+        issued=issued,
+        issued_count=len(issued)
+    )
+
+
+@material_balances_controller.route('/written_off',methods=['GET'])
+@access_control('written_off')
+def handle_written_off():
 
     written_off_operations = MaterialOperations.query.filter_by(
         is_written_off=True
@@ -103,12 +122,8 @@ def handle_storage():
         written_off.append(txt_operation)
 
     return render_template(
-        'storage.html',
-        title='Хранение медицинских материалов',
-        available=available,
-        issued=issued,
+        'written_off.html',
+        title='Списанные медицинские материалы',
         written_off=written_off,
-        available_count=len(available),
-        issued_count=len(issued),
         written_off_count=len(written_off)
     )

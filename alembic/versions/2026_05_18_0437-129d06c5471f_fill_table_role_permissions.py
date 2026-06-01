@@ -24,17 +24,27 @@ def upgrade() -> None:
         WITH r AS (SELECT id, code FROM entities),
             ins(role_name, code, can_read, can_write, own_only) AS (VALUES
                 ('Врач', 'storage', TRUE, TRUE, TRUE),
+                ('Врач', 'issued', TRUE, TRUE, TRUE),
                 ('Провизор', 'storage', TRUE, TRUE, TRUE),
+                ('Провизор', 'issued', TRUE, TRUE, TRUE),
+                ('Провизор', 'written_off', TRUE, TRUE, TRUE),
                 ('Медсестра', 'storage', TRUE, TRUE, TRUE),
+                ('Медсестра', 'issued', TRUE, TRUE, TRUE),
+                ('Медсестра', 'written_off', TRUE, TRUE, TRUE),
                 ('Фельдшер', 'storage', TRUE, TRUE, TRUE),
+                ('Фельдшер', 'issued', TRUE, TRUE, TRUE),
+                ('Фельдшер', 'written_off', TRUE, TRUE, TRUE),
                 ('Кладовщик', 'suppliers', TRUE, TRUE, FALSE),
                 ('Кладовщик', 'delivery', TRUE, TRUE, FALSE),
                 ('Кладовщик', 'issue', TRUE, TRUE, FALSE),
                 ('Кладовщик', 'storage', TRUE, TRUE, TRUE),
+                ('Кладовщик', 'written_off', TRUE, TRUE, TRUE),
                 ('Администратор', 'suppliers', TRUE, TRUE, FALSE),
                 ('Администратор', 'delivery', TRUE, TRUE, FALSE),
                 ('Администратор', 'issue', TRUE, TRUE, FALSE),
-                ('Администратор', 'storage', TRUE, TRUE, FALSE)
+                ('Администратор', 'storage', TRUE, TRUE, FALSE),
+                ('Администратор', 'issued', TRUE, TRUE, FALSE),
+                ('Администратор', 'written_off', TRUE, TRUE, FALSE)
             )
         INSERT INTO role_permissions (role_id, entity_id, can_read, can_write, own_only)
         SELECT
@@ -57,17 +67,27 @@ def downgrade() -> None:
     # Полный список записей role_permissions для удаления:
     records_to_delete = [
         ('Врач', 'storage'),
+        ('Врач', 'issued'),
         ('Провизор', 'storage'),
+        ('Провизор', 'issued'),
+        ('Провизор', 'written_off'),
         ('Медсестра', 'storage'),
+        ('Медсестра', 'issued'),
+        ('Медсестра', 'written_off'),
         ('Фельдшер', 'storage'),
+        ('Фельдшер', 'issued'),
+        ('Фельдшер', 'written_off'),
         ('Кладовщик', 'suppliers'),
         ('Кладовщик', 'delivery'),
         ('Кладовщик', 'issue'),
         ('Кладовщик', 'storage'),
+        ('Кладовщик', 'written_off'),
         ('Администратор', 'suppliers'),
         ('Администратор', 'delivery'),
         ('Администратор', 'issue'),
-        ('Администратор', 'storage')
+        ('Администратор', 'storage'),
+        ('Администратор', 'issued'),
+        ('Администратор', 'written_off')
     ]
 
     for record in records_to_delete:

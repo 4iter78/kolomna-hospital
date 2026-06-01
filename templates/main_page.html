@@ -16,13 +16,19 @@
   <a href="/suppliers"     class="btn-action btn-create">Поставщики</a>
   {% endif %}
   {% if can_read('delivery') %}
-  <a href="/delivery"     class="btn-action btn-create">Поступление медпрепаратов</a>
+  <a href="/delivery"     class="btn-action btn-create">Поступление медматериалов</a>
   {% endif %}
   {% if can_read('issue') %}
-  <a href="/issues"     class="btn-action btn-create">Выдача медпрепаратов</a>
+  <a href="/issues"     class="btn-action btn-create">Выдача медматериалов</a>
   {% endif %}
   {% if can_read('storage') %}
-  <a href="/storage"     class="btn-action btn-create">Хранение медпрепаратов</a>
+  <a href="/storage"     class="btn-action btn-create">Хранение медматериалов</a>
+  {% endif %}
+  {% if can_read('issued') %}
+  <a href="/issued"     class="btn-action btn-create">Выданные медпрепараты</a>
+  {% endif %}
+  {% if can_read('written_off') %}
+  <a href="/written_off"     class="btn-action btn-create">Списанные медпрепараты</a>
   {% endif %}
   {% if can_read('patients') %}
   <a href="/patients"       class="btn-action btn-create">Пациенты</a>

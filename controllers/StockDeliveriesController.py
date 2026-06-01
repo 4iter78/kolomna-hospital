@@ -28,10 +28,7 @@ stock_deliveries_controller = Blueprint(
 )
 
 
-@stock_deliveries_controller.route(
-    '/delivery',
-    methods=['GET', 'POST']
-)
+@stock_deliveries_controller.route('/delivery',methods=['GET', 'POST'])
 @access_control('delivery')
 def handle_delivery():
 
@@ -208,7 +205,7 @@ def handle_delivery():
 
     return render_template(
         'delivery.html',
-        title='Поступление медицинских материалов',
+        title='Поступление медицинских материалов на склад',
         deliveries=result,
         suppliers=suppliers,
         materials=materials,
