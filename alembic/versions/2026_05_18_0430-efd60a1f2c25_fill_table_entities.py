@@ -32,6 +32,7 @@ def downgrade() -> None:
     op.execute('''
         DELETE FROM entities
         WHERE code IN (
+            'suppliers',
             'delivery',
             'issue',
             'storage'
