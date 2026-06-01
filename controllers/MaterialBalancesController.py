@@ -78,11 +78,21 @@ def handle_storage():
         for material in MedicalMaterials.query.all()
     ]
 
+    departments = [
+        {
+            "id": department.id,
+            "name": department.name
+        }
+
+        for department in Departments.query.all()
+    ]
+
     return render_template(
         'storage.html',
         title='Медицинские материалы в наличии',
         available=available,
         materials=materials,
+        departments=departments,
         available_count=len(available)
     )
 

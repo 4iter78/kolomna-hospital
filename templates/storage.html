@@ -1,6 +1,60 @@
 {% extends "main.html" %}
 {% block content %}
 
+<div class="filter-panel mb-3">
+    <div class="row">
+        <div class="col">
+            <select id="filter-material"
+                    class="form-control">
+                <option value="">
+                    Все материалы
+                </option>
+                {% for material in materials %}
+                <option value="{{ material.name }}">
+                    {{ material.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <select id="filter-department"
+                    class="form-control">
+                <option value="">
+                    Все отделения
+                </option>
+                {% for department in departments %}
+                <option value="{{ department.name }}">
+                    {{ department.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <input type="number"
+                   id="filter-quantity"
+                   class="form-control"
+                   placeholder="Количество">
+        </div>
+        <div class="col">
+            <input type="date"
+                   id="filter-date-from"
+                   class="form-control">
+        </div>
+        <div class="col">
+            <input type="date"
+                   id="filter-date-to"
+                   class="form-control">
+        </div>
+        <div class="col-auto">
+            <button type="button"
+                    class="btn-action btn-edit"
+                    onclick="resetFilters()">
+                Сбросить
+            </button>
+        </div>
+    </div>
+</div>
+
 <table class="table table-striped">
   <thead>
     <tr>
@@ -148,6 +202,117 @@
   {%- endif %}
   {%- block scripts %}
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+    const filters = [
+        'filter-material',
+        'filter-department',
+        'filter-quantity',
+        'filter-date-from',
+        'filter-date-to'
+    ];
+
+    filters.forEach(id => {
+        document.getElementById(id)
+            .addEventListener('input', applyFilters);
+
+        document.getElementById(id)
+            .addEventListener('change', applyFilters);
+    });
+
+});
+
+function applyFilters() {
+
+    const material =
+        document.getElementById('filter-material')
+            .value.toLowerCase();
+
+    const department =
+        document.getElementById('filter-department')
+            .value.toLowerCase();
+
+    const quantity =
+        document.getElementById('filter-quantity')
+            .value;
+
+    const dateFrom =
+        document.getElementById('filter-date-from')
+            .value;
+
+    const dateTo =
+        document.getElementById('filter-date-to')
+            .value;
+
+    let visibleCount = 0;
+
+    document.querySelectorAll(
+        '.table tbody > tr[data-id]'
+    ).forEach(row => {
+
+        const cells = row.children;
+
+        const materialText =
+            cells[1].innerText.toLowerCase();
+
+        const quantityText =
+            cells[2].innerText.trim();
+
+        const departmentText =
+            cells[3].innerText.toLowerCase();
+
+        const updateDate =
+            row.dataset.lastUpdated || '';
+
+        const idText =
+            row.dataset.id.toLowerCase();
+
+        let visible = true;
+
+        if (material &&
+            !materialText.includes(material))
+            visible = false;
+
+        if (department &&
+            !departmentText.includes(department))
+            visible = false;
+
+        if (quantity &&
+            quantityText !== quantity)
+            visible = false;
+
+        if (dateFrom &&
+            updateDate < dateFrom)
+            visible = false;
+
+        if (dateTo &&
+            updateDate > dateTo)
+            visible = false;
+
+        row.style.display =
+            visible ? '' : 'none';
+
+        if (visible) {
+            visibleCount++;
+        }
+    });
+
+    document.getElementById('record-count')
+        .textContent =
+        `Записей: ${visibleCount}`;
+  }
+
+  function resetFilters() {
+
+    document.getElementById('filter-material').value = '';
+    document.getElementById('filter-department').value = '';
+    document.getElementById('filter-quantity').value = '';
+    document.getElementById('filter-date-from').value = '';
+    document.getElementById('filter-date-to').value = '';
+
+    applyFilters();
+  }
+
     function openEditModalIssued(id) {
       const r = document.querySelector(`tr[data-id="${id}"]`);
       document.getElementById('edit-id').value   = id;
