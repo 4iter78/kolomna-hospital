@@ -192,7 +192,8 @@
       </a>
       {% endif %}
 
-      {% if can_read('diagnosises') or can_read('drugs') or can_read('treatment_types') or can_read('room_type') or can_read('rooms') %}
+      {% if can_read('diagnosises') or can_read('drugs') or can_read('treatment_types')
+      or can_read('room_type') or can_read('rooms') or can_read('material_types') or can_read('user_name') %}
       <div class="nav-section-label">Справочники</div>
       {% endif %}
       {% if can_read('diagnosises') %}

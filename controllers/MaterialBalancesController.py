@@ -4,9 +4,6 @@ from flask import (
     Blueprint,
     render_template,
     request,
-    redirect,
-    url_for,
-    flash,
     session
 )
 
@@ -15,6 +12,7 @@ from decorators import access_control
 from models.Departments import Departments
 from models.MaterialBalances import MaterialBalances
 from models.MaterialOperations import MaterialOperations
+from models.MaterialUnits import MaterialUnits
 from models.MedicalMaterials import MedicalMaterials
 
 db = db_connection
@@ -38,7 +36,11 @@ def handle_storage():
         material = MedicalMaterials.query.get(
             balance.medical_material_id
         )
-
+        material_unit = None
+        if material:
+            material_unit = MaterialUnits.query.get(
+                material.material_unit_id
+            )
         department = Departments.query.get(
             balance.department_id
         )
@@ -51,6 +53,8 @@ def handle_storage():
                 material.name if material else '',
             "current_quantity":
                 balance.current_quantity,
+            "table_quantity":
+                f'{balance.current_quantity} {material_unit.short_name if material else ''}',
             "document_number":
                 '',
             "department_id":
@@ -113,11 +117,17 @@ def handle_issued():
             operation.medical_material_id
         )
 
+        material_unit = None
+        if material:
+            material_unit = MaterialUnits.query.get(
+                material.material_unit_id
+            )
         txt_operation = {
             "id": operation.id,
             "medical_material":
                 material.name if material else '',
             "quantity": operation.quantity,
+            "table_quantity": f'{operation.quantity} {material_unit.short_name if material else ''}',
             "document_number":
                 operation.document_number,
             "operation_date":
@@ -240,11 +250,17 @@ def handle_written_off():
             operation.medical_material_id
         )
 
+        material_unit = None
+        if material:
+            material_unit = MaterialUnits.query.get(
+                material.material_unit_id
+            )
         txt_operation = {
             "id": operation.id,
             "medical_material":
                 material.name if material else '',
             "quantity": operation.quantity,
+            "table_quantity": f'{operation.quantity} {material_unit.short_name if material else ''}',
             "document_number":
                 operation.document_number,
             "operation_date":

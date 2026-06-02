@@ -85,13 +85,14 @@
       data-department_id="{{ item.department_id }}"
       data-department="{{ item.department }}"
       data-quantity="{{ item.current_quantity }}"
+      data-table_quantity="{{ item.table_quantity }}"
       data-document_number="{{ item.document_number }}"
       data-operation_date="{{ item.operation_date }}"
       data-description="{{ item.description }}">
       <td>{{ item.id }}</td>
       <td>{{ item.department }}</td>
       <td>{{ item.medical_material }}</td>
-      <td>{{ item.current_quantity }}</td>
+      <td>{{ item.table_quantity }}</td>
       <td>{{ item.last_updated.strftime('%d.%m.%Y %H:%M') }}</td>
       <td><div class="actions-cell">
           {%- if can_write('written_off')  %}
@@ -136,6 +137,10 @@
             <label class="form-label">Наименование</label>
             <input class="form-control" type="text" name="medical_material" id="edit-medical_material"
                    placeholder="" readonly required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Всего</label>
+            <input class="form-control" type="text" name="table_quantity" id="edit-table_quantity"  placeholder="" readonly>
           </div>
           <div class="form-group">
             <label class="form-label">Количество</label>
@@ -184,6 +189,10 @@
                    placeholder="" readonly required>
           </div>
           <div class="form-group">
+            <label class="form-label">Всего</label>
+            <input class="form-control" type="text" name="table_quantity" id="edit-table_quantity-2"  placeholder="" readonly>
+          </div>
+          <div class="form-group">
             <label class="form-label">Количество</label>
             <input class="form-control" type="text" name="quantity" id="edit-quantity-2"  placeholder="" required>
           </div>
@@ -216,6 +225,7 @@
       document.getElementById('edit-id').value   = id;
       document.getElementById('edit-medical_material').value = r.dataset.medical_material;
       document.getElementById('edit-quantity').value = r.dataset.quantity;
+      document.getElementById('edit-table_quantity').value = r.dataset.table_quantity;
       document.getElementById('edit-document_number').value = r.dataset.document_number;
       document.getElementById('edit-department').value = r.dataset.department;
       document.getElementById('edit-operation_date').value = r.dataset.operation_date;
@@ -228,6 +238,7 @@
       document.getElementById('edit-id-2').value   = id;
       document.getElementById('edit-medical_material-2').value = r.dataset.medical_material;
       document.getElementById('edit-quantity-2').value = r.dataset.quantity;
+      document.getElementById('edit-table_quantity-2').value = r.dataset.table_quantity;
       document.getElementById('edit-document_number-2').value = r.dataset.document_number;
       document.getElementById('edit-department-2').value = r.dataset.department;
       document.getElementById('edit-operation_date-2').value = r.dataset.operation_date;

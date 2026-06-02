@@ -14,7 +14,7 @@ def handle_material_units():
     if request.method == 'POST':
         try:
             data = request.get_json() if request.is_json else request.form
-            new_material_unit = MaterialUnits(name=data['name'])
+            new_material_unit = MaterialUnits(name=data['name'], short_name=data['short_name'])
             db.session.add(new_material_unit)
             db.session.commit()
             flash(f"Единица измерения {new_material_unit.name} с идентификатором "
@@ -27,7 +27,7 @@ def handle_material_units():
 
     elif request.method == 'GET':
         material_units = MaterialUnits.query.all()
-        results = [{"id": rt.id, "name": rt.name} for rt in material_units]
+        results = [{"id": rt.id, "name": rt.name, "short_name": rt.short_name} for rt in material_units]
         return render_template('material_units.html',
                                title='Единицы измерения материалов',
                                material_units=results, count=len(results))
@@ -44,6 +44,7 @@ def handle_material_unit(material_units_id):
     elif request.method == 'PUT':
         data = request.get_json()
         material_unit.name = data['name']
+        material_unit.short_name = data['short_name']
         db.session.add(material_unit)
         db.session.commit()
         return {"message": f"Единица измерения {material_unit.name} успешно обновлена"}

@@ -34,7 +34,7 @@ function showToast(msg, type) {
   t.className = 'toast ' + (type || 'success');
   t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(function () { t.remove(); }, 3000);
+  setTimeout(function () { t.remove(); }, 20000);
 }
 
 // ── DELETE через fetch ───────────────────────────
@@ -51,10 +51,10 @@ function deleteRecord(url, id) {
 
       const modal = document.getElementById(modalId);
       console.log(modal);
-      setTimeout(function () { location.reload(); }, 800);
+      setTimeout(function () { location.reload(); }, 20000);
     })
     .catch(function () { showToast('Ошибка при удалении', 'error');
-      setTimeout(function () { location.reload(); }, 50);
+      setTimeout(function () { location.reload(); }, 20000);
     });
 }
 
@@ -87,9 +87,11 @@ function submitEdit(url, formId, modalId) {
 
       const modal = document.getElementById(modalId);
       console.log(modal);
-      setTimeout(function () { location.reload(); }, 800);
+      setTimeout(function () { location.reload(); }, 10000);
     })
-    .catch(function () { showToast('Ошибка при сохранении', 'error'); });
+    .catch(function () { showToast('Ошибка при сохранении', 'error');
+    });
+
 }
 
 let sortDirections = {};
