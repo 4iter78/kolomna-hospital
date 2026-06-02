@@ -10,9 +10,10 @@ def create_app():
     app = Flask(__name__)
     app.secret_key = '41be93f0a63b2584b7f01f638207b74b5208b5dfd6cb6133bff311335358ba1e'
     # подключение к базе данных СУБД://имя_пользователя:пароль@IP-адрес:порт/имя_базы_данных
-    app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:cfvfz78!@localhost:5432/kolomna_hospital"
+    app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:postgres@localhost:1024/kolomna_hospital"
     db_connection.init_app(app)
 
+    # ── Получение иконки вкладки ────────────────────────────────
     @app.route('/favicon.ico')
     def favicon():
         return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico',
@@ -45,12 +46,3 @@ def create_app():
         return render_template('403.html', title='Доступ запрещён'), 403
 
     return app
-
-
-# def init_db(app):
-#     global db_connection
-#     db_connection = SQLAlchemy(app)
-#
-#
-# def get_db():
-#     return db_connection
