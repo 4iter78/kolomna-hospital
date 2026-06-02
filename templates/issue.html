@@ -161,8 +161,7 @@
 
 {% block modals %}
 {%- if can_write('issue') %}
-<div id="modal-create"
-     class="modal-overlay"
+<div id="modal-create" class="modal-overlay"
      onclick="closeOnOverlay(event,'modal-create')">
   <div class="modal-box modal-xl">
     <div class="modal-header">
@@ -175,9 +174,7 @@
     <div class="modal-body">
       <form id="modal-create-form" method="POST" action="/issue">
         <div class="form-group">
-          <label class="form-label">
-            Выдал
-          </label>
+          <label class="form-label">Выдал</label>
           <select class="form-control" name="from_user_id" required>
             {% for user in users %}
             {%- if user.id == curr_user_id %}
@@ -196,9 +193,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">
-            Принял
-          </label>
+          <label class="form-label">Принял</label>
           <select class="form-control"
                   name="to_user_id"
                   required>
@@ -210,12 +205,8 @@
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">
-            Место хранения
-          </label>
-          <select class="form-control"
-                  name="department_id"
-                  required>
+          <label class="form-label">Место хранения</label>
+          <select class="form-control" name="department_id" required>
             {% for department in departments %}
             <option value="{{ department.id }}">
               {{ department.name }}
@@ -224,32 +215,20 @@
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">
-            Дата выдачи
-          </label>
-          <input class="form-control"
-                 type="datetime-local"
-                 name="issue_date"
-                 value="{{today}}"
-                 required>
+          <label class="form-label">Дата выдачи</label>
+          <input class="form-control" type="datetime-local"
+                 name="issue_date" value="{{today}}" required>
         </div>
         <div class="form-group">
-          <label class="form-label">
-            Комментарий
-          </label>
-          <textarea class="form-control"
-                    name="notes"></textarea>
+          <label class="form-label">Комментарий</label>
+          <textarea class="form-control" name="notes"></textarea>
         </div>
         <hr>
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <h4>
-            Выданные материалы
-          </h4>
+          <h4>Выданные материалы</h4>
           <button type="button"
                   class="btn-action btn-create"
-                  onclick="addIssueMaterialRow()">
-            Добавить материал
-          </button>
+                  onclick="addIssueMaterialRow()">Добавить материал</button>
         </div>
         <table class="table table-bordered">
           <thead>
@@ -264,18 +243,13 @@
         </table>
       </form>
     </div>
-        <div class="modal-footer">
-          <button form="modal-create-form" type="button"
-                  class="btn-action btn-edit"
-                  onclick="closeModal('modal-create')">
-            Отмена
-          </button>
-          <button form="modal-create-form" type="submit"
-                  class="btn-action btn-create">
-            Сохранить
-          </button>
-        </div>
-
+    <div class="modal-footer">
+      <button form="modal-create-form" type="button"
+              class="btn-action btn-edit"
+              onclick="closeModal('modal-create')">Отмена</button>
+      <button form="modal-create-form" type="submit"
+              class="btn-action btn-create">Сохранить</button>
+    </div>
   </div>
 </div>
 {%- endif %}

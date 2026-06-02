@@ -16,8 +16,8 @@ def handle_departments():
             new_department = Departments(name=data['name'])
             db.session.add(new_department)
             db.session.commit()
-            flash(f"Отделение {new_department.name} с идентификатором {new_department.id} успешно создано.",
-              'success')
+            flash(f"Отделение {new_department.name} с идентификатором {new_department.id} "
+                  f"успешно создано.", 'success')
 
         except Exception as e:
             db.session.rollback()
