@@ -331,3 +331,23 @@ function resetTableFilters() {
         });
     applyTableFilters();
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const nav = document.querySelector('.sidebar-nav');
+
+    if (!nav) return;
+
+    // Восстановление позиции
+    const savedPosition = sessionStorage.getItem('sidebarScrollPosition');
+    if (savedPosition !== null) {
+        nav.scrollTop = parseInt(savedPosition, 10);
+    }
+
+    // Сохранение при прокрутке
+    nav.addEventListener('scroll', function() {
+        sessionStorage.setItem(
+            'sidebarScrollPosition',
+            nav.scrollTop
+        );
+    });
+});
