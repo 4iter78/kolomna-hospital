@@ -12,6 +12,9 @@
   {% if can_read('user_roles') %}
   <a href="/user-roles"     class="btn-action btn-create">Роли пользователей</a>
   {% endif %}
+  {% if can_read('departments') %}
+  <a href="/departments"     class="btn-action btn-create">Отделения</a>
+  {% endif %}
   {% if can_read('suppliers') %}
   <a href="/suppliers"     class="btn-action btn-create">Поставщики</a>
   {% endif %}

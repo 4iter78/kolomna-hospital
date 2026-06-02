@@ -49,24 +49,38 @@
     </div>
 
     <nav class="sidebar-nav">
-      {% if can_read('users') or can_read('user_roles') %}
+      {% if can_read('users') or can_read('user_roles') or can_read('departments') %}
       <div class="nav-section-label">Персонал</div>
       {% endif %}
       {% if can_read('users') %}
       <a href="/users" class="nav-link-item">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 1c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z"/></svg>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 1c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z"/>
+        </svg>
         Пользователи
       </a>
       {% endif %}
       {% if can_read('user_roles') %}
       <a href="/user-roles" class="nav-link-item">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/></svg>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/></svg>
         Роли пользователей
+      </a>
+      {% endif %}
+      {% if can_read('departments') %}
+      <a href="/departments" class="nav-link-item">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8.5 5.034v1.1l.953-.55.5.867L9 7l.953.55-.5.866-.953-.55v1.1h-1v-1.1l-.953.55-.5-.866L7 7l-.953-.55.5-.866.953.55v-1.1zM13.25 9a.25.25 0 0 0-.25.25v.5c0 .138.112.25.25.25h.5a.25.25 0 0 0 .25-.25v-.5a.25.25 0 0 0-.25-.25zM13 11.25a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25zm.25 1.75a.25.25 0 0 0-.25.25v.5c0 .138.112.25.25.25h.5a.25.25 0 0 0 .25-.25v-.5a.25.25 0 0 0-.25-.25zm-11-4a.25.25 0 0 0-.25.25v.5c0 .138.112.25.25.25h.5A.25.25 0 0 0 3 9.75v-.5A.25.25 0 0 0 2.75 9zm0 2a.25.25 0 0 0-.25.25v.5c0 .138.112.25.25.25h.5a.25.25 0 0 0 .25-.25v-.5a.25.25 0 0 0-.25-.25zM2 13.25a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25z"/>
+          <path d="M5 1a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1a1 1 0 0 1 1 1v4h3a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h3V3a1 1 0 0 1 1-1zm2 14h2v-3H7zm3 0h1V3H5v12h1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1zm0-14H6v1h4zm2 7v7h3V8zm-8 7V8H1v7z"/>
+        </svg>
+        Отделения
       </a>
       {% endif %}
       {% if can_write('user_roles') %}
       <a href="/admin/permissions" class="nav-link-item">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+        </svg>
         Матрица прав
       </a>
       {% endif %}
@@ -134,7 +148,9 @@
       {% endif %}
       {% if can_read('patients') %}
       <a href="/patients" class="nav-link-item">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a5 5 0 1 0 0 10A5 5 0 0 0 8 1zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0 0 14A7 7 0 0 0 8 1z"/></svg>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 1a5 5 0 1 0 0 10A5 5 0 0 0 8 1zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0 0 14A7 7 0 0 0 8 1z"/>
+        </svg>
         Пациенты
       </a>
       {% endif %}
@@ -149,7 +165,9 @@
       {% endif %}
       {% if can_read('appointments') %}
       <a href="/appointments" class="nav-link-item">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM8.5 9.5H5v-1h3.5V5h1v3.5H13v1H9.5V13h-1V9.5z"/></svg>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM8.5 9.5H5v-1h3.5V5h1v3.5H13v1H9.5V13h-1V9.5z"/>
+        </svg>
         Приёмы
       </a>
       {% endif %}
@@ -159,13 +177,17 @@
       {% endif %}
       {% if can_read('work_timetable') %}
       <a href="/work_timetable" class="nav-link-item">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+        </svg>
         Расписание работы
       </a>
       {% endif %}
       {% if can_read('clean_timetable') %}
       <a href="/clean_timetable" class="nav-link-item">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/></svg>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+        </svg>
         Расписание уборки
       </a>
       {% endif %}
@@ -175,7 +197,9 @@
       {% endif %}
       {% if can_read('diagnosises') %}
       <a href="/diagnosises" class="nav-link-item">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zM1 8a7 7 0 1 1 14 0A7 7 0 0 1 1 8z"/></svg>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zM1 8a7 7 0 1 1 14 0A7 7 0 0 1 1 8z"/>
+        </svg>
         Диагнозы
       </a>
       {% endif %}
@@ -189,19 +213,26 @@
       {% endif %}
       {% if can_read('treatment_types') %}
       <a href="/treatment_types" class="nav-link-item">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/></svg>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
+        </svg>
         Типы лечения
       </a>
       {% endif %}
       {% if can_read('room_type') %}
       <a href="/room_type" class="nav-link-item">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.707L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.646a.5.5 0 0 0 .708-.707L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5z"/></svg>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4z"/>
+        </svg>
         Типы помещений
       </a>
       {% endif %}
       {% if can_read('rooms') %}
       <a href="/rooms" class="nav-link-item">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v1h.5a.5.5 0 0 1 0 1H14v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4H1.5a.5.5 0 0 1 0-1H2V2zm1 2v11h10V4H2zm5 2a.5.5 0 0 1 .5.5v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2v-2A.5.5 0 0 1 7 6z"/></svg>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8.5 10c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1"/>
+            <path d="M10.828.122A.5.5 0 0 1 11 .5V1h.5A1.5 1.5 0 0 1 13 2.5V15h1.5a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1H3V1.5a.5.5 0 0 1 .43-.495l7-1a.5.5 0 0 1 .398.117M11.5 2H11v13h1V2.5a.5.5 0 0 0-.5-.5M4 1.934V15h6V1.077z"/>
+        </svg>
         Помещения
       </a>
       {% endif %}
@@ -215,7 +246,9 @@
       {% endif %}
       {% if can_read('material_units') %}
       <a href="/material_units" class="nav-link-item">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v1h.5a.5.5 0 0 1 0 1H14v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4H1.5a.5.5 0 0 1 0-1H2V2zm1 2v11h10V4H2zm5 2a.5.5 0 0 1 .5.5v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2v-2A.5.5 0 0 1 7 6z"/></svg>
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M1 2a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v1h.5a.5.5 0 0 1 0 1H14v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4H1.5a.5.5 0 0 1 0-1H2V2zm1 2v11h10V4H2zm5 2a.5.5 0 0 1 .5.5v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2v-2A.5.5 0 0 1 7 6z"/>
+        </svg>
         Единицы измерения
       </a>
       {% endif %}
@@ -237,7 +270,8 @@
 
   <main class="main-area">
     <div class="page-header">
-      <h1>{{ title }}</h1>
+      <h1>{% block title_img %}{% endblock %}
+          {{ title }}</h1>
       <hr>
     </div>
     <div class="content-card">

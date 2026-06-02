@@ -27,14 +27,7 @@ material_issues_controller = Blueprint(
 )
 
 
-# =====================================================
-# ISSUE LIST + CREATE
-# =====================================================
-
-@material_issues_controller.route(
-    '/issue',
-    methods=['GET', 'POST']
-)
+@material_issues_controller.route('/issue', methods=['GET', 'POST'])
 @access_control('issue')
 def handle_issue():
 
@@ -203,6 +196,7 @@ def handle_issue_item(issue_id):
         issue_items = IssueItems.query.filter_by(
             material_issue_id=issue.id
         ).all()
+        print(f"issue items in GET {issue_items}")
 
         items = []
 

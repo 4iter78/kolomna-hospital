@@ -164,14 +164,14 @@ def downgrade() -> None:
                 )
                 AND quantity = :quantity
                 AND document_number = :document_number
-                AND user_id = (
+                AND current_user_id = (
                     SELECT id
                     FROM users
                     WHERE surname = :user_surname
                 )
                 AND description = :description
                 AND is_issued = :is_issued
-                AND is_written_off = :is_written_off
+                AND is_written_off = :is_written_off;
             '''),
             params
         )

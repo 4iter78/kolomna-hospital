@@ -64,6 +64,43 @@ def upgrade() -> None:
             can_read  = EXCLUDED.can_read,
             can_write = EXCLUDED.can_write,
             own_only  = EXCLUDED.own_only;
+        
+        INSERT INTO role_permissions (role_id, entity_id, can_read, can_write, own_only)
+        SELECT
+            ur.id,
+            e.id,
+            TRUE,
+            FALSE,
+            FALSE
+        FROM user_roles ur
+        CROSS JOIN entities e
+        WHERE e.code = 'departments' AND ur.id 
+        NOT IN (SELECT id FROM user_roles WHERE name IN ('Регистратор', 'Администратор'))
+        ON CONFLICT (role_id, entity_id) DO UPDATE
+        SET
+            can_read  = EXCLUDED.can_read,
+            can_write = EXCLUDED.can_write,
+            own_only  = EXCLUDED.own_only;
+        
+        WITH r AS (SELECT id, code FROM entities),
+            ins(role_name, code, can_read, can_write, own_only) AS (VALUES
+                ('Регистратор', 'departments', TRUE, TRUE, FALSE),
+                ('Администратор', 'departments', TRUE, TRUE, FALSE)
+            )
+        INSERT INTO role_permissions (role_id, entity_id, can_read, can_write, own_only)
+        SELECT
+            (SELECT id FROM user_roles WHERE name = ins.role_name),
+            r.id,
+            ins.can_read,
+            ins.can_write,
+            ins.own_only
+        FROM ins
+        JOIN r ON r.code = ins.code
+        ON CONFLICT (role_id, entity_id) DO UPDATE
+        SET
+            can_read  = EXCLUDED.can_read,
+            can_write = EXCLUDED.can_write,
+            own_only  = EXCLUDED.own_only;
     ''')
 
 
@@ -119,7 +156,11 @@ def downgrade() -> None:
                     SELECT id
                     FROM entities
                     WHERE code = :entity_code
-                )
+                );
             '''),
             params
         )
+
+        op.execute('''
+            DELETE FROM role_permissions where entity_id = (SELECT id FROM entities WHERE name = 'departments');
+        ''')

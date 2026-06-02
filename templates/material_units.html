@@ -1,4 +1,9 @@
 {% extends "main.html" %}
+{% block title_img %}
+<svg width="60" height="60" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M1 2a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v1h.5a.5.5 0 0 1 0 1H14v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4H1.5a.5.5 0 0 1 0-1H2V2zm1 2v11h10V4H2zm5 2a.5.5 0 0 1 .5.5v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2v-2A.5.5 0 0 1 7 6z"/>
+</svg>
+{% endblock %}
 {% block content %}
 
   <div class="table-toolbar">
@@ -62,7 +67,7 @@
   <div id="modal-create" class="modal-overlay" onclick="closeOnOverlay(event,'modal-create')">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>Создать: Роль</h3>
+        <h3>Создать: Единица измерения материала</h3>
         <button class="modal-close" onclick="closeModal('modal-create')">✕</button>
       </div>
       <div class="modal-body">
@@ -86,7 +91,7 @@
   <div id="modal-edit" class="modal-overlay" onclick="closeOnOverlay(event,'modal-edit')">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>Редактировать: Роль</h3>
+        <h3>Редактировать: Единица измерения материала</h3>
         <button class="modal-close" onclick="closeModal('modal-edit')">✕</button>
       </div>
       <div class="modal-body">

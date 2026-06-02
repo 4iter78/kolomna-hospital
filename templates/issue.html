@@ -1,4 +1,9 @@
 {% extends "main.html" %}
+{% block title_img %}
+<svg width="60" height="60" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+</svg>
+{% endblock %}
 {% block content %}
 
 <div class="table-toolbar">
@@ -14,70 +19,71 @@
 </div>
 
 <div class="filter-panel mb-3">
-    <div class="row">
-        <div class="col">
-            <select id="filter-from-user"
-                    class="form-control">
-                <option value="">
-                    Все выдавшие
-                </option>
-                {% for user in users %}
-                <option value="{{ user.surname }} {{ user.name }} {{ user.second_name }}">
-                    {{ user.surname }} {{ user.name }} {{ user.second_name }}
-                </option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col">
-            <select id="filter-to-user"
-                    class="form-control">
-                <option value="">
-                    Все получатели
-                </option>
-                {% for user in users %}
-                <option value="{{ user.surname }} {{ user.name }} {{ user.second_name }}">
-                    {{ user.surname }} {{ user.name }} {{ user.second_name }}
-                </option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col">
-            <select id="filter-department"
-                    class="form-control">
-                <option value="">
-                    Все места хранения
-                </option>
-                {% for department in departments %}
-                <option value="{{ department.name }}">
-                    {{ department.name }}
-                </option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col">
-            <input type="date"
-                   id="filter-date-from"
-                   class="form-control">
-        </div>
-        <div class="col">
-            <input type="date"
-                   id="filter-date-to"
-                   class="form-control">
-        </div>
-        <div class="col">
-            <input type="text"
-                   id="filter-notes"
-                   class="form-control"
-                   placeholder="Комментарий">
-        </div>
-        <div class="col-auto">
-            <button type="button"
-                    class="btn-action btn-edit"
-                    onclick="resetFilters()">
-                Сбросить
-            </button>
-        </div>
+  <div class="row">
+    <div class="col">
+      <select class="form-control table-filter"
+              id="filter-from-user"
+              data-filter-field="from_user">
+        <option value="">Все выдавшие</option>
+        {% for user in users %}
+        <option value="{{ user.surname }} {{ user.name }} {{ user.second_name }}">
+          {{ user.surname }} {{ user.name }} {{ user.second_name }}
+        </option>
+        {% endfor %}
+      </select>
     </div>
+    <div class="col">
+      <select class="form-control table-filter"
+              id="filter-to-user"
+              data-filter-field="to_user">
+        <option value="">Все получатели</option>
+        {% for user in users %}
+        <option value="{{ user.surname }} {{ user.name }} {{ user.second_name }}">
+          {{ user.surname }} {{ user.name }} {{ user.second_name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col">
+      <select class="form-control table-filter"
+              id="filter-department"
+              data-filter-field="department">
+        <option value="">Все места хранения</option>
+        {% for department in departments %}
+        <option value="{{ department.name }}">
+          {{ department.name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col">
+      <input type="datetime-local"
+             class="form-control table-filter"
+             id="filter-date-from"
+             data-filter-field="issue_date_from">
+    </div>
+    <div class="col">
+      <input type="datetime-local"
+             class="form-control table-filter"
+             id="filter-date-to"
+             data-filter-field="issue_date_to">
+    </div>
+    <div class="col">
+      <input type="text"
+             class="form-control table-filter"
+             id="filter-notes"
+             data-filter-field="notes"
+             placeholder="Комментарий">
+    </div>
+    <div class="col-auto">
+      <button type="button"
+              class="btn-action btn-edit"
+              onclick="resetTableFilters()">
+        Сбросить
+      </button>
+    </div>
+
+  </div>
 </div>
 
 <table class="table table-striped">
@@ -98,13 +104,13 @@
     data-id="{{ issue.id }}"
     data-from_user="{{ issue.from_user }}"
     data-to_user="{{ issue.to_user }}"
-    data-issue-date="{{ issue.issue_date.strftime('%Y-%m-%d') if issue.issue_date else '' }}"
+    data-issue_date="{{ issue.issue_date }}"
     data-notes="{{ issue.notes or '' }}">
       <td>{{ issue.id }}</td>
       <td>{{ issue.from_user }}</td>
       <td>{{ issue.to_user }}</td>
       <td>{{ issue.department }}</td>
-      <td>{{ issue.issue_date }}</td>
+      <td>{{ issue.issue_date.strftime('%Y-%m-%d %H:%M') if issue.issue_date else '' }}</td>
       <td>{{ issue.notes }}</td>
       <td>
         <details>
@@ -133,9 +139,7 @@
           </table>
         </details>
       </td>
-
       <td>
-
         <div class="actions-cell">
           {%- if can_write('issue') %}
           <button class="btn-action btn-edit"
@@ -178,7 +182,7 @@
           <select class="form-control" name="from_user_id" required>
             {% for user in users %}
             <option value="{{ user.id }}">
-              {{ user.name }}
+              {{ user.surname }} {{ user.name }} {{ user.second_name }}
             </option>
             {% endfor %}
           </select>
@@ -187,13 +191,12 @@
           <label class="form-label">
             Принял
           </label>
-
           <select class="form-control"
                   name="to_user_id"
                   required>
             {% for user in users %}
             <option value="{{ user.id }}">
-              {{ user.name }}
+              {{ user.surname }} {{ user.name }} {{ user.second_name }}
             </option>
             {% endfor %}
           </select>
@@ -221,7 +224,6 @@
                  name="issue_date"
                  required>
         </div>
-
         <div class="form-group">
           <label class="form-label">
             Комментарий
@@ -237,7 +239,6 @@
           <button type="button"
                   class="btn-action btn-create"
                   onclick="addIssueMaterialRow()">
-
             Добавить материал
           </button>
         </div>
@@ -254,17 +255,18 @@
         </table>
       </form>
     </div>
-    <div class="modal-footer">
-      <button type="button"
-              class="btn-action btn-edit"
-              onclick="closeModal('modal-create')">
-        Отмена
-      </button>
-      <button type="submit"
-              class="btn-action btn-create">
-        Сохранить
-      </button>
-    </div>
+        <div class="modal-footer">
+          <button type="button"
+                  class="btn-action btn-edit"
+                  onclick="closeModal('modal-create')">
+            Отмена
+          </button>
+          <button type="submit"
+                  class="btn-action btn-create">
+            Сохранить
+          </button>
+        </div>
+
   </div>
 </div>
 {%- endif %}
@@ -294,7 +296,7 @@
                   id="edit-from_user_id">
             {% for user in users %}
             <option value="{{ user.id }}">
-              {{ user.name }}
+              {{ user.surname }} {{ user.name }} {{ user.second_name }}
             </option>
             {% endfor %}
           </select>
@@ -307,7 +309,7 @@
                   id="edit-to_user_id">
             {% for user in users %}
             <option value="{{ user.id }}">
-              {{ user.name }}
+              {{ user.surname }} {{ user.name }} {{ user.second_name }}
             </option>
             {% endfor %}
           </select>
@@ -382,134 +384,9 @@
 
 {% block scripts %}
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-
-    const filters = [
-        'filter-from-user',
-        'filter-to-user',
-        'filter-department',
-        'filter-date-from',
-        'filter-date-to',
-        'filter-notes'
-    ];
-
-    filters.forEach(id => {
-        document.getElementById(id)
-            .addEventListener('input', applyFilters);
-    });
-    filters.forEach(id => {
-        document.getElementById(id)
-            .addEventListener('change', applyFilters);
-    });
-
-});
-
-function applyFilters() {
-
-    const fromUser =
-        document.getElementById('filter-from-user')
-            .value.toLowerCase();
-
-    const toUser =
-        document.getElementById('filter-to-user')
-            .value.toLowerCase();
-
-    const department =
-        document.getElementById('filter-department')
-            .value.toLowerCase();
-
-    const dateFrom =
-        document.getElementById('filter-date-from')
-            .value;
-
-    const dateTo =
-        document.getElementById('filter-date-to')
-            .value;
-
-    const notes =
-        document.getElementById('filter-notes')
-            .value.toLowerCase();
-
-    let visibleCount = 0;
-
-    document.querySelectorAll(
-        '.table tbody > tr[data-id]'
-    ).forEach(row => {
-
-        const cells = row.children;
-
-        const fromUserText =
-            cells[1].innerText.toLowerCase();
-
-        const toUserText =
-            cells[2].innerText.toLowerCase();
-
-        const departmentText =
-            cells[3].innerText.toLowerCase();
-
-        const issueDate =
-            row.dataset.issueDate;
-
-        const notesText =
-            (row.dataset.notes || '')
-                .toLowerCase();
-
-        let visible = true;
-
-        if (fromUser &&
-            !fromUserText.includes(fromUser))
-            visible = false;
-
-        if (toUser &&
-            !toUserText.includes(toUser))
-            visible = false;
-
-        if (department &&
-            !departmentText.includes(department))
-            visible = false;
-
-        if (notes &&
-            !notesText.includes(notes))
-            visible = false;
-
-        if (dateFrom &&
-            issueDate < dateFrom)
-            visible = false;
-
-        if (dateTo &&
-            issueDate > dateTo)
-            visible = false;
-
-        row.style.display =
-            visible ? '' : 'none';
-
-        if (visible) {
-            visibleCount++;
-        }
-    });
-
-    document.getElementById('record-count')
-        .textContent =
-        `Записей: ${visibleCount}`;
-}
 
 function removeRow(btn) {
     btn.closest('tr').remove();
-}
-
-function resetFilters() {
-    [
-        'filter-from-user',
-        'filter-to-user',
-        'filter-department',
-        'filter-date-from',
-        'filter-date-to',
-        'filter-notes'
-    ].forEach(id => {
-        document.getElementById(id).value = '';
-    });
-
-    applyFilters();
 }
 
 function addIssueMaterialRow() {
@@ -554,6 +431,7 @@ async function openEditModal(id) {
         `/issue/${id}`
     );
     const data = await response.json();
+    console.log("data for openEditModal", data)
     const issue = data.issue;
 
     document.getElementById(
@@ -574,7 +452,7 @@ async function openEditModal(id) {
 
     document.getElementById(
         'edit-issue_date'
-    ).value = issue.issue_date;
+    ).value = new Date(issue.issue_date).toISOString().slice(0, 16);
 
     document.getElementById(
         'edit-notes'

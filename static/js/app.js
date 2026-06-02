@@ -10,8 +10,6 @@ function openModal(id) {
 
 function closeModal(id) {
   console.log('closing', id);
-  const modal = document.getElementById(id);
-  console.log(modal);
   document.getElementById(id || 'modal-create').classList.remove('open');
   document.body.style.overflow = '';
 }
@@ -42,23 +40,38 @@ function showToast(msg, type) {
 // ── DELETE через fetch ───────────────────────────
 function deleteRecord(url, id) {
   if (!confirm('Удалить запись #' + id + '?')) return;
+
   fetch(url + id, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' }
   })
     .then(function (r) { return r.json(); })
-    .then(function (data) {
-      showToast(data.message || 'Запись удалена', 'success');
+    .then(function (resp) {
+      showToast(resp.message || 'Запись удалена', 'success');
+
+      const modal = document.getElementById(modalId);
+      console.log(modal);
       setTimeout(function () { location.reload(); }, 800);
     })
-    .catch(function () { showToast('Ошибка при удалении', 'error'); });
+    .catch(function () { showToast('Ошибка при удалении', 'error');
+      setTimeout(function () { location.reload(); }, 50);
+    });
 }
 
 // ── PUT через fetch ──────────────────────────────
 function submitEdit(url, formId, modalId) {
   const form = document.getElementById(formId);
   const data = {};
-  new FormData(form).forEach(function (v, k) { data[k] = v; });
+  const formData = new FormData(form);
+    formData.forEach((v, k) => {
+      if (k.endsWith('[]')) {
+        const key = k.replace('[]', '');
+        if (!data[key]) data[key] = [];
+        data[key].push(v);
+      } else {
+        data[k] = v;
+      }
+    });
   const id = data.id;
   delete data.id;
 
@@ -78,6 +91,7 @@ function submitEdit(url, formId, modalId) {
     })
     .catch(function () { showToast('Ошибка при сохранении', 'error'); });
 }
+
 let sortDirections = {};
 
 function enableTableSorting() {
@@ -229,6 +243,8 @@ function applyTableFilters() {
         '.table tbody tr[data-id]'
     ).forEach(row => {
         let visible = true;
+        console.log("apply filters", row)
+        console.log("dataset", row.dataset)
         document
             .querySelectorAll('.table-filter')
             .forEach(filter => {
@@ -240,6 +256,13 @@ function applyTableFilters() {
                 const value =
                     filter.value.trim();
                 if (!value) {
+                    return;
+                }
+                if (field == 'id') {
+                    const rowValue = row.dataset[field];
+                    if (String(rowValue) !== String(value)) {
+                        visible = false;
+                    }
                     return;
                 }
                 // диапазон ОТ

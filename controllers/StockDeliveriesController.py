@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import (
     Blueprint,
     render_template,
@@ -81,11 +83,7 @@ def handle_delivery():
             db.session.rollback()
             flash(f"{str(e)}", "danger")
 
-        return redirect(
-            url_for(
-                'stock_deliveries_controller.handle_delivery'
-            )
-        )
+        return redirect(url_for('stock_deliveries_controller.handle_delivery'))
 
     deliveries = StockDeliveries.query.all()
 
@@ -159,10 +157,6 @@ def handle_delivery():
 
         result.append(txt_delivery)
 
-    # =================================================
-    # SUPPLIERS
-    # =================================================
-
     suppliers = [
 
         {
@@ -215,10 +209,7 @@ def handle_delivery():
     )
 
 
-@stock_deliveries_controller.route(
-    '/delivery/<delivery_id>',
-    methods=['GET', 'PUT', 'DELETE']
-)
+@stock_deliveries_controller.route('/delivery/<delivery_id>', methods=['GET', 'PUT', 'DELETE'])
 @access_control('delivery')
 def handle_delivery_item(delivery_id):
 
@@ -235,6 +226,7 @@ def handle_delivery_item(delivery_id):
         delivery_items = DeliveryItems.query.filter_by(
             stock_delivery_id=delivery.id
         ).all()
+        print(f"delivery items in GET {delivery_items}")
 
         items = []
 
@@ -293,15 +285,14 @@ def handle_delivery_item(delivery_id):
         }
 
         return {
-
             "message": "success",
-
             "delivery": response
         }
 
     elif request.method == 'PUT':
 
         data = request.get_json()
+        print(f'data delivery PUT {data}')
         delivery.supplier_id = data[
             'supplier_id'
         ]
@@ -351,18 +342,22 @@ def handle_delivery_item(delivery_id):
         }
 
     elif request.method == 'DELETE':
+        try:
+            delivery_items = DeliveryItems.query.filter_by(
+                stock_delivery_id=delivery.id
+            ).all()
 
-        delivery_items = DeliveryItems.query.filter_by(
-            stock_delivery_id=delivery.id
-        ).all()
+            for item in delivery_items:
+                db.session.delete(item)
 
-        for item in delivery_items:
-            db.session.delete(item)
+            db.session.delete(delivery)
 
-        db.session.delete(delivery)
+            db.session.commit()
+            flash(f"Поступление {delivery.id} успешно удалено")
 
-        db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            flash(f"{str(e)}", "danger")
 
-        return {
-            "message": f"Поступление {delivery.id} успешно удалено"
-        }
+        return redirect(url_for('stock_deliveries_controller.handle_delivery'))
+
