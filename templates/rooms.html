@@ -13,8 +13,35 @@
       <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2z"/></svg> Создать запись
     </button>
     {%- endif %}
-    <span class="record-count">Записей: {{count}}</span>
+    <span id="record-count" class="record-count">Записей: {{count}}</span>
   </div>
+
+<div class="filter-panel mb-3">
+  <div class="row">
+    <div class="col">
+      <input type="text"
+             class="form-control table-filter"
+             id="filter-name"
+             data-filter-field="name"
+             placeholder="Наименование">
+    </div>
+
+    <div class="col">
+        <select class="form-control table-filter"
+                data-filter-field="id">
+            <option value="">Все типы помещений</option>
+            {% for rt in room_types %}<option value="{{ rt.id }}">{{ rt.name }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+      <button type="button"
+              class="btn-action btn-edit"
+              onclick="resetTableFilters()">
+        Сбросить
+      </button>
+    </div>
+  </div>
+</div>
 
   <table class="table table-striped">
     <thead><tr>
@@ -24,7 +51,10 @@
       <th>Действия</th></tr></thead>
     <tbody>
       {% for room in rooms %}
-      <tr data-id="{{ room.id }}" data-name="{{ room.name }}" data-room_type_id="{{ room.room_type_id }}">
+      <tr data-id="{{ room.id }}"
+          data-name="{{ room.name }}"
+          data-room_type_id="{{ room.room_type_id }}"
+          data-room_type="{{ room.room_type }}">
         <td>{{ room.id }}</td>
         <td>{{ room.name }}</td>
         <td>{{ room.room_type }}</td>
