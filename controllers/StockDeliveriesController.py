@@ -197,6 +197,8 @@ def handle_delivery():
         for material_unit in MaterialUnits.query.all()
     ]
 
+    today = datetime.now().strftime("%Y-%m-%d")
+
     return render_template(
         'delivery.html',
         title='Поступление медицинских материалов на склад',
@@ -205,6 +207,7 @@ def handle_delivery():
         materials=materials,
         material_types=material_types,
         material_units=material_units,
+        today=today,
         count=len(result)
     )
 

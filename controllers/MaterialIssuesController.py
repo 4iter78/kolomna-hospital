@@ -1,10 +1,13 @@
+from datetime import datetime
+
 from flask import (
     Blueprint,
     render_template,
     request,
     redirect,
     url_for,
-    flash
+    flash,
+    session
 )
 
 from app import db_connection
@@ -76,112 +79,118 @@ def handle_issue():
             )
         )
 
-    issues = MaterialIssues.query.all()
+    elif request.method == 'GET':
+        issues = MaterialIssues.query.all()
 
-    result = []
+        result = []
 
-    for issue in issues:
+        for issue in issues:
 
-        from_user = Users.query.get(
-            issue.from_user_id
-        )
-
-        to_user = Users.query.get(
-            issue.to_user_id
-        )
-
-        department = Departments.query.get(
-            issue.department_id
-        )
-
-        issue_items = IssueItems.query.filter_by(
-            material_issue_id=issue.id
-        ).all()
-
-        items = []
-
-        for item in issue_items:
-
-            material = MedicalMaterials.query.get(
-                item.medical_material_id
+            from_user = Users.query.get(
+                issue.from_user_id
             )
 
-            txt_item = {
+            to_user = Users.query.get(
+                issue.to_user_id
+            )
+
+            department = Departments.query.get(
+                issue.department_id
+            )
+
+            issue_items = IssueItems.query.filter_by(
+                material_issue_id=issue.id
+            ).all()
+
+            items = []
+
+            for item in issue_items:
+
+                material = MedicalMaterials.query.get(
+                    item.medical_material_id
+                )
+
+                txt_item = {
+                    "id":
+                        item.id,
+                    "medical_material_id":
+                        item.medical_material_id,
+                    "medical_material":
+                        material.name if material else '',
+                    "quantity":
+                        item.quantity
+                }
+
+                items.append(txt_item)
+
+            txt_issue = {
                 "id":
-                    item.id,
-                "medical_material_id":
-                    item.medical_material_id,
-                "medical_material":
-                    material.name if material else '',
-                "quantity":
-                    item.quantity
+                    issue.id,
+                "from_user_id":
+                    issue.from_user_id,
+                "to_user_id":
+                    issue.to_user_id,
+                "from_user": f'{from_user.surname} {from_user.name} {from_user.second_name}'
+                if from_user else ''            ,
+                "to_user": f'{to_user.surname} {to_user.name} {to_user.second_name}'
+                if to_user else ''            ,
+                "department_id":
+                    issue.department_id,
+                "department":
+                    department.name if department else '',
+                "issue_date":
+                    issue.issue_date,
+                "notes":
+                    issue.notes,
+                "issue_items":
+                    items
             }
 
-            items.append(txt_item)
+            result.append(txt_issue)
 
-        txt_issue = {
-            "id":
-                issue.id,
-            "from_user_id":
-                issue.from_user_id,
-            "to_user_id":
-                issue.to_user_id,
-            "from_user": f'{from_user.surname} {from_user.name} {from_user.second_name}'
-            if from_user else ''            ,
-            "to_user": f'{to_user.surname} {to_user.name} {to_user.second_name}'
-            if to_user else ''            ,
-            "department_id":
-                issue.department_id,
-            "department":
-                department.name if department else '',
-            "issue_date":
-                issue.issue_date,
-            "notes":
-                issue.notes,
-            "issue_items":
-                items
-        }
+        users = [
+            {
+                "id": user.id,
+                "surname": user.surname,
+                "name": user.name,
+                "second_name": user.second_name
+            }
 
-        result.append(txt_issue)
+            for user in Users.query.all()
+        ]
 
-    users = [
-        {
-            "id": user.id,
-            "surname": user.surname,
-            "name": user.name,
-            "second_name": user.second_name
-        }
+        departments = [
+            {
+                "id": department.id,
+                "name": department.name
+            }
 
-        for user in Users.query.all()
-    ]
+            for department in Departments.query.all()
+        ]
 
-    departments = [
-        {
-            "id": department.id,
-            "name": department.name
-        }
+        materials = [
+            {
+                "id": material.id,
+                "name": material.name
+            }
 
-        for department in Departments.query.all()
-    ]
+            for material in MedicalMaterials.query.all()
+        ]
 
-    materials = [
-        {
-            "id": material.id,
-            "name": material.name
-        }
+        current_user_id = session.get('user_id')
+        today = datetime.now().strftime("%Y-%m-%dT%H:%M")
 
-        for material in MedicalMaterials.query.all()
-    ]
-
-    return render_template(
-        'issue.html',
-        title='Выдача медицинских материалов',
-        issues=result,
-        users=users,
-        departments=departments,
-        materials=materials,
-        count=len(result)
-    )
+        return render_template(
+            'issue.html',
+            title='Выдача медицинских материалов',
+            issues=result,
+            users=users,
+            departments=departments,
+            materials=materials,
+            curr_user_id=current_user_id,
+            today=today,
+            count=len(result)
+        )
 
 @material_issues_controller.route('/issue/<issue_id>',methods=['GET', 'PUT', 'DELETE'])
 @access_control('issue')
