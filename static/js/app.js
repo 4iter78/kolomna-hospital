@@ -78,6 +78,57 @@ function submitEdit(url, formId, modalId) {
     })
     .catch(function () { showToast('Ошибка при сохранении', 'error'); });
 }
+let sortDirections = {};
+
+function enableTableSorting() {
+
+    document.querySelectorAll('.sortable')
+        .forEach((th, index) => {
+
+            th.addEventListener('click', () => {
+                sortTable(th, index);
+            });
+
+        });
+}
+
+function sortTable(th, columnIndex) {
+    const table = th.closest('table');
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(
+        tbody.querySelectorAll('tr')
+    );
+    const key =
+        `${table.id || 'table'}-${columnIndex}`;
+    sortDirections[key] =
+        !sortDirections[key];
+    const asc = sortDirections[key];
+    rows.sort((a, b) => {
+        let aVal =
+            a.cells[columnIndex]
+                .innerText.trim();
+        let bVal =
+            b.cells[columnIndex]
+                .innerText.trim();
+        const numA = Number(aVal);
+        const numB = Number(bVal);
+        if (!isNaN(numA) && !isNaN(numB)) {
+            return asc
+                ? numA - numB
+                : numB - numA;
+        }
+        return asc
+            ? aVal.localeCompare(bVal, 'ru')
+            : bVal.localeCompare(aVal, 'ru');
+    });
+    rows.forEach(row =>
+        tbody.appendChild(row)
+    );
+}
+document.addEventListener(
+    'DOMContentLoaded',
+    enableTableSorting
+);
 
 function initNameFilter() {
 
@@ -151,87 +202,98 @@ function resetNameFilter() {
 
 document.addEventListener(
     'DOMContentLoaded',
-    initTableFilters
+    () => {
+
+        document
+            .querySelectorAll('.table-filter')
+            .forEach(filter => {
+
+                filter.addEventListener(
+                    'input',
+                    applyTableFilters
+                );
+
+                filter.addEventListener(
+                    'change',
+                    applyTableFilters
+                );
+
+            });
+
+    }
 );
 
-function initTableFilters() {
-
-    const filters =
-        document.querySelectorAll(
-            '.table-filter'
-        );
-
-    if (!filters.length)
-        return;
-
-    filters.forEach(filter => {
-
-        filter.addEventListener(
-            'input',
-            applyTableFilters
-        );
-
-        filter.addEventListener(
-            'change',
-            applyTableFilters
-        );
-    });
-
-    applyTableFilters();
-}
-
 function applyTableFilters() {
-
     let visibleCount = 0;
-
-    const filters =
-        document.querySelectorAll(
-            '.table-filter'
-        );
-
     document.querySelectorAll(
-        '.table tbody > tr[data-id]'
+        '.table tbody tr[data-id]'
     ).forEach(row => {
-
         let visible = true;
-
-        filters.forEach(filter => {
-
-            const field =
-                filter.dataset.filterField;
-
-            const filterValue =
-                filter.value
-                    .toLowerCase()
-                    .trim();
-
-            const rowValue =
-                (row.dataset[field] || '')
-                    .toLowerCase();
-
-            if (
-                filterValue &&
-                !rowValue.includes(
-                    filterValue
-                )
-            ) {
-                visible = false;
-            }
-        });
-
+        document
+            .querySelectorAll('.table-filter')
+            .forEach(filter => {
+                if (!visible) {
+                    return;
+                }
+                const field =
+                    filter.dataset.filterField;
+                const value =
+                    filter.value.trim();
+                if (!value) {
+                    return;
+                }
+                // диапазон ОТ
+                if (field.endsWith('_from')) {
+                    const rowField =
+                        field.replace('_from', '');
+                    const rowValue =
+                        row.dataset[rowField];
+                    if (
+                        rowValue &&
+                        new Date(rowValue) <
+                            new Date(value)
+                    ) {
+                        visible = false;
+                    }
+                    return;
+                }
+                // диапазон ДО
+                if (field.endsWith('_to')) {
+                    const rowField =
+                        field.replace('_to', '');
+                    const rowValue =
+                        row.dataset[rowField];
+                    if (
+                        rowValue &&
+                        new Date(rowValue) >
+                            new Date(value)
+                    ) {
+                        visible = false;
+                    }
+                    return;
+                }
+                // обычный текстовый фильтр
+                const rowValue =
+                    (row.dataset[field] || '')
+                        .toLowerCase();
+                if (
+                    !rowValue.includes(
+                        value.toLowerCase()
+                    )
+                ) {
+                    visible = false;
+                }
+            });
         row.style.display =
             visible ? '' : 'none';
-
         if (visible) {
             visibleCount++;
         }
     });
-
     const counter =
         document.getElementById(
             'record-count'
         );
-
     if (counter) {
         counter.textContent =
             `Записей: ${visibleCount}`;
@@ -239,12 +301,10 @@ function applyTableFilters() {
 }
 
 function resetTableFilters() {
-
-    document.querySelectorAll(
-        '.table-filter'
-    ).forEach(filter => {
-        filter.value = '';
-    });
-
+    document
+        .querySelectorAll('.table-filter')
+        .forEach(filter => {
+            filter.value = '';
+        });
     applyTableFilters();
 }
