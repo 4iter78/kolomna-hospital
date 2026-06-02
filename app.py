@@ -2,7 +2,15 @@ from flask import Flask, session, redirect, url_for, request, render_template, s
 import os
 from flask_sqlalchemy import SQLAlchemy
 from permissions import can_read, can_write, is_own_only
+from dotenv import load_dotenv
 
+load_dotenv()
+
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
 db_connection = SQLAlchemy()
 
 
@@ -10,7 +18,7 @@ def create_app():
     app = Flask(__name__)
     app.secret_key = '41be93f0a63b2584b7f01f638207b74b5208b5dfd6cb6133bff311335358ba1e'
     # подключение к базе данных СУБД://имя_пользователя:пароль@IP-адрес:порт/имя_базы_данных
-    app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:postgres@localhost:1024/kolomna_hospital"
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     db_connection.init_app(app)
 
     # ── Получение иконки вкладки ────────────────────────────────
