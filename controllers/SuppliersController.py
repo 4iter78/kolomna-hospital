@@ -48,7 +48,7 @@ def handle_suppliers():
             }
             results.append(txt_supplier)
 
-        return render_template('suppliers.html', title='Поставщики',
+        return render_template('suppliers.html', title='Поставщики медицинских материалов',
                                suppliers=results, count=len(results))
 
 

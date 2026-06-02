@@ -85,131 +85,125 @@ def handle_delivery():
 
         return redirect(url_for('stock_deliveries_controller.handle_delivery'))
 
-    deliveries = StockDeliveries.query.all()
+    elif request.method == 'GET':
+        deliveries = StockDeliveries.query.all()
 
-    result = []
+        result = []
 
-    for delivery in deliveries:
+        for delivery in deliveries:
 
-        supplier = Suppliers.query.get(
-            delivery.supplier_id
-        )
-
-        delivery_items = DeliveryItems.query.filter_by(
-            stock_delivery_id=delivery.id
-        ).all()
-
-        items = []
-
-        for item in delivery_items:
-
-            material = MedicalMaterials.query.get(
-                item.medical_material_id
+            supplier = Suppliers.query.get(
+                delivery.supplier_id
             )
-            material_type = None
-            material_unit = None
 
-            if material:
-                material_type = MaterialTypes.query.get(
-                    material.material_type_id
-                )
-                material_unit = MaterialUnits.query.get(
-                    material.material_unit_id
-                )
+            delivery_items = DeliveryItems.query.filter_by(
+                stock_delivery_id=delivery.id
+            ).all()
 
-            txt_item = {
-                "id": item.id,
-                "medical_material_id":
-                    item.medical_material_id,
-                "medical_material":
-                    material.name if material else '',
-                "material_type_id":
-                    material.material_type_id if material else '',
-                "material_type":
-                    material_type.name if material else '',
-                "material_unit_id":
-                    material.material_unit_id if material else '',
-                "material_unit":
-                    material_unit.short_name if material else '',
-                "quantity":
-                    f'{item.quantity} {material_unit.short_name}' if material else '',
-                "unit_price":
-                    item.unit_price
+            items = []
+
+            for item in delivery_items:
+
+                material = MedicalMaterials.query.get(
+                    item.medical_material_id
+                )
+                material_type = None
+                material_unit = None
+
+                if material:
+                    material_type = MaterialTypes.query.get(
+                        material.material_type_id
+                    )
+                    material_unit = MaterialUnits.query.get(
+                        material.material_unit_id
+                    )
+
+                txt_item = {
+                    "id": item.id,
+                    "medical_material_id":
+                        item.medical_material_id,
+                    "medical_material":
+                        material.name if material else '',
+                    "material_type_id":
+                        material.material_type_id if material else '',
+                    "material_type":
+                        material_type.name if material else '',
+                    "material_unit_id":
+                        material.material_unit_id if material else '',
+                    "material_unit":
+                        material_unit.short_name if material else '',
+                    "quantity":
+                        f'{item.quantity} {material_unit.short_name}' if material else '',
+                    "unit_price":
+                        item.unit_price
+                }
+
+                items.append(txt_item)
+
+            txt_delivery = {
+                "id": delivery.id,
+                "supplier_id":
+                    delivery.supplier_id,
+                "supplier":
+                    supplier.name if supplier else '',
+                "delivery_date":
+                    delivery.delivery_date,
+                "document_number":
+                    delivery.document_number,
+                "notes":
+                    delivery.notes,
+                "delivery_items":
+                    items
             }
 
-            items.append(txt_item)
+            result.append(txt_delivery)
 
-        txt_delivery = {
-            "id": delivery.id,
-            "supplier_id":
-                delivery.supplier_id,
-            "supplier":
-                supplier.name if supplier else '',
-            "delivery_date":
-                delivery.delivery_date,
-            "document_number":
-                delivery.document_number,
-            "notes":
-                delivery.notes,
-            "delivery_items":
-                items
-        }
+        suppliers = [
+            {
+                "id": supplier.id,
+                "name": supplier.name
+            }
 
-        result.append(txt_delivery)
+            for supplier in Suppliers.query.all()
+        ]
 
-    suppliers = [
+        materials = [
+            {
+                "id": material.id,
+                "name": material.name
+            }
+            for material in MedicalMaterials.query.all()
+        ]
 
-        {
-            "id": supplier.id,
-            "name": supplier.name
-        }
+        material_types = [
+            {
+                "id": material_type.id,
+                "name": material_type.name
+            }
+            for material_type in MaterialTypes.query.all()
+        ]
 
-        for supplier in Suppliers.query.all()
-    ]
+        material_units = [
+            {
+                "id": material_unit.id,
+                "name": material_unit.short_name
+            }
+            for material_unit in MaterialUnits.query.all()
+        ]
 
-    materials = [
+        today = datetime.now().strftime("%Y-%m-%d")
 
-        {
-            "id": material.id,
-            "name": material.name
-        }
-
-        for material in MedicalMaterials.query.all()
-    ]
-
-    material_types = [
-
-        {
-            "id": material_type.id,
-            "name": material_type.name
-        }
-
-        for material_type in MaterialTypes.query.all()
-    ]
-
-    material_units = [
-
-        {
-            "id": material_unit.id,
-            "name": material_unit.short_name
-        }
-
-        for material_unit in MaterialUnits.query.all()
-    ]
-
-    today = datetime.now().strftime("%Y-%m-%d")
-
-    return render_template(
-        'delivery.html',
-        title='Поступление медицинских материалов на склад',
-        deliveries=result,
-        suppliers=suppliers,
-        materials=materials,
-        material_types=material_types,
-        material_units=material_units,
-        today=today,
-        count=len(result)
-    )
+        return render_template(
+            'delivery.html',
+            title='Поступление медицинских материалов на склад',
+            deliveries=result,
+            suppliers=suppliers,
+            materials=materials,
+            material_types=material_types,
+            material_units=material_units,
+            today=today,
+            count=len(result)
+        )
 
 
 @stock_deliveries_controller.route('/delivery/<delivery_id>', methods=['GET', 'PUT', 'DELETE'])
@@ -293,51 +287,46 @@ def handle_delivery_item(delivery_id):
         }
 
     elif request.method == 'PUT':
+        try:
+            data = request.get_json()
+            print(f'data delivery PUT {data}')
+            delivery.supplier_id = data[
+                'supplier_id'
+            ]
+            delivery.delivery_date = data[
+                'delivery_date'
+            ]
+            delivery.document_number = data[
+                'document_number'
+            ]
+            delivery.notes = data[
+                'notes'
+            ]
 
-        data = request.get_json()
-        print(f'data delivery PUT {data}')
-        delivery.supplier_id = data[
-            'supplier_id'
-        ]
-        delivery.delivery_date = data[
-            'delivery_date'
-        ]
-        delivery.document_number = data[
-            'document_number'
-        ]
-        delivery.notes = data[
-            'notes'
-        ]
+            old_items = DeliveryItems.query.filter_by(
+                stock_delivery_id=delivery.id
+            ).all()
 
-        db.session.add(delivery)
+            for item in old_items:
+                db.session.delete(item)
 
-        old_items = DeliveryItems.query.filter_by(
-            stock_delivery_id=delivery.id
-        ).all()
+            for item_data in data['delivery_items']:
+                db.session.add(
+                    DeliveryItems(
+                        stock_delivery_id=delivery.id,
+                        medical_material_id=item_data['medical_material_id'],
+                        quantity=item_data['quantity'],
+                        unit_price=item_data['unit_price']
+                    )
+                )
 
-        for item in old_items:
-            db.session.delete(item)
+            db.session.commit()
 
-        db.session.commit()
-
-        for item_data in data['delivery_items']:
-
-            new_item = DeliveryItems(
-                stock_delivery_id=delivery.id,
-                medical_material_id=item_data[
-                    'medical_material_id'
-                ],
-                quantity=item_data[
-                    'quantity'
-                ],
-                unit_price=item_data[
-                    'unit_price'
-                ]
-            )
-
-            db.session.add(new_item)
-
-        db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {
+            "message": f"Поступление {delivery.id} не может быть обновлено. {str(e)}"
+        }, 400
 
         return {
 

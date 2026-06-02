@@ -180,7 +180,7 @@
       </button>
     </div>
     <div class="modal-body">
-      <form method="POST" action="/delivery">
+      <form id="modal-create-form" method="POST" action="/delivery">
         <div class="form-group">
           <label class="form-label">
             Поставщик
@@ -244,12 +244,12 @@
           </tbody>
         </table>
 	  <div class="modal-footer">
-		<button type="button"
+		<button form="modal-create-form" type="button"
 				class="btn-action btn-edit"
 				onclick="closeModal('modal-create')">
 		  Отмена
 		</button>
-		<button type="submit"
+		<button form="modal-create-form" type="submit"
 				class="btn-action btn-create">
 		  Сохранить
 		</button>
@@ -355,7 +355,7 @@
       </button>
       <button type="button"
               class="btn-action btn-create"
-                onclick="submitEdit('/delivery/','edit-form','modal-edit')">
+                onclick="submitDeliveryEdit()">
         Сохранить
       </button>
     </div>

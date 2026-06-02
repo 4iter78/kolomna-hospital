@@ -182,7 +182,7 @@ def handle_issue():
 
         return render_template(
             'issue.html',
-            title='Выдача медицинских материалов',
+            title='Выдача медицинских материалов со склада на отделение',
             issues=result,
             users=users,
             departments=departments,

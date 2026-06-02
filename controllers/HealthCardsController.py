@@ -81,7 +81,7 @@ def handle_health_card(health_card_id):
     elif request.method == 'PUT':
         data = request.get_json()
         health_card.patient_id = data['patient_id']
-        health_card.create_datetime = data.get('create_datetime', health_card.create_datetime)
+        health_card.create_datetime = datetime.now()
         health_card.user_id = data['user_id']
         db.session.add(health_card)
         db.session.commit()

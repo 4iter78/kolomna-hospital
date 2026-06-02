@@ -71,7 +71,7 @@
         <button class="modal-close" onclick="closeModal('modal-create')">✕</button>
       </div>
       <div class="modal-body">
-        <form method="POST" action="/material_types">
+        <form id="modal-create-form" method="POST" action="/material_types">
           <div class="form-group">
             <label class="form-label">Наименование</label>
             <input class="form-control" type="text" name="name"  placeholder="Введите наименование" required>
@@ -79,8 +79,8 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
-        <button type="submit" class="btn-action btn-create">Сохранить</button>
+        <button form="modal-create-form" type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
+        <button form="modal-create-form" type="submit" class="btn-action btn-create">Сохранить</button>
       </div>
     </div>
   </div>

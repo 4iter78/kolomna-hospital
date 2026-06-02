@@ -19,7 +19,6 @@
 
   <div class="filter-panel mb-3">
       <div class="row">
-
           <div class="col">
               <select class="form-control table-filter"
                       data-filter-field="id">
@@ -121,7 +120,7 @@
         <button class="modal-close" onclick="closeModal('modal-create')">✕</button>
       </div>
       <div class="modal-body">
-        <form method="POST" action="/users">
+        <form id="modal-create-form" method="POST" action="/users">
             <div class="form-group">
             <label class="form-label">Фамилия</label>
             <input class="form-control" type="text" name="surname"  placeholder="" required>
@@ -161,13 +160,13 @@
                 {% endfor %}
               </select>
             </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
-        <button type="submit" class="btn-action btn-create">Сохранить</button>
-      </div>
         </form>
-      </div>
     </div>
+      <div class="modal-footer">
+        <button form="modal-create-form" type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
+        <button form="modal-create-form" type="submit" class="btn-action btn-create">Сохранить</button>
+      </div>
+      </div>
   </div>
   {%- endif %}
 
