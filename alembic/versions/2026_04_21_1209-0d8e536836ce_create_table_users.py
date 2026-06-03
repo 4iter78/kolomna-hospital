@@ -1,7 +1,7 @@
 """create table users
 
 Revision ID: 0d8e536836ce
-Revises: 3e60c935910a
+Revises: 666382c79b82
 Create Date: 2026-04-21 12:09:37.884890
 
 """
@@ -11,7 +11,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = '0d8e536836ce'
-down_revision: Union[str, Sequence[str], None] = '3e60c935910a'
+down_revision: Union[str, Sequence[str], None] = '666382c79b82'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
