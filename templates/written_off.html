@@ -49,6 +49,7 @@
   <thead>
     <tr>
       <th class="sortable">ID</th>
+      <th class="sortable">Отделение</th>
       <th class="sortable">Медицинский материал</th>
       <th class="sortable">Количество</th>
       <th class="sortable">№ документа</th>
@@ -60,10 +61,12 @@
     {% for item in written_off %}
     <tr
     data-id="{{ item.id }}"
+    data-department="{{ item.department }}"
     data-medical_material="{{ item.medical_material }}"
     data-document_number="{{ item.document_number }}"
     data-operation_date="{{ item.operation_date }}">
       <td>{{ item.id }}</td>
+      <td>{{ item.department }}</td>
       <td>{{ item.medical_material }}</td>
       <td>{{ item.table_quantity }}</td>
       <td>{{ item.document_number }}</td>

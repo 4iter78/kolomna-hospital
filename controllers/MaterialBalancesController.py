@@ -122,8 +122,13 @@ def handle_issued():
             material_unit = MaterialUnits.query.get(
                 material.material_unit_id
             )
+        department = Departments.query.get(
+            operation.department_id
+        )
         txt_operation = {
             "id": operation.id,
+            "department":
+                department.name if department else '',
             "medical_material":
                 material.name if material else '',
             "quantity": operation.quantity,
@@ -255,8 +260,13 @@ def handle_written_off():
             material_unit = MaterialUnits.query.get(
                 material.material_unit_id
             )
+        department = Departments.query.get(
+            operation.department_id
+        )
         txt_operation = {
             "id": operation.id,
+            "department":
+                department.name if department else '',
             "medical_material":
                 material.name if material else '',
             "quantity": operation.quantity,
