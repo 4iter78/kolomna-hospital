@@ -13,6 +13,8 @@ from flask import (
 from app import db_connection
 
 from decorators import access_control
+from models.MaterialTypes import MaterialTypes
+from models.MaterialUnits import MaterialUnits
 
 from models.MaterialIssues import MaterialIssues
 from models.IssueItems import IssueItems
@@ -109,6 +111,16 @@ def handle_issue():
                 material = MedicalMaterials.query.get(
                     item.medical_material_id
                 )
+                material_type = None
+                material_unit = None
+
+                if material:
+                    material_type = MaterialTypes.query.get(
+                        material.material_type_id
+                    )
+                    material_unit = MaterialUnits.query.get(
+                        material.material_unit_id
+                    )
 
                 txt_item = {
                     "id":
@@ -117,8 +129,16 @@ def handle_issue():
                         item.medical_material_id,
                     "medical_material":
                         material.name if material else '',
+                    "material_type_id":
+                        material.material_type_id if material else '',
+                    "material_type":
+                        material_type.name if material else '',
+                    "material_unit_id":
+                        material.material_unit_id if material else '',
+                    "material_unit":
+                        material_unit.short_name if material else '',
                     "quantity":
-                        item.quantity
+                        f'{item.quantity} {material_unit.short_name}' if material else ''
                 }
 
                 items.append(txt_item)
@@ -171,10 +191,27 @@ def handle_issue():
         materials = [
             {
                 "id": material.id,
-                "name": material.name
+                "name": material.name,
+                "material_type_id": material.material_type_id,
+                "material_unit_id": material.material_unit_id
             }
-
             for material in MedicalMaterials.query.all()
+        ]
+
+        material_types = [
+            {
+                "id": material_type.id,
+                "name": material_type.name
+            }
+            for material_type in MaterialTypes.query.all()
+        ]
+
+        material_units = [
+            {
+                "id": material_unit.id,
+                "name": material_unit.short_name
+            }
+            for material_unit in MaterialUnits.query.all()
         ]
 
         current_user_id = session.get('user_id')
@@ -187,15 +224,17 @@ def handle_issue():
             users=users,
             departments=departments,
             materials=materials,
+            material_types=material_types,
+            material_units=material_units,
             curr_user_id=current_user_id,
             today=today,
             count=len(result)
         )
 
+
 @material_issues_controller.route('/issue/<issue_id>',methods=['GET', 'PUT', 'DELETE'])
 @access_control('issue')
 def handle_issue_item(issue_id):
-
     issue = MaterialIssues.query.get_or_404(
         issue_id
     )
@@ -213,6 +252,16 @@ def handle_issue_item(issue_id):
             material = MedicalMaterials.query.get(
                 item.medical_material_id
             )
+            material_type = None
+            material_unit = None
+
+            if material:
+                material_type = MaterialTypes.query.get(
+                    material.material_type_id
+                )
+                material_unit = MaterialUnits.query.get(
+                    material.material_unit_id
+                )
 
             txt_item = {
                 "id":
@@ -221,6 +270,14 @@ def handle_issue_item(issue_id):
                     item.medical_material_id,
                 "medical_material":
                     material.name if material else '',
+                "material_type_id":
+                    material.material_type_id if material else '',
+                "material_type":
+                    material_type.name if material else '',
+                "material_unit_id":
+                    material.material_unit_id if material else '',
+                "material_unit":
+                    material_unit.short_name if material else '',
                 "quantity":
                     item.quantity
             }

@@ -18,7 +18,7 @@
     Создать запись
   </button>
   {%- endif %}
-  <span class="record-count" id="record-count">
+  <span id="record-count" class="record-count">
     Записей: {{ count }}
   </span>
 </div>
@@ -221,10 +221,10 @@
         <table class="table table-bordered">
           <thead>
             <tr>
-              <th>Тип материала</th>
+              <th>Тип</th>
               <th>Материал</th>
               <th>Количество</th>
-              <th>Ед измерения</th>
+              <th>Ед. изм.</th>
               <th>Цена</th>
               <th width="120"></th>
             </tr>
@@ -326,7 +326,7 @@
               <th>Тип материала</th>
               <th>Материал</th>
               <th>Количество</th>
-              <th>Ед измерения</th>
+              <th>Ед. изм.</th>
               <th>Цена</th>
               <th width="120"></th>
             </tr>
@@ -353,8 +353,40 @@
 {%- endif %}
 
 {% block scripts %}
-
 <script>
+  function materialChanged(select) {
+    const row = select.closest('tr');
+    const selectedOption =
+        select.options[select.selectedIndex];
+    const materialTypeId =
+        selectedOption.dataset.typeId;
+    const materialUnitId =
+        selectedOption.dataset.unitId;
+    row.querySelector(
+        '[name="material_type_id[]"]'
+    ).value = materialTypeId;
+    row.querySelector(
+        '[name="material_unit_id[]"]'
+    ).value = materialUnitId;
+  }
+
+function materialChangedEdit(select) {
+
+    const row = select.closest('tr');
+
+    const selectedOption =
+        select.options[select.selectedIndex];
+
+    row.querySelector(
+        '.material-type-select'
+    ).value =
+        selectedOption.dataset.typeId;
+
+    row.querySelector(
+        '.material-unit-select'
+    ).value =
+        selectedOption.dataset.unitId;
+}
 
 function addMaterialRow() {
     const tbody =
@@ -363,15 +395,13 @@ function addMaterialRow() {
         );
     const row =
         document.createElement('tr');
-
     row.innerHTML = `
         <td>
             <select
                 class="form-control"
                 name="material_type_id[]"
-                required>
+                disabled>
                 <option value="">
-                    — Выберите —
                 </option>
                 {% for material_type in material_types %}
                 <option value="{{ material_type.id }}">
@@ -384,30 +414,33 @@ function addMaterialRow() {
             <select
                 class="form-control"
                 name="medical_material_id[]"
+                onchange="materialChanged(this)"
                 required>
                 <option value="">
-                    — Выберите —
                 </option>
                 {% for material in materials %}
-                <option value="{{ material.id }}">
+                <option
+                    value="{{ material.id }}"
+                    data-type-id="{{ material.material_type_id }}"
+                    data-unit-id="{{ material.material_unit_id }}">
                     {{ material.name }}
                 </option>
                 {% endfor %}
             </select>
         </td>
         <td>
-            <input type="number"
-                   class="form-control"
-                   name="quantity[]"
-                   required>
+            <input
+                type="number"
+                class="form-control"
+                name="quantity[]"
+                required>
         </td>
         <td>
             <select
                 class="form-control"
                 name="material_unit_id[]"
-                required>
+                disabled>
                 <option value="">
-                    — Выберите —
                 </option>
                 {% for material_unit in material_units %}
                 <option value="{{ material_unit.id }}">
@@ -417,17 +450,18 @@ function addMaterialRow() {
             </select>
         </td>
         <td>
-            <input type="number"
-                   step="0.01"
-                   class="form-control"
-                   name="unit_price[]"
-                   required>
-
+            <input
+                type="number"
+                step="0.01"
+                class="form-control"
+                name="unit_price[]"
+                required>
         </td>
         <td>
-            <button type="button"
-                    class="btn-action btn-delete"
-                    onclick="removeRow(this)">
+            <button
+                type="button"
+                class="btn-action btn-delete"
+                onclick="removeRow(this)">
                 Удалить
             </button>
         </td>
@@ -491,9 +525,8 @@ function addEditMaterialRow(item = null) {
         <td>
             <select
                 class="form-control material-type-select"
-                required>
+                disabled>
                 <option value="">
-                    — Выберите —
                 </option>
                 {% for material_type in material_types %}
                 <option value="{{ material_type.id }}">
@@ -505,9 +538,12 @@ function addEditMaterialRow(item = null) {
         <td>
             <select
                 class="form-control material-select"
+                onchange="materialChangedEdit(this)"
                 required>
                 {% for material in materials %}
-                <option value="{{ material.id }}">
+                <option value="{{ material.id }}"
+                    data-type-id="{{ material.material_type_id }}"
+                    data-unit-id="{{ material.material_unit_id }}">
                     {{ material.name }}
                 </option>
                 {% endfor %}
@@ -521,9 +557,8 @@ function addEditMaterialRow(item = null) {
         <td>
             <select
                 class="form-control material-unit-select"
-                required>
+                disabled>
                 <option value="">
-                    — Выберите —
                 </option>
                 {% for material_unit in material_units %}
                 <option value="{{ material_unit.id }}">
@@ -579,13 +614,10 @@ async function submitDeliveryEdit() {
         document.getElementById(
             'edit-id'
         ).value;
-
     const rows = document.querySelectorAll(
         '#edit-materials-body tr'
     );
-
     const delivery_items = [];
-
     rows.forEach(row => {
 
         delivery_items.push({
@@ -594,7 +626,6 @@ async function submitDeliveryEdit() {
                 row.querySelector(
                     '.material-type-select'
                 ).value,
-
             medical_material_id:
                 row.querySelector(
                     '.material-select'
@@ -618,27 +649,22 @@ async function submitDeliveryEdit() {
     });
 
     const payload = {
-
         supplier_id:
             document.getElementById(
                 'edit-supplier_id'
             ).value,
-
         delivery_date:
             document.getElementById(
                 'edit-delivery_date'
             ).value,
-
         document_number:
             document.getElementById(
                 'edit-document_number'
             ).value,
-
         notes:
             document.getElementById(
                 'edit-notes'
             ).value,
-
         delivery_items:
             delivery_items
     };

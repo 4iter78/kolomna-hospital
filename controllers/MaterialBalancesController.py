@@ -14,6 +14,7 @@ from models.MaterialBalances import MaterialBalances
 from models.MaterialOperations import MaterialOperations
 from models.MaterialUnits import MaterialUnits
 from models.MedicalMaterials import MedicalMaterials
+from models.Users import Users
 
 db = db_connection
 
@@ -116,7 +117,9 @@ def handle_issued():
         material = MedicalMaterials.query.get(
             operation.medical_material_id
         )
-
+        current_user = Users.query.get(
+            operation.current_user_id
+        )
         material_unit = None
         if material:
             material_unit = MaterialUnits.query.get(
@@ -129,6 +132,8 @@ def handle_issued():
             "id": operation.id,
             "department":
                 department.name if department else '',
+            "current_user":
+                f'{current_user.surname} {current_user.name} {current_user.second_name}',
             "medical_material":
                 material.name if material else '',
             "quantity": operation.quantity,
@@ -150,11 +155,21 @@ def handle_issued():
         for material in MedicalMaterials.query.all()
     ]
 
+    departments = [
+        {
+            "id": department.id,
+            "name": department.name
+        }
+
+        for department in Departments.query.all()
+    ]
+
     return render_template(
         'issued.html',
         title='Выданные медицинские материалы',
         issued=issued,
         materials=materials,
+        departments=departments,
         count=len(issued)
     )
 
@@ -255,6 +270,10 @@ def handle_written_off():
             operation.medical_material_id
         )
 
+        current_user = Users.query.get(
+            operation.current_user_id
+        )
+
         material_unit = None
         if material:
             material_unit = MaterialUnits.query.get(
@@ -267,6 +286,8 @@ def handle_written_off():
             "id": operation.id,
             "department":
                 department.name if department else '',
+            "current_user":
+                f'{current_user.surname} {current_user.name} {current_user.second_name}',
             "medical_material":
                 material.name if material else '',
             "quantity": operation.quantity,
@@ -288,10 +309,20 @@ def handle_written_off():
         for material in MedicalMaterials.query.all()
     ]
 
+    departments = [
+        {
+            "id": department.id,
+            "name": department.name
+        }
+
+        for department in Departments.query.all()
+    ]
+
     return render_template(
         'written_off.html',
         title='Списанные медицинские материалы',
         written_off=written_off,
         materials=materials,
+        departments=departments,
         count=len(written_off)
     )

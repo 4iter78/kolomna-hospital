@@ -170,7 +170,9 @@ def handle_delivery():
         materials = [
             {
                 "id": material.id,
-                "name": material.name
+                "name": material.name,
+                "material_type_id": material.material_type_id,
+                "material_unit_id": material.material_unit_id
             }
             for material in MedicalMaterials.query.all()
         ]
