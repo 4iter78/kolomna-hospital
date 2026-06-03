@@ -29,7 +29,8 @@ def upgrade() -> None:
     ('written_off',      'Списанные медицинские материалы'),
     ('departments',      'Отделения'),
     ('material_types',   'Типы медицинских материалов'),
-    ('material_units',   'Единицы измерения материалов')
+    ('material_units',   'Единицы измерения материалов'),
+    ('medical_materials','Медицинские материалы')
     ON CONFLICT (code) DO NOTHING;
     ''')
 
@@ -48,6 +49,7 @@ def downgrade() -> None:
             'written_off',
             'departments',
             'material_types',
-            'material_units'
+            'material_units',
+            'medical_materials'
         );
     ''')

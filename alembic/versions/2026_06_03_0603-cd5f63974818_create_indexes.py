@@ -21,7 +21,6 @@ def upgrade() -> None:
     op.execute('''
         -- users
         CREATE INDEX idx_users_user_role_id ON users (user_role_id);
-        CREATE UNIQUE INDEX uq_users_login ON users(login);
         
         -- entities
         CREATE UNIQUE INDEX uq_entities_code ON entities (code);

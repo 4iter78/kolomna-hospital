@@ -39,6 +39,9 @@
   {% if can_read('material_units') %}
   <a href="/material_units"          class="btn-action btn-create">Единицы измерения</a>
   {% endif %}
+  {% if can_read('medical_materials') %}
+  <a href="/medical_materials"       class="btn-action btn-create">Медицинские материалы</a>
+  {% endif %}
 
 </div>
 {% endblock %}

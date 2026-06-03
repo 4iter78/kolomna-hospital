@@ -8,10 +8,11 @@ services:
     env_file:
       - ../.env
     ports:
-      - "8000:8000"
+      - "${APP_PORT}:8000"
     environment:
       DB_HOST: postgres_db
       DB_PORT: 5432
+      APP_PORT: 8000
 
   postgres:
     image: postgres:16

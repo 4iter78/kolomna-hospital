@@ -9,6 +9,7 @@ DB_PORT=5432
 DB_NAME=kolomna_hospital
 DB_USER=myuser
 DB_PASSWORD=secret
+APP_PORT=8001
 ```
 # Перед запуском создать requirements.txt, если его нет
 ```commandline
