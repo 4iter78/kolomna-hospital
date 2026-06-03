@@ -37,19 +37,5 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.execute('''
-        DELETE FROM entities
-        WHERE code IN (
-            'users',
-            'user_roles',
-            'suppliers',
-            'delivery',
-            'issue',
-            'storage',
-            'issued',
-            'written_off',
-            'departments',
-            'material_types',
-            'material_units',
-            'medical_materials'
-        );
+        DELETE FROM entities;
     ''')

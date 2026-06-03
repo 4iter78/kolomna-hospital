@@ -128,21 +128,5 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.execute('''
-            DELETE FROM users
-            WHERE login IN (
-                'smirnov_pe',
-                'fedorova_ad',
-                'orlov_ns',
-                'zakharov_vg',
-                'polyakova_ko',
-                'kovaleva_mi',
-                'lebedev_as',
-                'morozov_dv',
-                'kuznetsova_ep',
-                'nikitina_oa',
-                'sokolova_tv',
-                'vlasova_yr',
-                'egorov_mi',
-                'tarasova_no'
-            );
+            DELETE FROM users;
         ''')
