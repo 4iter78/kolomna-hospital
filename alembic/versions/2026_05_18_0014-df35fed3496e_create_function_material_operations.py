@@ -46,7 +46,7 @@ def upgrade() -> None:
         
             RETURN NEW;
         END;
-        $$
+        $$;
     ''')
 
 

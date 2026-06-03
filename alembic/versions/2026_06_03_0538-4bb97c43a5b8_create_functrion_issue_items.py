@@ -1,17 +1,20 @@
-"""create function issue_items
+"""create functrion issue_items
 
-Revision ID: d386178e5876
-Revises: 1c0f6842f315
-Create Date: 2026-05-18 02:24:32.444323
+Revision ID: 4bb97c43a5b8
+Revises: a2b94237b43a
+Create Date: 2026-06-03 05:38:22.335801
 
 """
 from typing import Sequence, Union
 
 from alembic import op
+import sqlalchemy as sa
+from sqlalchemy import text
+
 
 # revision identifiers, used by Alembic.
-revision: str = 'd386178e5876'
-down_revision: Union[str, Sequence[str], None] = '1c0f6842f315'
+revision: str = '4bb97c43a5b8'
+down_revision: Union[str, Sequence[str], None] = 'a2b94237b43a'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -19,11 +22,7 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     """Upgrade schema."""
     op.execute('''
-        -- =========================================
-        -- Выдача материалов в отделение
-        -- =========================================
-        
-        CREATE OR REPLACE FUNCTION trg_issue_items_after_insert()
+        CREATE OR REPLACE FUNCTION trg_issue_items_after_delete()
         RETURNS TRIGGER
         LANGUAGE plpgsql
         AS
@@ -32,34 +31,31 @@ def upgrade() -> None:
             v_storage_department_id INT;
             v_target_department_id INT;
         BEGIN
-        
-            -- Склад
             SELECT id
             INTO v_storage_department_id
             FROM departments
             WHERE name = 'Склад';
         
-            -- Отделение назначения
             SELECT department_id
             INTO v_target_department_id
             FROM material_issues
-            WHERE id = NEW.material_issue_id;
+            WHERE id = OLD.material_issue_id;
         
-            -- Уменьшаем остаток склада
+            -- Возвращаем на склад
             PERFORM update_material_balance(
-                NEW.medical_material_id,
+                OLD.medical_material_id,
                 v_storage_department_id,
-                -NEW.quantity
+                OLD.quantity
             );
         
-            -- Увеличиваем остаток отделения
+            -- Убираем из отделения
             PERFORM update_material_balance(
-                NEW.medical_material_id,
+                OLD.medical_material_id,
                 v_target_department_id,
-                NEW.quantity
+                -OLD.quantity
             );
         
-            RETURN NEW;
+            RETURN OLD;
         END;
         $$;
     ''')
@@ -68,5 +64,5 @@ def upgrade() -> None:
 def downgrade() -> None:
     """Downgrade schema."""
     op.execute('''
-        DROP FUNCTION IF EXISTS trg_issue_items_after_insert();
+        DROP FUNCTION IF EXISTS trg_issue_items_after_delete();
     ''')
