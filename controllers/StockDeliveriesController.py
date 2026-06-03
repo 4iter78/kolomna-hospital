@@ -37,18 +37,14 @@ def handle_delivery():
     if request.method == 'POST':
         try:
             data = request.form
-
             new_delivery = StockDeliveries(
                 supplier_id=data['supplier_id'],
                 delivery_date=data['delivery_date'],
                 document_number=data['document_number'],
                 notes=data['notes']
             )
-
             db.session.add(new_delivery)
-
             db.session.commit()
-
             material_ids = request.form.getlist(
                 'medical_material_id[]'
             )
@@ -56,54 +52,36 @@ def handle_delivery():
             quantities = request.form.getlist(
                 'quantity[]'
             )
-
             prices = request.form.getlist(
                 'unit_price[]'
             )
-
             for i in range(len(material_ids)):
-
                 item = DeliveryItems(
                     stock_delivery_id=new_delivery.id,
                     medical_material_id=material_ids[i],
                     quantity=quantities[i],
                     unit_price=prices[i]
                 )
-
                 db.session.add(item)
-
             db.session.commit()
-
-            flash(
-                f'Поставка #{new_delivery.id} успешно создана.',
-                'success'
-            )
-
+            flash(f'Поставка #{new_delivery.id} успешно создана.', 'success')
         except Exception as e:
             db.session.rollback()
-            flash(f"{str(e)}", "danger")
-
+            flash(f"Поставка не может быть создана. {str(e)}", "danger")
         return redirect(url_for('stock_deliveries_controller.handle_delivery'))
 
     elif request.method == 'GET':
         deliveries = StockDeliveries.query.all()
-
         result = []
-
         for delivery in deliveries:
-
             supplier = Suppliers.query.get(
                 delivery.supplier_id
             )
-
             delivery_items = DeliveryItems.query.filter_by(
                 stock_delivery_id=delivery.id
             ).all()
-
             items = []
-
             for item in delivery_items:
-
                 material = MedicalMaterials.query.get(
                     item.medical_material_id
                 )
@@ -117,7 +95,6 @@ def handle_delivery():
                     material_unit = MaterialUnits.query.get(
                         material.material_unit_id
                     )
-
                 txt_item = {
                     "id": item.id,
                     "medical_material_id":
@@ -137,9 +114,7 @@ def handle_delivery():
                     "unit_price":
                         item.unit_price
                 }
-
                 items.append(txt_item)
-
             txt_delivery = {
                 "id": delivery.id,
                 "supplier_id":
@@ -155,18 +130,14 @@ def handle_delivery():
                 "delivery_items":
                     items
             }
-
             result.append(txt_delivery)
-
         suppliers = [
             {
                 "id": supplier.id,
                 "name": supplier.name
             }
-
             for supplier in Suppliers.query.all()
         ]
-
         materials = [
             {
                 "id": material.id,
@@ -176,7 +147,6 @@ def handle_delivery():
             }
             for material in MedicalMaterials.query.all()
         ]
-
         material_types = [
             {
                 "id": material_type.id,
@@ -184,7 +154,6 @@ def handle_delivery():
             }
             for material_type in MaterialTypes.query.all()
         ]
-
         material_units = [
             {
                 "id": material_unit.id,
@@ -192,9 +161,7 @@ def handle_delivery():
             }
             for material_unit in MaterialUnits.query.all()
         ]
-
         today = datetime.now().strftime("%Y-%m-%d")
-
         return render_template(
             'delivery.html',
             title='Поступление медицинских материалов на склад',
@@ -217,26 +184,19 @@ def handle_delivery_item(delivery_id):
     )
 
     if request.method == 'GET':
-
         supplier = Suppliers.query.get(
             delivery.supplier_id
         )
-
         delivery_items = DeliveryItems.query.filter_by(
             stock_delivery_id=delivery.id
         ).all()
-        print(f"delivery items in GET {delivery_items}")
-
         items = []
-
         for item in delivery_items:
-
             material = MedicalMaterials.query.get(
                 item.medical_material_id
             )
             material_type = None
             material_unit = None
-
             if material:
                 material_type = MaterialTypes.query.get(
                     material.material_type_id
@@ -244,7 +204,6 @@ def handle_delivery_item(delivery_id):
                 material_unit = MaterialUnits.query.get(
                     material.material_unit_id
                 )
-
             txt_item = {
                 "id": item.id,
                 "medical_material_id":
@@ -264,9 +223,7 @@ def handle_delivery_item(delivery_id):
                 "unit_price":
                     item.unit_price
             }
-
             items.append(txt_item)
-
         response = {
             "id": delivery.id,
             "supplier_id":
@@ -282,7 +239,6 @@ def handle_delivery_item(delivery_id):
             "delivery_items":
                 items
         }
-
         return {
             "message": "success",
             "delivery": response
@@ -291,7 +247,6 @@ def handle_delivery_item(delivery_id):
     elif request.method == 'PUT':
         try:
             data = request.get_json()
-            print(f'data delivery PUT {data}')
             delivery.supplier_id = data[
                 'supplier_id'
             ]
@@ -304,14 +259,12 @@ def handle_delivery_item(delivery_id):
             delivery.notes = data[
                 'notes'
             ]
-
             old_items = DeliveryItems.query.filter_by(
                 stock_delivery_id=delivery.id
             ).all()
 
             for item in old_items:
                 db.session.delete(item)
-
             for item_data in data['delivery_items']:
                 db.session.add(
                     DeliveryItems(
@@ -321,37 +274,23 @@ def handle_delivery_item(delivery_id):
                         unit_price=item_data['unit_price']
                     )
                 )
-
             db.session.commit()
-
+            return {"success": True, "message": f"Поступление {delivery.id} успешно обновлено"}
         except Exception as e:
             db.session.rollback()
-            return {
-            "message": f"Поступление {delivery.id} не может быть обновлено. {str(e)}"
-        }, 400
-
-        return {
-
-            "message": f"Поступление {delivery.id} успешно обновлено"
-        }
+            return {"success": False, "message": f"Поступление {delivery.id} не может быть обновлено. {str(e)}"}, 400
 
     elif request.method == 'DELETE':
         try:
             delivery_items = DeliveryItems.query.filter_by(
                 stock_delivery_id=delivery.id
             ).all()
-
             for item in delivery_items:
                 db.session.delete(item)
-
             db.session.delete(delivery)
-
             db.session.commit()
-            flash(f"Поступление {delivery.id} успешно удалено")
-
+            return {"success": True, "message": f"Поступление {delivery.id} успешно удалена"}
         except Exception as e:
             db.session.rollback()
-            flash(f"{str(e)}", "danger")
-
-        return redirect(url_for('stock_deliveries_controller.handle_delivery'))
+            return {"success": False, "message": f"Поступление {delivery.name} не может быть удалена. {str(e)}"}, 400
 

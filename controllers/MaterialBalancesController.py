@@ -29,11 +29,8 @@ material_balances_controller = Blueprint(
 def handle_storage():
 
     balances = MaterialBalances.query.all()
-
     available = []
-
     for balance in balances:
-
         material = MedicalMaterials.query.get(
             balance.medical_material_id
         )
@@ -45,7 +42,6 @@ def handle_storage():
         department = Departments.query.get(
             balance.department_id
         )
-
         txt_balance = {
             "id": balance.id,
             "medical_material_id":
@@ -71,27 +67,21 @@ def handle_storage():
             "is_not_storage":
                 department.name != 'Склад'
         }
-
         available.append(txt_balance)
-
     materials = [
         {
             "id": material.id,
             "name": material.name
         }
-
         for material in MedicalMaterials.query.all()
     ]
-
     departments = [
         {
             "id": department.id,
             "name": department.name
         }
-
         for department in Departments.query.all()
     ]
-
     return render_template(
         'storage.html',
         title='Медицинские материалы в наличии (Хранение)',
@@ -109,11 +99,8 @@ def handle_issued():
     issued_operations = MaterialOperations.query.filter_by(
         is_issued=True
     ).all()
-
     issued = []
-
     for operation in issued_operations:
-
         material = MedicalMaterials.query.get(
             operation.medical_material_id
         )
@@ -143,27 +130,21 @@ def handle_issued():
             "operation_date":
                 operation.operation_date
         }
-
         issued.append(txt_operation)
-
     materials = [
         {
             "id": material.id,
             "name": material.name
         }
-
         for material in MedicalMaterials.query.all()
     ]
-
     departments = [
         {
             "id": department.id,
             "name": department.name
         }
-
         for department in Departments.query.all()
     ]
-
     return render_template(
         'issued.html',
         title='Выданные медицинские материалы',
@@ -176,7 +157,6 @@ def handle_issued():
 @material_balances_controller.route('/issued/<issued_id>',methods=['PUT'])
 @access_control('issued')
 def handle_issued_item(issued_id):
-    print("in issued id")
 
     balance = MaterialBalances.query.get_or_404(
         issued_id
@@ -189,7 +169,6 @@ def handle_issued_item(issued_id):
     if request.method == 'PUT':
         try:
             data = request.get_json()
-
             new_material_operation = MaterialOperations(
                 medical_material_id=balance.medical_material_id,
                 quantity=data['quantity'],
@@ -201,36 +180,28 @@ def handle_issued_item(issued_id):
                 is_issued=True
             )
             db.session.add(new_material_operation)
-
             db.session.commit()
-
+            return {"success": True, "message": f"Материал {material.name} успешно выдан."}
         except Exception as e:
             db.session.rollback()
-            return {f"{str(e)}", "danger"}
+            return {"success": False, "message": f"Материал {material.name} не может быть выдан. {str(e)}"}, 400
 
-        return {
-            "message": f"Материал #{material.name} успешно выдан."
-        }
 
 @material_balances_controller.route('/written_off/<written_off_id>',methods=['PUT'])
 @access_control('written_off')
 def handle_written_off_item(written_off_id):
-    print("in written_off id")
 
     balance = MaterialBalances.query.get_or_404(
         written_off_id
     )
-    print(balance)
 
     material = MedicalMaterials.query.get_or_404(
         balance.medical_material_id
     )
-    print(material)
 
     if request.method == 'PUT':
         try:
             data = request.get_json()
-
             new_material_operation = MaterialOperations(
                 medical_material_id=balance.medical_material_id,
                 quantity=data['quantity'],
@@ -242,16 +213,11 @@ def handle_written_off_item(written_off_id):
                 is_written_off=True
             )
             db.session.add(new_material_operation)
-
             db.session.commit()
-
+            return {"success": True, "message": f"Материал #{material.name} успешно списан."}
         except Exception as e:
             db.session.rollback()
-            return {f"{str(e)}", "danger"}
-
-        return {
-            "message": f"Материал #{material.name} успешно списан."
-        }
+            return {"success": False, "message": f"Материал {material.name} не может быть списан. {str(e)}"}, 400
 
 
 @material_balances_controller.route('/written_off',methods=['GET'])
@@ -263,17 +229,13 @@ def handle_written_off():
     ).all()
 
     written_off = []
-
     for operation in written_off_operations:
-
         material = MedicalMaterials.query.get(
             operation.medical_material_id
         )
-
         current_user = Users.query.get(
             operation.current_user_id
         )
-
         material_unit = None
         if material:
             material_unit = MaterialUnits.query.get(
@@ -297,27 +259,21 @@ def handle_written_off():
             "operation_date":
                 operation.operation_date
         }
-
         written_off.append(txt_operation)
-
     materials = [
         {
             "id": material.id,
             "name": material.name
         }
-
         for material in MedicalMaterials.query.all()
     ]
-
     departments = [
         {
             "id": department.id,
             "name": department.name
         }
-
         for department in Departments.query.all()
     ]
-
     return render_template(
         'written_off.html',
         title='Списанные медицинские материалы',

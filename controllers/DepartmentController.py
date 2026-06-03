@@ -18,10 +18,9 @@ def handle_departments():
             db.session.commit()
             flash(f"Отделение {new_department.name} с идентификатором {new_department.id} "
                   f"успешно создано.", 'success')
-
         except Exception as e:
             db.session.rollback()
-            flash(f"{str(e)}", "danger")
+            flash(f"Отделение не может быть создано. {str(e)}", "danger")
         return redirect(url_for('department_controller.handle_departments'))
 
     elif request.method == 'GET':
@@ -40,13 +39,21 @@ def handle_department(department_id):
         return {"message": "success", "department": {"id": department.id, "name": department.name}}
 
     elif request.method == 'PUT':
-        data = request.get_json()
-        department.name = data['name']
-        db.session.add(department)
-        db.session.commit()
-        return {"message": f"Отделение {department.name} успешно обновлено"}
+        try:
+            data = request.get_json()
+            department.name = data['name']
+            db.session.add(department)
+            db.session.commit()
+            return {"success": True, "message": f"Отделение {department.name} успешно обновлено"}
+        except Exception as e:
+            db.session.rollback()
+            return {"success": False, "message": f"Отделение {department.name} не может быть обновлено. {str(e)}"}, 400
 
     elif request.method == 'DELETE':
-        db.session.delete(department)
-        db.session.commit()
-        return {"message": f"Отделение {department.name} успешно удалено."}
+        try:
+            db.session.delete(department)
+            db.session.commit()
+            return {"success": True, "message": f"Отделение {department.name} успешно удалено."}
+        except Exception as e:
+            db.session.rollback()
+            return {"success": False, "message": f"Отделение {department.name} не может быть удалено. {str(e)}"}, 400

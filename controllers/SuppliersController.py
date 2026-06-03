@@ -3,7 +3,6 @@ from flask import redirect, url_for, flash, request, Blueprint, render_template
 from app import db_connection
 from decorators import access_control
 from models.Suppliers import Suppliers
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 db = db_connection
 suppliers_controller = Blueprint('suppliers_controller', __name__)
@@ -25,13 +24,10 @@ def handle_suppliers():
             db.session.add(new_supplier)
             db.session.commit()
             flash(f"Поставщик {new_supplier.name} с идентификатором "
-                  f"{new_supplier.id} успешно создан.",
-                  'success')
-
+                  f"{new_supplier.id} успешно создан.", 'success')
         except Exception as e:
             db.session.rollback()
-            flash(f"{str(e)}", "danger")
-
+            flash(f"Поставщик не может быть создан. {str(e)}", "danger")
         return redirect(url_for('suppliers_controller.handle_suppliers'))
 
     elif request.method == 'GET':
@@ -47,7 +43,6 @@ def handle_suppliers():
                 "address": supplier.address
             }
             results.append(txt_supplier)
-
         return render_template('suppliers.html', title='Поставщики медицинских материалов',
                                suppliers=results, count=len(results))
 
@@ -60,7 +55,6 @@ def handle_suppliers():
 @access_control('suppliers')
 def handle_supplier(supplier_id):
     supplier = Suppliers.query.get_or_404(supplier_id)
-
     if request.method == 'GET':
         response = {
             "id": supplier.id,
@@ -73,23 +67,25 @@ def handle_supplier(supplier_id):
         return {"message": "success", "supplier": response}
 
     elif request.method == 'PUT':
-
-        data = request.get_json()
-        supplier.name = data['name']
-        supplier.contact_person = data['contact_person']
-        supplier.phone = data['phone']
-        supplier.email = data['email']
-        supplier.address = data['address']
-
-        db.session.add(supplier)
-
-        db.session.commit()
-
-        return {"message": f"Поставщик {supplier.name} успешно обновлен"}
-
+        try:
+            data = request.get_json()
+            supplier.name = data['name']
+            supplier.contact_person = data['contact_person']
+            supplier.phone = data['phone']
+            supplier.email = data['email']
+            supplier.address = data['address']
+            db.session.add(supplier)
+            db.session.commit()
+            return {"success": True, "message": f"Поставщик {supplier.name} успешно обновлен"}
+        except Exception as e:
+            db.session.rollback()
+            return {"success": False, "message": f"Поставщик {supplier.name} не может быть обновлено. {str(e)}"}, 400
 
     elif request.method == 'DELETE':
-        db.session.delete(supplier)
-        db.session.commit()
-
-        return {"message": f"Поставщик {supplier.name} успешно удален."}
+        try:
+            db.session.delete(supplier)
+            db.session.commit()
+            return {"success": True, "message": f"Поставщик {supplier.name} успешно удален."}
+        except Exception as e:
+            db.session.rollback()
+            return {"success": False, "message": f"Поставщик {supplier.name} не может быть удалено. {str(e)}"}, 400

@@ -9,10 +9,9 @@ from flask import (
 
 from app import db_connection
 from decorators import access_control
-
-from models.MedicalMaterials import MedicalMaterials
 from models.MaterialTypes import MaterialTypes
 from models.MaterialUnits import MaterialUnits
+from models.MedicalMaterials import MedicalMaterials
 
 db = db_connection
 
@@ -28,28 +27,19 @@ def handle_medical_materials():
 
     if request.method == 'POST':
         try:
-
             data = request.form
-
             material = MedicalMaterials(
                 name=data['name'],
                 material_type_id=data['material_type_id'],
                 material_unit_id=data['material_unit_id'],
                 description=data.get('description')
             )
-
             db.session.add(material)
             db.session.commit()
-
-            flash(
-                f'Материал "{material.name}" успешно создан',
-                'success'
-            )
-
+            flash(f'Материал "{material.name}" успешно создан','success')
         except Exception as e:
             db.session.rollback()
-            flash(str(e), 'danger')
-
+            flash(f"Материал не может быть создан. {str(e)}", 'danger')
         return redirect(
             url_for(
                 'medical_materials_controller.handle_medical_materials'
@@ -57,21 +47,15 @@ def handle_medical_materials():
         )
 
     elif request.method == 'GET':
-
         materials = MedicalMaterials.query.all()
-
         result = []
-
         for material in materials:
-
             material_type = MaterialTypes.query.get(
                 material.material_type_id
             )
-
             material_unit = MaterialUnits.query.get(
                 material.material_unit_id
             )
-
             result.append({
                 "id":
                     material.id,
@@ -88,7 +72,6 @@ def handle_medical_materials():
                 "description":
                     material.description
             })
-
         material_types = [
             {
                 "id": item.id,
@@ -96,7 +79,6 @@ def handle_medical_materials():
             }
             for item in MaterialTypes.query.all()
         ]
-
         material_units = [
             {
                 "id": item.id,
@@ -104,7 +86,6 @@ def handle_medical_materials():
             }
             for item in MaterialUnits.query.all()
         ]
-
         return render_template(
             'medical_materials.html',
             title='Медицинские материалы',
@@ -123,7 +104,6 @@ def handle_medical_material(material_id):
     )
 
     if request.method == 'GET':
-
         response = {
             "id":
                 material.id,
@@ -136,41 +116,36 @@ def handle_medical_material(material_id):
             "description":
                 material.description
         }
-
         return {
             "message": "success",
             "material": response
         }
 
     elif request.method == 'PUT':
-
-        data = request.get_json()
-
-        material.name = data['name']
-        material.material_type_id = data[
-            'material_type_id'
-        ]
-        material.material_unit_id = data[
-            'material_unit_id'
-        ]
-        material.description = data.get(
-            'description'
-        )
-
-        db.session.add(material)
-        db.session.commit()
-
-        return {
-            "message":
-                f"Материал {material.id} успешно обновлен"
-        }
+        try:
+            data = request.get_json()
+            material.name = data['name']
+            material.material_type_id = data[
+                'material_type_id'
+            ]
+            material.material_unit_id = data[
+                'material_unit_id'
+            ]
+            material.description = data.get(
+                'description'
+            )
+            db.session.add(material)
+            db.session.commit()
+            return {"success": True, "message": f"Материал {material.id} успешно обновлен"}
+        except Exception as e:
+            db.session.rollback()
+            return {"success": False, "message": f"Материал {material.name} не может быть обновлен. {str(e)}"}, 400
 
     elif request.method == 'DELETE':
-
-        db.session.delete(material)
-        db.session.commit()
-
-        return {
-            "message":
-                f"Материал {material.id} успешно удален"
-        }
+        try:
+            db.session.delete(material)
+            db.session.commit()
+            return {"success": True, "message": f"Материал {material.id} успешно удален"}
+        except Exception as e:
+            db.session.rollback()
+            return {"success": False, "message": f"Материал {material.name} не может быть удален. {str(e)}"}, 400

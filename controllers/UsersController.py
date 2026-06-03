@@ -37,7 +37,7 @@ def handle_users():
                   f"{new_user.id} успешно создан.", 'success')
         except Exception as e:
             db.session.rollback()
-            flash(f"{str(e)}", "danger")
+            flash(f"Пользователь не может быть создан. {str(e)}", "danger")
         return redirect(url_for('users_controller.handle_users'))
 
     elif request.method == 'GET':
@@ -54,9 +54,7 @@ def handle_users():
                 .filter(UserDepartments.user_id == user.id)
                 .all()
             ]
-
             user_departments = Departments.query.filter(Departments.id.in_(department_ids)).all()
-
             txt_user = {
                 "id": user.id,
                 "surname": user.surname,
@@ -71,18 +69,14 @@ def handle_users():
                     ", ".join(department.name for department in user_departments if department.name)
             }
             results.append(txt_user)
-
         roles = [{"id": r.id, "name": r.name} for r in UserRoles.query.all()]
-
         departments = [
             {
                 "id": department.id,
                 "name": department.name
             }
-
             for department in Departments.query.all()
         ]
-
         return render_template('users.html', title='Пользователи',
                                users=results, user_roles=roles, departments=departments, count=len(results))
 
@@ -100,18 +94,15 @@ def handle_user(user_id):
         user_role = None
         if user.user_role_id is not None:
             user_role = UserRoles.query.get(user.user_role_id)
-
         department_ids = [
             d.department_id for d in
             db.session.query(UserDepartments.department_id)
             .filter(UserDepartments.user_id == user.id)
             .all()
         ]
-
         departments = Departments.query.filter(
             Departments.id.in_(department_ids)
         ).all()
-
         response = {
             "id": user.id,
             "surname": user.surname,
@@ -126,34 +117,34 @@ def handle_user(user_id):
         return {"message": "success", "user": response}
 
     elif request.method == 'PUT':
-        data = request.get_json()
-        user.surname = data['surname']
-        user.name = data['name']
-        user.second_name = data['second_name']
-        user.employment_date = data['employment_date']
-        user.user_role_id = data['user_role_id']
-
-        department_ids = data["department_ids"]
-
-        UserDepartments.query.filter_by(user_id=user.id).delete()
-        for dep_id in department_ids:
-            user_department = UserDepartments(user_id=user.id, department_id=dep_id)
-            db.session.add(user_department)
-
-        db.session.commit()
-
-        return {"message": f"Пользователь {user.surname} {user.name} {user.second_name} успешно обновлен"}
+        try:
+            data = request.get_json()
+            user.surname = data['surname']
+            user.name = data['name']
+            user.second_name = data['second_name']
+            user.employment_date = data['employment_date']
+            user.user_role_id = data['user_role_id']
+            department_ids = data["department_ids"]
+            UserDepartments.query.filter_by(user_id=user.id).delete()
+            for dep_id in department_ids:
+                user_department = UserDepartments(user_id=user.id, department_id=dep_id)
+                db.session.add(user_department)
+            db.session.commit()
+            return {"success": True, "message": f"Пользователь {user.surname} {user.name} {user.second_name} "
+                                                f"успешно обновлен"}
+        except Exception as e:
+            db.session.rollback()
+            return {"success": False, "message": f"Пользователь {user.surname} {user.name} {user.second_name} "
+                                                 f"не может быть обновлен. {str(e)}"}, 400
 
     elif request.method == 'DELETE':
         try:
             UserDepartments.query.filter_by(user_id=user.id).delete()
             db.session.delete(user)
             db.session.commit()
+            return {"success": True, "message": f"Пользователь {user.surname} {user.name} {user.second_name} "
+                                                f"успешно удален."}
         except Exception as e:
             db.session.rollback()
-            # return {"message": f"{str(e)}"}, 400
-            flash(str(e), "danger")
-            # return {"reload": True}, 400
-            return redirect(url_for('users_controller.handle_users'))
-
-        return {"message": f"Пользователь {user.surname} {user.name} {user.second_name} успешно удален."}
+            return {"success": False, "message": f"Пользователь {user.surname} {user.name} {user.second_name} "
+                                                 f"не может быть удален. {str(e)}"}, 400
