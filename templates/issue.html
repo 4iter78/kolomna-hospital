@@ -18,7 +18,7 @@
     Создать запись
   </button>
   {%- endif %}
-  <span class="record-count" id="record-count">
+  <span id="record-count" class="record-count">
     Записей: {{ count }}
   </span>
 </div>
@@ -98,7 +98,7 @@
       <th class="sortable">Место хранения</th>
       <th class="sortable">Дата выдачи</th>
       <th class="sortable">Комментарий</th>
-      <th class="sortable">Материалы</th>
+      <th>Материалы</th>
       <th>Действия</th>
     </tr>
   </thead>
@@ -124,6 +124,7 @@
           <table class="table table-sm table-bordered">
             <thead>
               <tr>
+                <th>Тип</th>
                 <th>Материал</th>
                 <th>Количество</th>
               </tr>
@@ -131,12 +132,9 @@
             <tbody>
               {% for item in issue.issue_items %}
               <tr>
-                <td>
-                  {{ item.medical_material }}
-                </td>
-                <td>
-                  {{ item.quantity }}
-                </td>
+                <td>{{ item.material_type }}</td>
+                <td>{{ item.medical_material }}</td>
+                <td>{{ item.quantity }}</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -150,7 +148,6 @@
                   onclick="openEditModal({{ issue.id }})">
             Изменить
           </button>
-
           <button class="btn-action btn-delete"
                   onclick="deleteRecord('/issue/', {{ issue.id }})">
             Удалить
@@ -170,7 +167,7 @@
      onclick="closeOnOverlay(event,'modal-create')">
   <div class="modal-box modal-xl">
     <div class="modal-header">
-      <h3>Создать: Выдача</h3>
+      <h3>Создать: Выдача медицинских материалов со склада</h3>
       <button class="modal-close"
               onclick="closeModal('modal-create')">
         ✕
@@ -238,8 +235,10 @@
         <table class="table table-bordered">
           <thead>
             <tr>
+              <th>Тип</th>
               <th>Материал</th>
               <th>Количество</th>
+              <th>Ед. изм.</th>
               <th width="120"></th>
             </tr>
           </thead>
@@ -263,10 +262,9 @@
 <div id="modal-edit"
      class="modal-overlay"
      onclick="closeOnOverlay(event,'modal-edit')">
-
   <div class="modal-box modal-xl">
     <div class="modal-header">
-      <h3>Редактировать: Выдача</h3>
+      <h3>Редактировать: Выдача медицинских материалов со склада</h3>
       <button class="modal-close"
               onclick="closeModal('modal-edit')">
         ✕
@@ -275,7 +273,8 @@
     <div class="modal-body">
       <form id="edit-form">
         <input type="hidden"
-               id="edit-id">
+               id="edit-id"
+               name="id">
         <div class="form-group">
           <label class="form-label">
             Выдал
@@ -328,7 +327,8 @@
             Комментарий
           </label>
           <textarea class="form-control"
-                    id="edit-notes"></textarea>
+                    id="edit-notes"
+                    name="notes"></textarea>
         </div>
         <hr>
         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -344,8 +344,10 @@
         <table class="table table-bordered">
           <thead>
             <tr>
+              <th>Тип</th>
               <th>Материал</th>
               <th>Количество</th>
+              <th>Ед. изм.</th>
               <th width="120"></th>
             </tr>
           </thead>
@@ -372,6 +374,39 @@
 
 {% block scripts %}
 <script>
+  function issueMaterialChanged(select) {
+    const row = select.closest('tr');
+    const selectedOption =
+        select.options[select.selectedIndex];
+    const materialTypeId =
+        selectedOption.dataset.typeId;
+    const materialUnitId =
+        selectedOption.dataset.unitId;
+    row.querySelector(
+        '[name="material_type_id[]"]'
+    ).value = materialTypeId;
+    row.querySelector(
+        '[name="material_unit_id[]"]'
+    ).value = materialUnitId;
+  }
+
+function issueMaterialChangedEdit(select) {
+
+    const row = select.closest('tr');
+
+    const selectedOption =
+        select.options[select.selectedIndex];
+
+    row.querySelector(
+        '.material-type-select'
+    ).value =
+        selectedOption.dataset.typeId;
+
+    row.querySelector(
+        '.material-unit-select'
+    ).value =
+        selectedOption.dataset.unitId;
+}
 
 function removeRow(btn) {
     btn.closest('tr').remove();
@@ -388,25 +423,61 @@ function addIssueMaterialRow() {
         <td>
             <select
                 class="form-control"
-                name="medical_material_id[]"
-                required>
-                {% for material in materials %}
-                <option value="{{ material.id }}">
-                    {{ material.name }}
+                name="material_type_id[]"
+                disabled>
+                <option value="">
+                </option>
+                {% for material_type in material_types %}
+                <option value="{{ material_type.id }}">
+                    {{ material_type.name }}
                 </option>
                 {% endfor %}
             </select>
         </td>
         <td>
-            <input type="number"
-                   class="form-control"
-                   name="quantity[]"
-                   required>
+            <select
+                class="form-control"
+                name="medical_material_id[]"
+                onchange="issueMaterialChanged(this)"
+                required>
+                <option value="">
+                </option>
+                {% for material in materials %}
+                <option
+                    value="{{ material.id }}"
+                    data-type-id="{{ material.material_type_id }}"
+                    data-unit-id="{{ material.material_unit_id }}">
+                    {{ material.name }}
+                </option>
+                {% endfor %}
+            </select>
+          </td>
+        <td>
+            <input
+                type="number"
+                class="form-control"
+                name="quantity[]"
+                required>
         </td>
         <td>
-            <button type="button"
-                    class="btn-action btn-delete"
-                    onclick="removeRow(this)">
+            <select
+                class="form-control"
+                name="material_unit_id[]"
+                disabled>
+                <option value="">
+                </option>
+                {% for material_unit in material_units %}
+                <option value="{{ material_unit.id }}">
+                    {{ material_unit.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </td>
+        <td>
+            <button
+                type="button"
+                class="btn-action btn-delete"
+                onclick="removeRow(this)">
                 Удалить
             </button>
         </td>
@@ -456,7 +527,6 @@ async function openEditModal(id) {
     for (const item of issue.issue_items) {
         addEditIssueMaterialRow(item);
     }
-
     openModal('modal-edit');
 }
 
@@ -467,13 +537,29 @@ function addEditIssueMaterialRow(item = null) {
         );
     const row =
         document.createElement('tr');
-
     row.innerHTML = `
         <td>
             <select
-                class="form-control material-select">
+                class="form-control material-type-select"
+                disabled>
+                <option value="">
+                </option>
+                {% for material_type in material_types %}
+                <option value="{{ material_type.id }}">
+                    {{ material_type.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </td>
+        <td>
+            <select
+                class="form-control material-select"
+                onchange="issueMaterialChangedEdit(this)"
+                required>
                 {% for material in materials %}
-                <option value="{{ material.id }}">
+                <option value="{{ material.id }}"
+                    data-type-id="{{ material.material_type_id }}"
+                    data-unit-id="{{ material.material_unit_id }}">
                     {{ material.name }}
                 </option>
                 {% endfor %}
@@ -481,7 +567,21 @@ function addEditIssueMaterialRow(item = null) {
         </td>
         <td>
             <input type="number"
-                   class="form-control quantity-input">
+                   class="form-control quantity-input"
+                   required>
+        </td>
+        <td>
+            <select
+                class="form-control material-unit-select"
+                disabled>
+                <option value="">
+                </option>
+                {% for material_unit in material_units %}
+                <option value="{{ material_unit.id }}">
+                    {{ material_unit.name }}
+                </option>
+                {% endfor %}
+            </select>
         </td>
         <td>
             <button type="button"
@@ -495,13 +595,20 @@ function addEditIssueMaterialRow(item = null) {
     tbody.appendChild(row);
 
     if (item) {
-        row.querySelector(
-            '.material-select'
-        ).value = item.medical_material_id;
+      row.querySelector(
+          '.material-type-select'
+      ).value = item.material_type_id;
 
-        row.querySelector(
-            '.quantity-input'
-        ).value = item.quantity;
+      row.querySelector('.material-select').value =
+          item.medical_material_id;
+
+      row.querySelector(
+          '.quantity-input'
+      ).value = item.quantity;
+
+      row.querySelector(
+          '.material-unit-select'
+      ).value = item.material_unit_id;
     }
 }
 
@@ -514,9 +621,12 @@ async function submitIssueEdit() {
         '#edit-issue-materials-body tr'
     );
     const issue_items = [];
-
     rows.forEach(row => {
         issue_items.push({
+            material_type_id:
+                row.querySelector(
+                    '.material-type-select'
+                ).value,
             medical_material_id:
                 row.querySelector(
                     '.material-select'
@@ -525,6 +635,11 @@ async function submitIssueEdit() {
             quantity:
                 row.querySelector(
                     '.quantity-input'
+                ).value,
+
+            material_unit_id:
+                row.querySelector(
+                    '.material-unit-select'
                 ).value
         });
     });
@@ -534,17 +649,14 @@ async function submitIssueEdit() {
             document.getElementById(
                 'edit-from_user_id'
             ).value,
-
         to_user_id:
             document.getElementById(
                 'edit-to_user_id'
             ).value,
-
         department_id:
             document.getElementById(
                 'edit-department_id'
             ).value,
-
         issue_date:
             document.getElementById(
                 'edit-issue_date'
@@ -554,7 +666,6 @@ async function submitIssueEdit() {
             document.getElementById(
                 'edit-notes'
             ).value,
-
         issue_items:
             issue_items
     };
@@ -573,14 +684,11 @@ async function submitIssueEdit() {
     );
 
     const result = await response.json();
-
     showToast(
         result.message || 'Запись обновлена',
         'success'
     );
-
     closeModal('modal-edit');
-
     setTimeout(function () {
         location.reload();
     }, 800);
