@@ -97,7 +97,7 @@ def handle_storage():
         available=available,
         materials=materials,
         departments=departments,
-        available_count=len(available)
+        count=len(available)
     )
 
 
@@ -155,7 +155,7 @@ def handle_issued():
         title='Выданные медицинские материалы',
         issued=issued,
         materials=materials,
-        issued_count=len(issued)
+        count=len(issued)
     )
 
 @material_balances_controller.route('/issued/<issued_id>',methods=['PUT'])
@@ -293,5 +293,5 @@ def handle_written_off():
         title='Списанные медицинские материалы',
         written_off=written_off,
         materials=materials,
-        written_off_count=len(written_off)
+        count=len(written_off)
     )
