@@ -60,4 +60,9 @@ if __name__ == '__main__':
     # запуск сервера локально по умолчанию на порту 5000 по протоколу HTTPS
     # app.run(debug=True, ssl_context='adhoc')
     # запуск сервера локально на порту 8000 по протоколу HTTP
-    app.run(debug=True,port=8000)
+    # app.run(debug=True,port=8000)
+    app.run(
+        host='0.0.0.0',
+        port=8000,
+        debug=True
+    )
