@@ -1,4 +1,9 @@
 {% extends "main.html" %}
+{% block title_img %}
+<svg width="60" height="60" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+</svg>
+{% endblock %}
 {% block content %}
 
   <div class="table-toolbar">
@@ -7,11 +12,33 @@
       <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2z"/></svg> Создать запись
     </button>
     {%- endif %}
-    <span class="record-count">Записей: {{count}}</span>
+    <span id="record-count" class="record-count">Записей: {{count}}</span>
+  </div>
+
+  <div class="filter-panel mb-3">
+      <div class="row">
+          <div class="col">
+              <input type="text"
+                     id="filter-name"
+                     class="form-control"
+                     placeholder="Наименование">
+          </div>
+
+          <div class="col-auto">
+              <button type="button"
+                      class="btn-action btn-edit"
+                      onclick="resetNameFilter()">
+                  Сбросить
+              </button>
+          </div>
+      </div>
   </div>
 
   <table class="table table-striped">
-    <thead><tr><th>ID</th><th>Наименование</th><th>Действия</th></tr></thead>
+    <thead><tr>
+      <th class="sortable">ID</th>
+      <th class="sortable">Наименование</th>
+      <th>Действия</th></tr></thead>
     <tbody>
       {% for user_role in user_roles %}
       <tr data-id="{{ user_role.id }}" data-name="{{ user_role.name }}">
@@ -33,26 +60,28 @@
     </tbody>
   </table>
 
+{% endblock %}
 
-  {%- if can_write('user-roles') %}
+{% block modals %}
+  {%- if can_write('user_roles') %}
   <div id="modal-create" class="modal-overlay" onclick="closeOnOverlay(event,'modal-create')">
     <div class="modal-box">
       <div class="modal-header">
         <h3>Создать: Роль</h3>
         <button class="modal-close" onclick="closeModal('modal-create')">✕</button>
       </div>
-      <form method="POST" action="/user-roles">
-        <div class="modal-body">
+      <div class="modal-body">
+        <form id="modal-create-form" method="POST" action="/user-roles">
           <div class="form-group">
             <label class="form-label">Наименование</label>
             <input class="form-control" type="text" name="name"  placeholder="Введите наименование" required>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
-          <button type="submit" class="btn-action btn-create">Сохранить</button>
-        </div>
-      </form>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button form="modal-create-form" type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
+        <button form="modal-create-form" type="submit" class="btn-action btn-create">Сохранить</button>
+      </div>
     </div>
   </div>
   {%- endif %}
@@ -84,6 +113,11 @@
   {%- endif %}
   {%- block scripts %}
   <script>
+    document.addEventListener(
+      'DOMContentLoaded',
+      initNameFilter
+    );
+
     function openEditModal(id) {
       const r = document.querySelector(`tr[data-id="${id}"]`);
       document.getElementById('edit-id').value   = id;
@@ -92,6 +126,5 @@
     }
   </script>
   {%- endblock %}
-
 
 {% endblock %}

@@ -1,10 +1,13 @@
+from datetime import datetime
+
 from flask import (
     Blueprint,
     render_template,
     request,
     redirect,
     url_for,
-    flash
+    flash,
+    session
 )
 
 from app import db_connection
@@ -27,208 +30,169 @@ material_issues_controller = Blueprint(
 )
 
 
-# =====================================================
-# ISSUE LIST + CREATE
-# =====================================================
-
-@material_issues_controller.route(
-    '/issue',
-    methods=['GET', 'POST']
-)
+@material_issues_controller.route('/issue', methods=['GET', 'POST'])
 @access_control('issue')
 def handle_issue():
 
-    # =================================================
-    # CREATE
-    # =================================================
-
     if request.method == 'POST':
+        try:
+            data = request.form
 
-        data = request.form
-
-        new_issue = MaterialIssues(
-            from_user_id=data['from_user_id'],
-            to_user_id=data['to_user_id'],
-            department_id=data['department_id'],
-            issue_date=data['issue_date'],
-            notes=data['notes']
-        )
-
-        db.session.add(new_issue)
-
-        db.session.commit()
-
-        # =============================================
-        # ISSUE ITEMS
-        # =============================================
-
-        material_ids = request.form.getlist(
-            'medical_material_id[]'
-        )
-        quantities = request.form.getlist(
-            'quantity[]'
-        )
-
-        for i in range(len(material_ids)):
-            item = IssueItems(
-                material_issue_id=new_issue.id,
-                medical_material_id=material_ids[i],
-                quantity=quantities[i]
+            new_issue = MaterialIssues(
+                from_user_id=data['from_user_id'],
+                to_user_id=data['to_user_id'],
+                department_id=data['department_id'],
+                issue_date=data['issue_date'],
+                notes=data['notes']
             )
 
-            db.session.add(item)
+            db.session.add(new_issue)
 
-        db.session.commit()
+            db.session.commit()
 
-        flash(
-            f'Выдача #{new_issue.id} создана.',
-            'success'
-        )
+            material_ids = request.form.getlist(
+                'medical_material_id[]'
+            )
+            quantities = request.form.getlist(
+                'quantity[]'
+            )
 
+            for i in range(len(material_ids)):
+                item = IssueItems(
+                    material_issue_id=new_issue.id,
+                    medical_material_id=material_ids[i],
+                    quantity=quantities[i]
+                )
+
+                db.session.add(item)
+
+            db.session.commit()
+
+            flash(f'Выдача #{new_issue.id} успешно создана.','success')
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"{str(e)}", "danger")
         return redirect(
             url_for(
                 'material_issues_controller.handle_issue'
             )
         )
 
-    # =================================================
-    # GET LIST
-    # =================================================
+    elif request.method == 'GET':
+        issues = MaterialIssues.query.all()
 
-    issues = MaterialIssues.query.all()
+        result = []
 
-    result = []
+        for issue in issues:
 
-    for issue in issues:
-
-        from_user = Users.query.get(
-            issue.from_user_id
-        )
-
-        to_user = Users.query.get(
-            issue.to_user_id
-        )
-
-        department = Departments.query.get(
-            issue.department_id
-        )
-
-        # =============================================
-        # ISSUE ITEMS
-        # =============================================
-
-        issue_items = IssueItems.query.filter_by(
-            material_issue_id=issue.id
-        ).all()
-
-        items = []
-
-        for item in issue_items:
-
-            material = MedicalMaterials.query.get(
-                item.medical_material_id
+            from_user = Users.query.get(
+                issue.from_user_id
             )
 
-            txt_item = {
+            to_user = Users.query.get(
+                issue.to_user_id
+            )
+
+            department = Departments.query.get(
+                issue.department_id
+            )
+
+            issue_items = IssueItems.query.filter_by(
+                material_issue_id=issue.id
+            ).all()
+
+            items = []
+
+            for item in issue_items:
+
+                material = MedicalMaterials.query.get(
+                    item.medical_material_id
+                )
+
+                txt_item = {
+                    "id":
+                        item.id,
+                    "medical_material_id":
+                        item.medical_material_id,
+                    "medical_material":
+                        material.name if material else '',
+                    "quantity":
+                        item.quantity
+                }
+
+                items.append(txt_item)
+
+            txt_issue = {
                 "id":
-                    item.id,
-                "medical_material_id":
-                    item.medical_material_id,
-                "medical_material":
-                    material.name if material else '',
-                "quantity":
-                    item.quantity
+                    issue.id,
+                "from_user_id":
+                    issue.from_user_id,
+                "to_user_id":
+                    issue.to_user_id,
+                "from_user": f'{from_user.surname} {from_user.name} {from_user.second_name}'
+                if from_user else ''            ,
+                "to_user": f'{to_user.surname} {to_user.name} {to_user.second_name}'
+                if to_user else ''            ,
+                "department_id":
+                    issue.department_id,
+                "department":
+                    department.name if department else '',
+                "issue_date":
+                    issue.issue_date,
+                "notes":
+                    issue.notes,
+                "issue_items":
+                    items
             }
 
-            items.append(txt_item)
+            result.append(txt_issue)
 
-        # =============================================
-        # ISSUE OBJECT
-        # =============================================
+        users = [
+            {
+                "id": user.id,
+                "surname": user.surname,
+                "name": user.name,
+                "second_name": user.second_name
+            }
 
-        txt_issue = {
-            "id":
-                issue.id,
-            "from_user_id":
-                issue.from_user_id,
-            "to_user_id":
-                issue.to_user_id,
-            "department_id":
-                issue.department_id,
-            "from_user":
-                from_user.name if from_user else '',
-            "to_user":
-                to_user.name if to_user else '',
-            "department":
-                department.name if department else '',
-            "issue_date":
-                issue.issue_date,
-            "notes":
-                issue.notes,
-            "issue_items":
-                items
-        }
+            for user in Users.query.all()
+        ]
 
-        result.append(txt_issue)
+        departments = [
+            {
+                "id": department.id,
+                "name": department.name
+            }
 
-    # =================================================
-    # USERS
-    # =================================================
+            for department in Departments.query.all()
+        ]
 
-    users = [
-        {
-            "id": user.id,
-            "name": user.name
-        }
+        materials = [
+            {
+                "id": material.id,
+                "name": material.name
+            }
 
-        for user in Users.query.all()
-    ]
+            for material in MedicalMaterials.query.all()
+        ]
 
-    # =================================================
-    # DEPARTMENTS
-    # =================================================
+        current_user_id = session.get('user_id')
+        today = datetime.now().strftime("%Y-%m-%dT%H:%M")
 
-    departments = [
-        {
-            "id": department.id,
-            "name": department.name
-        }
+        return render_template(
+            'issue.html',
+            title='Выдача медицинских материалов со склада на отделение',
+            issues=result,
+            users=users,
+            departments=departments,
+            materials=materials,
+            curr_user_id=current_user_id,
+            today=today,
+            count=len(result)
+        )
 
-        for department in Departments.query.all()
-    ]
-
-    # =================================================
-    # MATERIALS
-    # =================================================
-
-    materials = [
-        {
-            "id": material.id,
-            "name": material.name
-        }
-
-        for material in MedicalMaterials.query.all()
-    ]
-
-    return render_template(
-        'issue.html',
-        title='Выдача',
-        issues=result,
-        users=users,
-        departments=departments,
-        materials=materials,
-        count=len(result)
-    )
-
-
-# =====================================================
-# ISSUE ITEM
-# =====================================================
-
-@material_issues_controller.route(
-    '/issue/<issue_id>',
-    methods=['GET', 'PUT', 'DELETE']
-)
+@material_issues_controller.route('/issue/<issue_id>',methods=['GET', 'PUT', 'DELETE'])
 @access_control('issue')
 def handle_issue_item(issue_id):
 
@@ -236,15 +200,12 @@ def handle_issue_item(issue_id):
         issue_id
     )
 
-    # =================================================
-    # GET ONE
-    # =================================================
-
     if request.method == 'GET':
 
         issue_items = IssueItems.query.filter_by(
             material_issue_id=issue.id
         ).all()
+        print(f"issue items in GET {issue_items}")
 
         items = []
 
@@ -288,10 +249,6 @@ def handle_issue_item(issue_id):
             "issue": response
         }
 
-    # =================================================
-    # UPDATE
-    # =================================================
-
     elif request.method == 'PUT':
         data = request.get_json()
         issue.from_user_id = data[
@@ -311,10 +268,6 @@ def handle_issue_item(issue_id):
         ]
         db.session.add(issue)
 
-        # =============================================
-        # DELETE OLD ITEMS
-        # =============================================
-
         old_items = IssueItems.query.filter_by(
             material_issue_id=issue.id
         ).all()
@@ -323,10 +276,6 @@ def handle_issue_item(issue_id):
             db.session.delete(item)
 
         db.session.commit()
-
-        # =============================================
-        # ADD NEW ITEMS
-        # =============================================
 
         for item_data in data['issue_items']:
             new_item = IssueItems(
@@ -344,13 +293,8 @@ def handle_issue_item(issue_id):
         db.session.commit()
 
         return {
-            "message":
-                f"Issue {issue.id} updated"
+            "message": f"Выдача {issue.id} успешно обновлена"
         }
-
-    # =================================================
-    # DELETE
-    # =================================================
 
     elif request.method == 'DELETE':
         issue_items = IssueItems.query.filter_by(
@@ -365,6 +309,5 @@ def handle_issue_item(issue_id):
         db.session.commit()
 
         return {
-            "message":
-                f"Issue {issue.id} successfully deleted"
+            "message": f"Выдача {issue.id} успешно удалена"
         }

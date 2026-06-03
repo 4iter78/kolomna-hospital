@@ -6,19 +6,42 @@
 </p>
 
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
-
+  {% if can_read('users') %}
   <a href="/users"          class="btn-action btn-create">Пользователи</a>
+  {% endif %}
+  {% if can_read('user_roles') %}
   <a href="/user-roles"     class="btn-action btn-create">Роли пользователей</a>
-  <a href="/patients"       class="btn-action btn-create">Пациенты</a>
-  <a href="/health_cards"   class="btn-action btn-create">Медицинские карты</a>
-  <a href="/appointments"   class="btn-action btn-create">Приёмы</a>
-  <a href="/work_timetable" class="btn-action btn-create">Расписание работы</a>
-  <a href="/clean_timetable"class="btn-action btn-create">Расписание уборки</a>
-  <a href="/diagnosises"    class="btn-action btn-create">Диагнозы</a>
-  <a href="/drugs"          class="btn-action btn-create">Препараты</a>
-  <a href="/treatment_types"class="btn-action btn-create">Типы лечения</a>
-  <a href="/room_type"      class="btn-action btn-create">Типы помещений</a>
-  <a href="/rooms"          class="btn-action btn-create">Помещения</a>
+  {% endif %}
+  {% if can_read('departments') %}
+  <a href="/departments"     class="btn-action btn-create">Отделения</a>
+  {% endif %}
+  {% if can_read('suppliers') %}
+  <a href="/suppliers"     class="btn-action btn-create">Поставщики</a>
+  {% endif %}
+  {% if can_read('delivery') %}
+  <a href="/delivery"     class="btn-action btn-create">Поступление медматериалов</a>
+  {% endif %}
+  {% if can_read('issue') %}
+  <a href="/issues"     class="btn-action btn-create">Выдача медматериалов</a>
+  {% endif %}
+  {% if can_read('storage') %}
+  <a href="/storage"     class="btn-action btn-create">Хранение медматериалов</a>
+  {% endif %}
+  {% if can_read('issued') %}
+  <a href="/issued"     class="btn-action btn-create">Выданные медматериалы</a>
+  {% endif %}
+  {% if can_read('written_off') %}
+  <a href="/written_off"     class="btn-action btn-create">Списанные медматериалы</a>
+  {% endif %}
+  {% if can_read('material_types') %}
+  <a href="/material_types"      class="btn-action btn-create">Типы материалов</a>
+  {% endif %}
+  {% if can_read('material_units') %}
+  <a href="/material_units"          class="btn-action btn-create">Единицы измерения</a>
+  {% endif %}
+  {% if can_read('medical_materials') %}
+  <a href="/medical_materials"       class="btn-action btn-create">Медицинские материалы</a>
+  {% endif %}
 
 </div>
 {% endblock %}

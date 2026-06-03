@@ -1,7 +1,7 @@
 """create table material_types
 
 Revision ID: c9f2fbf6849a
-Revises: b79e80d2b683
+Revises: 354924229524
 Create Date: 2026-05-17 22:34:22.272956
 
 """
@@ -11,7 +11,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = 'c9f2fbf6849a'
-down_revision: Union[str, Sequence[str], None] = 'b79e80d2b683'
+down_revision: Union[str, Sequence[str], None] = '354924229524'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -21,7 +21,7 @@ def upgrade() -> None:
     op.execute('''
         CREATE TABLE material_types (
             id   SERIAL PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
+            name VARCHAR(100) NOT NULL UNIQUE,
             description TEXT
         );
     ''')

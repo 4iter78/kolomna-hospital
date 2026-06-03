@@ -13,12 +13,16 @@ user_roles_controller = Blueprint('user_roles_controller', __name__)
 @access_control('user_roles')
 def handle_user_roles():
     if request.method == 'POST':
-        data = request.get_json() if request.is_json else request.form
-        new_user_role = UserRoles(name=data['name'])
-        db.session.add(new_user_role)
-        db.session.commit()
-        flash(f"Роль {new_user_role.name} с идентификатором {new_user_role.id} успешно создана.",
-              'success')
+        try:
+            data = request.get_json() if request.is_json else request.form
+            new_user_role = UserRoles(name=data['name'])
+            db.session.add(new_user_role)
+            db.session.commit()
+            flash(f"Роль {new_user_role.name} с идентификатором {new_user_role.id} успешно создана.",
+                  'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f"{str(e)}", "danger")
         return redirect(url_for('user_roles_controller.handle_user_roles'))
 
     elif request.method == 'GET':
@@ -55,10 +59,10 @@ def handle_user_role(user_role_id):
         db.session.add(user_role)
         db.session.commit()
 
-        return {"message": f"user_role {user_role.name} successfully updated"}
+        return {"message": f"Роль {user_role.name} успешно обновлена"}
 
     elif request.method == 'DELETE':
         db.session.delete(user_role)
         db.session.commit()
 
-        return {"message": f"Customer {user_role.name} successfully deleted."}
+        return {"message": f"Роль {user_role.name} успешно удалена."}

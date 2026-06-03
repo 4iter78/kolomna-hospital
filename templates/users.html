@@ -1,21 +1,97 @@
 {% extends "main.html" %}
+{% block title_img %}
+<svg width="60" height="60" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 1c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z"/>
+</svg>
+{% endblock %}
 {% block content %}
 
   <div class="table-toolbar">
     {%- if can_write('users') %}
     <button class="btn-action btn-create" onclick="openModal('modal-create')">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2z"/></svg> Создать запись
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2z"/>
+      </svg> Создать запись
     </button>
     {%- endif %}
-    <span class="record-count">Записей: {{count}}</span>
+    <span id="record-count" class="record-count">Записей: {{count}}</span>
+  </div>
+
+  <div class="filter-panel mb-3">
+      <div class="row">
+          <div class="col">
+              <select class="form-control table-filter"
+                      data-filter-field="id">
+                  <option value="">Все пользователи</option>
+
+                  {% for user in users %}
+                  <option value="{{ user.id }}">
+                      {{ user.surname }} {{ user.name }} {{ user.second_name }}
+                  </option>
+                  {% endfor %}
+              </select>
+          </div>
+          <div class="col">
+              <input type="date"
+                     class="form-control table-filter"
+                     data-filter-field="employment_date_from">
+          </div>
+          <div class="col">
+              <input type="date"
+                     class="form-control table-filter"
+                     data-filter-field="employment_date_to">
+          </div>
+          <div class="col">
+              <select class="form-control table-filter"
+                      data-filter-field="user_role_id">
+                  <option value="">Все роли</option>
+                  {% for role in user_roles %}
+                  <option value="{{ role.id }}">
+                      {{ role.name }}
+                  </option>
+                  {% endfor %}
+              </select>
+          </div>
+          <div class="col">
+              <input type="text"
+                     data-filter-field="department"
+                     class="form-control table-filter"
+                     placeholder="Отделение">
+          </div>
+          <div class="col-auto">
+              <button type="button"
+                      class="btn-action btn-edit"
+                      onclick="resetTableFilters()">
+                  Сбросить
+              </button>
+          </div>
+      </div>
   </div>
 
   <table class="table table-striped">
-    <thead><tr><th>ID</th><th>ФИО</th><th>Дата устройства</th><th>Роль</th><th>Действия</th></tr></thead>
+    <thead><tr>
+      <th class="sortable">ID</th>
+      <th class="sortable">ФИО</th>
+      <th class="sortable">Дата устройства</th>
+      <th class="sortable">Роль</th>
+      <th class="sortable">Отделение</th>
+      <th>Действия</th></tr></thead>
     <tbody>
       {% for user in users %}
-      <tr data-id="{{ user.id }}" data-surname="{{ user.surname }}" data-name="{{ user.name }}" data-second_name="{{ user.second_name }}" data-employment_date="{{ user.employment_date }}" data-user_role_id="{{ user.user_role_id }}">
-        <td>{{ user.id }}</td><td>{{ user.fio }}</td><td>{{ user.employment_date }}</td><td>{{ user.user_role }}</td>
+      <tr data-id="{{ user.id }}"
+          data-fio="{{ user.fio }}"
+          data-surname="{{ user.surname }}"
+          data-name="{{ user.name }}"
+          data-second_name="{{ user.second_name }}"
+          data-employment_date="{{ user.employment_date }}"
+          data-user_role_id="{{ user.user_role_id }}"
+          data-department_ids="{{ user.department_ids }}"
+          data-department="{{ user.department }}">
+        <td>{{ user.id }}</td>
+        <td>{{ user.fio }}</td>
+        <td>{{ user.employment_date }}</td>
+        <td>{{ user.user_role }}</td>
+        <td>{{ user.department }}</td>
                 <td><div class="actions-cell">
           {%- if can_write('users')  %}
           <button class="btn-action btn-edit"
@@ -33,7 +109,9 @@
     </tbody>
   </table>
 
+{% endblock %}
 
+{% block modals %}
   {%- if can_write('users') %}
   <div id="modal-create" class="modal-overlay" onclick="closeOnOverlay(event,'modal-create')">
     <div class="modal-box">
@@ -41,9 +119,9 @@
         <h3>Создать: Пользователь</h3>
         <button class="modal-close" onclick="closeModal('modal-create')">✕</button>
       </div>
-      <form method="POST" action="/users">
-        <div class="modal-body">
-          <div class="form-group">
+      <div class="modal-body">
+        <form id="modal-create-form" method="POST" action="/users">
+            <div class="form-group">
             <label class="form-label">Фамилия</label>
             <input class="form-control" type="text" name="surname"  placeholder="" required>
           </div>
@@ -74,16 +152,23 @@
               {% for role in user_roles %}<option value="{{ role.id }}">{{ role.name }}</option>{% endfor %}
             </select>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
-          <button type="submit" class="btn-action btn-create">Сохранить</button>
-        </div>
-      </form>
+            <div class="form-group">
+              <label class="form-label">Отделения</label>
+              <select class="form-control" name="department_ids[]" multiple >
+                {% for dept in departments %}
+                  <option value="{{ dept.id }}">{{ dept.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+        </form>
     </div>
+      <div class="modal-footer">
+        <button form="modal-create-form" type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
+        <button form="modal-create-form" type="submit" class="btn-action btn-create">Сохранить</button>
+      </div>
+      </div>
   </div>
   {%- endif %}
-
 
   {%- if can_write('users') %}
   <div id="modal-edit" class="modal-overlay" onclick="closeOnOverlay(event,'modal-edit')">
@@ -118,6 +203,14 @@
               {% for role in user_roles %}<option value="{{ role.id }}">{{ role.name }}</option>{% endfor %}
             </select>
           </div>
+            <div class="form-group">
+              <label class="form-label">Отделения</label>
+              <select class="form-control" name="department_ids[]" id="edit-department_ids" multiple="multiple">
+                {% for dept in departments %}
+                  <option value="{{ dept.id }}">{{ dept.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
         </form>
       </div>
       <div class="modal-footer">
@@ -138,8 +231,23 @@
       document.getElementById('edit-second_name').value     = r.dataset.second_name;
       document.getElementById('edit-employment_date').value = r.dataset.employment_date;
       document.getElementById('edit-user_role_id').value    = r.dataset.user_role_id;
-      openModal('modal-edit');
-    }
+
+      // 🔥 departments
+      const select = document.getElementById('edit-department_ids');
+
+      // очистить выбор
+      Array.from(select.options).forEach(opt => opt.selected = false);
+
+      // распарсить JSON
+      const deptIds = JSON.parse(r.dataset.department_ids || "[]");
+
+      deptIds.forEach(id => {
+          const option = select.querySelector(`option[value="${id}"]`);
+          if (option) option.selected = true;
+      });
+
+    openModal('modal-edit');
+}
   </script>
   {%- endblock %}
 

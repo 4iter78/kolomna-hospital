@@ -38,3 +38,8 @@ alembic history --verbose
 ```
 alembic downgrade -1
 ```
+
+Откатиться до конкретной предыдущей миграции:
+```
+alembic downgrade <revision_id>
+```

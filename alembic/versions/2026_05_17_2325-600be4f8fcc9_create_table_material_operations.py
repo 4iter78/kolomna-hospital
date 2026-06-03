@@ -27,8 +27,9 @@ def upgrade() -> None:
                 CHECK (quantity > 0),
             -- чек, акт списания, рецепт, накладная и т.д.
             document_number VARCHAR(100),
-            user_id INT NOT NULL
+            current_user_id INT NOT NULL
                 REFERENCES users(id),
+            department_id INT NOT NULL REFERENCES departments(id),
             operation_date TIMESTAMP NOT NULL
                 DEFAULT NOW(),
             description TEXT,

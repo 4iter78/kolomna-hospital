@@ -1,0 +1,291 @@
+{% extends "main.html" %}
+{% block title_img %}
+<svg width="60" height="60" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5zm1.294 7.456A2 2 0 0 1 4.732 11h5.536a2 2 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456M12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+</svg>
+{% endblock %}
+{% block content %}
+
+  <div class="table-toolbar">
+    {%- if can_write('suppliers') %}
+    <button class="btn-action btn-create" onclick="openModal('modal-create')">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2z"/>
+      </svg> Создать запись
+    </button>
+    {%- endif %}
+    <span id="record-count" class="record-count">Записей: {{count}}</span>
+  </div>
+
+  <div class="filter-panel mb-3">
+      <div class="row">
+          <div class="col">
+              <input type="text"
+                     id="filter-name"
+                     class="form-control"
+                     placeholder="Наименование">
+          </div>
+
+          <div class="col">
+              <input type="text"
+                     id="filter-contact"
+                     class="form-control"
+                     placeholder="Контактное лицо">
+          </div>
+
+          <div class="col">
+              <input type="text"
+                     id="filter-phone"
+                     class="form-control"
+                     placeholder="Телефон">
+          </div>
+
+          <div class="col">
+              <input type="text"
+                     id="filter-email"
+                     class="form-control"
+                     placeholder="Эл. почта">
+          </div>
+
+          <div class="col">
+              <input type="text"
+                     id="filter-address"
+                     class="form-control"
+                     placeholder="Адрес">
+          </div>
+
+          <div class="col-auto">
+              <button type="button"
+                      class="btn-action btn-edit"
+                      onclick="resetFilters()">
+                  Сбросить
+              </button>
+          </div>
+      </div>
+  </div>
+
+  <table class="table table-striped">
+    <thead><tr>
+      <th class="sortable">ID</th>
+      <th class="sortable">Наименование</th>
+      <th class="sortable">Контактное лицо</th>
+      <th class="sortable">Телефон</th>
+      <th class="sortable">Эл.почта</th>
+      <th class="sortable">Адрес</th>
+      <th>Действия</th></tr></thead>
+    <tbody>
+      {% for supplier in suppliers %}
+      <tr data-id="{{ supplier.id }}"
+          data-name="{{ supplier.name }}"
+          data-contact_person="{{ supplier.contact_person }}"
+          data-phone="{{ supplier.phone }}"
+          data-email="{{ supplier.email }}"
+          data-address="{{ supplier.address }}">
+        <td>{{ supplier.id }}</td>
+        <td>{{ supplier.name }}</td>
+        <td>{{ supplier.contact_person }}</td>
+        <td>{{ supplier.phone }}</td>
+        <td>{{ supplier.email }}</td>
+        <td>{{ supplier.address }}</td>
+        <td><div class="actions-cell">
+          {%- if can_write('suppliers')  %}
+          <button class="btn-action btn-edit"
+                  onclick="openEditModal({{ supplier.id }})">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm-1.96 2.708L4.5 9.25V11.5h2.25l6.395-6.396-2.25-2.25zM3.5 10.5v1h1l-1-1z"/></svg> Изменить
+          </button>
+          <button class="btn-action btn-delete"
+                  onclick="deleteRecord('/suppliers/', {{ supplier.id }})">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.5l1-1h3l1 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/></svg> Удалить
+          </button>
+          {%- endif %}
+        </div></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block modals %}
+  {%- if can_write('suppliers') %}
+  <div id="modal-create" class="modal-overlay" onclick="closeOnOverlay(event,'modal-create')">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Создать: Поставщик</h3>
+        <button class="modal-close" onclick="closeModal('modal-create')">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="modal-create-form" method="POST" action="/suppliers">
+          <div class="form-group">
+            <label class="form-label">Наименование</label>
+            <input class="form-control" type="text" name="name"  placeholder="" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Контактное лицо</label>
+            <input class="form-control" type="text" name="contact_person"  placeholder="" >
+          </div>
+          <div class="form-group">
+            <label class="form-label">Телефон</label>
+            <input class="form-control" type="text" name="phone"  placeholder="" >
+          </div>
+          <div class="form-group">
+            <label class="form-label">Эл.почта</label>
+            <input class="form-control" type="text" name="email"  placeholder="" >
+          </div>
+          <div class="form-group">
+            <label class="form-label">Адрес</label>
+            <input class="form-control" type="text" name="address"  placeholder="" >
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button form="modal-create-form" type="button" class="btn-action btn-edit" onclick="closeModal('modal-create')">Отмена</button>
+        <button form="modal-create-form" type="submit" class="btn-action btn-create">Сохранить</button>
+      </div>
+    </div>
+  </div>
+  {%- endif %}
+
+  {%- if can_write('suppliers') %}
+  <div id="modal-edit" class="modal-overlay" onclick="closeOnOverlay(event,'modal-edit')">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Редактировать: Поставщик</h3>
+        <button class="modal-close" onclick="closeModal('modal-edit')">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-form">
+          <input type="hidden" name="id" id="edit-id">
+          <div class="form-group">
+            <label class="form-label">Наименование</label>
+            <input class="form-control" type="text" name="name" id="edit-name" placeholder="" >
+          </div>
+          <div class="form-group">
+            <label class="form-label">Контактное лицо</label>
+            <input class="form-control" type="text" name="contact_person" id="edit-contact_person" placeholder="" >
+          </div>
+          <div class="form-group">
+            <label class="form-label">Телефон</label>
+            <input class="form-control" type="text" name="phone" id="edit-phone" placeholder="" >
+          </div>
+          <div class="form-group">
+            <label class="form-label">Эл.почта</label>
+            <input class="form-control" type="text" name="email" id="edit-email" placeholder="" >
+          </div>
+          <div class="form-group">
+            <label class="form-label">Адрес</label>
+            <input class="form-control" type="text" name="address" id="edit-address" placeholder="" >
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-action btn-edit" onclick="closeModal('modal-edit')">Отмена</button>
+        <button type="button" class="btn-action btn-create"
+                onclick="submitEdit('/suppliers/','edit-form','modal-edit')">Сохранить</button>
+      </div>
+    </div>
+  </div>
+  {%- endif %}
+  {%- block scripts %}
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const filters = [
+        'filter-name',
+        'filter-contact',
+        'filter-phone',
+        'filter-email',
+        'filter-address'
+    ];
+    filters.forEach(id => {
+        document.getElementById(id)
+            .addEventListener('input', applyFilters);
+    });
+    applyFilters();
+});
+
+function applyFilters() {
+    const name =
+        document.getElementById('filter-name')
+            .value.toLowerCase();
+    const contact =
+        document.getElementById('filter-contact')
+            .value.toLowerCase();
+    const phone =
+        document.getElementById('filter-phone')
+            .value.toLowerCase();
+    const email =
+        document.getElementById('filter-email')
+            .value.toLowerCase();
+    const address =
+        document.getElementById('filter-address')
+            .value.toLowerCase();
+    let visibleCount = 0;
+    document.querySelectorAll(
+        '.table tbody > tr[data-id]'
+    ).forEach(row => {
+        const rowName =
+            (row.dataset.name || '')
+                .toLowerCase();
+        const rowContact =
+            (row.dataset.contact_person || '')
+                .toLowerCase();
+        const rowPhone =
+            (row.dataset.phone || '')
+                .toLowerCase();
+        const rowEmail =
+            (row.dataset.email || '')
+                .toLowerCase();
+        const rowAddress =
+            (row.dataset.address || '')
+                .toLowerCase();
+        let visible = true;
+        if (name &&
+            !rowName.includes(name))
+            visible = false;
+        if (contact &&
+            !rowContact.includes(contact))
+            visible = false;
+        if (phone &&
+            !rowPhone.includes(phone))
+            visible = false;
+        if (email &&
+            !rowEmail.includes(email))
+            visible = false;
+        if (address &&
+            !rowAddress.includes(address))
+            visible = false;
+        row.style.display =
+            visible ? '' : 'none';
+        if (visible) {
+            visibleCount++;
+        }
+    });
+    document.querySelector(
+        '.record-count'
+    ).textContent =
+        `Записей: ${visibleCount}`;
+}
+
+function resetFilters() {
+    document.getElementById('filter-name').value = '';
+    document.getElementById('filter-contact').value = '';
+    document.getElementById('filter-phone').value = '';
+    document.getElementById('filter-email').value = '';
+    document.getElementById('filter-address').value = '';
+    applyFilters();
+}
+
+    function openEditModal(id) {
+      const r = document.querySelector(`tr[data-id="${id}"]`);
+      document.getElementById('edit-id').value = id;
+      document.getElementById('edit-name').value = r.dataset.name;
+      document.getElementById('edit-contact_person').value = r.dataset.contact_person;
+      document.getElementById('edit-phone').value = r.dataset.phone;
+      document.getElementById('edit-email').value = r.dataset.email;
+      document.getElementById('edit-address').value = r.dataset.address;
+      openModal('modal-edit');
+    }
+  </script>
+  {%- endblock %}
+
+
+{% endblock %}

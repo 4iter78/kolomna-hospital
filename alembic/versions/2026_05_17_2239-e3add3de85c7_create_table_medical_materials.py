@@ -21,7 +21,7 @@ def upgrade() -> None:
     op.execute('''
         CREATE TABLE medical_materials (
             id              SERIAL PRIMARY KEY,
-            name            VARCHAR(255) NOT NULL,
+            name            VARCHAR(255) NOT NULL UNIQUE,
             material_type_id INT NOT NULL REFERENCES material_types(id),
             material_unit_id         INT NOT NULL REFERENCES material_units(id),
             description     TEXT

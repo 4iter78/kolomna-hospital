@@ -1,317 +1,217 @@
 {% extends "main.html" %}
+{% block title_img %}
+<svg width="60" height="60" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+</svg>
+{% endblock %}
 {% block content %}
 
 <div class="table-toolbar">
-
   {%- if can_write('delivery') %}
-
   <button class="btn-action btn-create"
           onclick="openModal('modal-create')">
-
+    <svg width="14" height="14"
+         viewBox="0 0 16 16"
+         fill="currentColor">
+      <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2z"/>
+    </svg>
     Создать запись
-
   </button>
-
   {%- endif %}
-
-  <span class="record-count">
-
+  <span class="record-count" id="record-count">
     Записей: {{ count }}
-
   </span>
-
 </div>
 
-
+<div class="filter-panel mb-3">
+  <div class="row">
+    <div class="col">
+      <select class="form-control table-filter"
+              id="filter-supplier"
+              data-filter-field="supplier">
+        <option value="">Все поставщики</option>
+        {% for supplier in suppliers %}
+        <option value="{{ supplier.name }}">
+          {{ supplier.name }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col">
+      <input type="date"
+             class="form-control table-filter"
+             id="filter-date-from"
+             data-filter-field="delivery_date_from">
+    </div>
+    <div class="col">
+      <input type="date"
+             class="form-control table-filter"
+             id="filter-date-to"
+             data-filter-field="delivery_date_to">
+    </div>
+    <div class="col">
+      <input type="text"
+             class="form-control table-filter"
+             id="filter-document"
+             data-filter-field="document_number"
+             placeholder="№ документа">
+    </div>
+    <div class="col">
+      <input type="text"
+             class="form-control table-filter"
+             id="filter-notes"
+             data-filter-field="notes"
+             placeholder="Комментарий">
+    </div>
+    <div class="col-auto">
+      <button type="button"
+              class="btn-action btn-edit"
+              onclick="resetTableFilters()">
+        Сбросить
+      </button>
+    </div>
+  </div>
+</div>
 
 <table class="table table-striped">
-
   <thead>
-
     <tr>
-
-      <th>ID</th>
-
-      <th>Поставщик</th>
-
-      <th>Дата приёма</th>
-
-      <th>№ документа</th>
-
-      <th>Комментарий</th>
-
+      <th class="sortable">ID</th>
+      <th class="sortable">Поставщик</th>
+      <th class="sortable">Дата поставки</th>
+      <th class="sortable">№ документа</th>
+      <th class="sortable">Комментарий</th>
       <th>Материалы</th>
-
       <th>Действия</th>
-
     </tr>
-
   </thead>
-
   <tbody>
-
     {% for delivery in deliveries %}
-
     <tr
       data-id="{{ delivery.id }}"
       data-supplier_id="{{ delivery.supplier_id }}"
+      data-supplier="{{ delivery.supplier }}"
       data-delivery_date="{{ delivery.delivery_date }}"
       data-document_number="{{ delivery.document_number }}"
       data-notes="{{ delivery.notes }}"
     >
-
+      <td>{{ delivery.id }}</td>
+      <td>{{ delivery.supplier }}</td>
+      <td>{{ delivery.delivery_date }}</td>
+      <td>{{ delivery.document_number }}</td>
+      <td>{{ delivery.notes }}</td>
       <td>
+        <details>
+          <summary>
 
-        {{ delivery.id }}
-
+          </summary>
+          <table class="table table-sm table-bordered">
+            <thead>
+              <tr>
+                <th>Тип</th>
+                <th>Материал</th>
+                <th>Количество</th>
+                <th>Цена</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in delivery.delivery_items %}
+              <tr>
+                <td>
+                  {{ item.material_type }}
+                </td>
+                <td>
+                  {{ item.medical_material }}
+                </td>
+                <td>
+                  {{ item.quantity }}
+                </td>
+                <td>
+                  {{ item.unit_price }}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </details>
       </td>
-
       <td>
-
-        {{ delivery.supplier }}
-
-      </td>
-
-      <td>
-
-        {{ delivery.delivery_date }}
-
-      </td>
-
-      <td>
-
-        {{ delivery.document_number }}
-
-      </td>
-
-      <td>
-
-        {{ delivery.notes }}
-
-      </td>
-
-
-      <!-- ===================================== -->
-      <!-- MATERIALS -->
-      <!-- ===================================== -->
-
-      <td>
-
-        <table class="table table-sm table-bordered">
-
-          <thead>
-
-            <tr>
-
-              <th>Материал</th>
-
-              <th>Количество</th>
-
-              <th>Цена</th>
-
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            {% for item in delivery.delivery_items %}
-
-            <tr>
-
-              <td>
-
-                {{ item.medical_material }}
-
-              </td>
-
-              <td>
-
-                {{ item.quantity }}
-
-              </td>
-
-              <td>
-
-                {{ item.unit_price }}
-
-              </td>
-
-            </tr>
-
-            {% endfor %}
-
-          </tbody>
-
-        </table>
-
-      </td>
-
-
-      <!-- ===================================== -->
-      <!-- ACTIONS -->
-      <!-- ===================================== -->
-
-      <td>
-
         <div class="actions-cell">
-
           {%- if can_write('delivery') %}
-
           <button class="btn-action btn-edit"
                   onclick="openEditModal({{ delivery.id }})">
-
             Изменить
-
           </button>
-
-
           <button class="btn-action btn-delete"
                   onclick="deleteRecord('/delivery/', {{ delivery.id }})">
-
             Удалить
-
           </button>
-
           {%- endif %}
-
         </div>
-
       </td>
-
     </tr>
-
     {% endfor %}
-
   </tbody>
-
 </table>
+{% endblock %}
 
-
-
-<!-- ========================================= -->
-<!-- CREATE MODAL -->
-<!-- ========================================= -->
-
+{% block modals %}
 {%- if can_write('delivery') %}
-
 <div id="modal-create"
      class="modal-overlay"
      onclick="closeOnOverlay(event,'modal-create')">
-
   <div class="modal-box modal-xl">
-
     <div class="modal-header">
-
-      <h3>Создать: Приём</h3>
-
+      <h3>Создать: Поступление медицинских материалов</h3>
       <button class="modal-close"
               onclick="closeModal('modal-create')">
-
         ✕
-
       </button>
-
     </div>
-
-
-    <form method="POST"
-          action="/delivery">
-
-      <div class="modal-body">
-
-
-        <!-- ================================= -->
-        <!-- DELIVERY DATA -->
-        <!-- ================================= -->
-
+    <div class="modal-body">
+      <form id="modal-create-form" method="POST" action="/delivery">
         <div class="form-group">
-
           <label class="form-label">
-
             Поставщик
-
           </label>
-
           <select class="form-control"
                   name="supplier_id"
                   required>
-
-            <option value="">
-              — Выберите —
-            </option>
-
+            <option value="">— Выберите —</option>
             {% for supplier in suppliers %}
-
-            <option value="{{ supplier.id }}">
-
-              {{ supplier.name }}
-
-            </option>
-
+            <option value="{{ supplier.id }}">{{ supplier.name }}</option>
             {% endfor %}
-
           </select>
-
         </div>
-
-
         <div class="form-group">
-
           <label class="form-label">
-
-            Дата приёма
-
+            Дата поставки
           </label>
-
           <input class="form-control"
                  type="date"
                  name="delivery_date"
+                 value="{{today}}"
                  required>
-
         </div>
-
-
         <div class="form-group">
-
           <label class="form-label">
-
             № документа
-
           </label>
-
           <input class="form-control"
                  type="text"
                  name="document_number"
                  required>
-
         </div>
-
-
         <div class="form-group">
-
           <label class="form-label">
-
             Комментарий
-
           </label>
-
           <textarea class="form-control"
                     name="notes"></textarea>
-
         </div>
-
-
-        <!-- ================================= -->
-        <!-- MATERIALS -->
-        <!-- ================================= -->
-
         <hr>
-
         <div class="d-flex justify-content-between align-items-center mb-2">
-
           <h4>Медицинские материалы</h4>
-
           <button type="button"
                   class="btn-action btn-create"
                   onclick="addMaterialRow()">
@@ -321,8 +221,10 @@
         <table class="table table-bordered">
           <thead>
             <tr>
+              <th>Тип материала</th>
               <th>Материал</th>
               <th>Количество</th>
+              <th>Ед измерения</th>
               <th>Цена</th>
               <th width="120"></th>
             </tr>
@@ -330,36 +232,30 @@
           <tbody id="materials-body">
           </tbody>
         </table>
-      </div>
-      <div class="modal-footer">
-        <button type="button"
-                class="btn-action btn-edit"
-                onclick="closeModal('modal-create')">
-          Отмена
-        </button>
-
-        <button type="submit"
-                class="btn-action btn-create">
-          Сохранить
-        </button>
-      </div>
-    </form>
+	  <div class="modal-footer">
+		<button form="modal-create-form" type="button"
+				class="btn-action btn-edit"
+				onclick="closeModal('modal-create')">
+		  Отмена
+		</button>
+		<button form="modal-create-form" type="submit"
+				class="btn-action btn-create">
+		  Сохранить
+		</button>
+	  </div>
+      </form>
+    </div>
   </div>
 </div>
 {%- endif %}
 
-<!-- ========================================= -->
-<!-- EDIT MODAL -->
-<!-- ========================================= -->
-
 {%- if can_write('delivery') %}
-
 <div id="modal-edit"
      class="modal-overlay"
-     onclick="submitDeliveryEdit()">
+     onclick="closeOnOverlay(event,'modal-edit')">
   <div class="modal-box modal-xl">
     <div class="modal-header">
-      <h3>Редактировать: Приём</h3>
+      <h3>Редактировать: Поступление медицинских материалов</h3>
       <button class="modal-close"
               onclick="closeModal('modal-edit')">
         ✕
@@ -387,7 +283,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">
-            Дата приёма
+            Дата поставки
           </label>
           <input class="form-control"
                  type="date"
@@ -427,8 +323,10 @@
         <table class="table table-bordered">
           <thead>
             <tr>
+              <th>Тип материала</th>
               <th>Материал</th>
               <th>Количество</th>
+              <th>Ед измерения</th>
               <th>Цена</th>
               <th width="120"></th>
             </tr>
@@ -446,71 +344,79 @@
       </button>
       <button type="button"
               class="btn-action btn-create"
-                onclick="submitEdit('/delivery/','edit-form','modal-edit')">
+                onclick="submitDeliveryEdit()">
         Сохранить
       </button>
     </div>
   </div>
 </div>
-
 {%- endif %}
 
 {% block scripts %}
 
 <script>
 
-//
-// CREATE MATERIAL ROW
-//
-
 function addMaterialRow() {
-
     const tbody =
         document.getElementById(
             'materials-body'
         );
-
     const row =
         document.createElement('tr');
 
     row.innerHTML = `
-
         <td>
-
+            <select
+                class="form-control"
+                name="material_type_id[]"
+                required>
+                <option value="">
+                    — Выберите —
+                </option>
+                {% for material_type in material_types %}
+                <option value="{{ material_type.id }}">
+                    {{ material_type.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </td>
+        <td>
             <select
                 class="form-control"
                 name="medical_material_id[]"
                 required>
-
                 <option value="">
                     — Выберите —
                 </option>
-
                 {% for material in materials %}
-
                 <option value="{{ material.id }}">
-
                     {{ material.name }}
-
                 </option>
-
                 {% endfor %}
-
             </select>
-
         </td>
-
         <td>
-
             <input type="number"
                    class="form-control"
                    name="quantity[]"
                    required>
-
         </td>
-
         <td>
-
+            <select
+                class="form-control"
+                name="material_unit_id[]"
+                required>
+                <option value="">
+                    — Выберите —
+                </option>
+                {% for material_unit in material_units %}
+                <option value="{{ material_unit.id }}">
+                    {{ material_unit.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </td>
+        <td>
             <input type="number"
                    step="0.01"
                    class="form-control"
@@ -518,51 +424,28 @@ function addMaterialRow() {
                    required>
 
         </td>
-
         <td>
-
             <button type="button"
                     class="btn-action btn-delete"
                     onclick="removeRow(this)">
-
                 Удалить
-
             </button>
-
         </td>
     `;
-
     tbody.appendChild(row);
 }
 
-
-
-//
-// REMOVE ROW
-//
-
 function removeRow(btn) {
-
     btn.closest('tr').remove();
 }
 
-
-
-//
-// OPEN EDIT
-//
-
 async function openEditModal(id) {
-
     const response = await fetch(
         `/delivery/${id}`
     );
-
     const data = await response.json();
-
+    console.log("data for openEditModal", data)
     const delivery = data.delivery;
-
-    // MAIN DATA
 
     document.getElementById(
         'edit-id'
@@ -574,7 +457,7 @@ async function openEditModal(id) {
 
     document.getElementById(
         'edit-delivery_date'
-    ).value = delivery.delivery_date;
+    ).value = new Date(delivery.delivery_date).toISOString().split('T')[0];
 
     document.getElementById(
         'edit-document_number'
@@ -584,8 +467,6 @@ async function openEditModal(id) {
         'edit-notes'
     ).value = delivery.notes || '';
 
-    // MATERIALS
-
     const tbody =
         document.getElementById(
             'edit-materials-body'
@@ -594,84 +475,85 @@ async function openEditModal(id) {
     tbody.innerHTML = '';
 
     for (const item of delivery.delivery_items) {
-
         addEditMaterialRow(item);
     }
-
     openModal('modal-edit');
 }
 
-
-
-//
-// ADD EDIT MATERIAL ROW
-//
-
 function addEditMaterialRow(item = null) {
-
     const tbody =
         document.getElementById(
             'edit-materials-body'
         );
-
     const row =
         document.createElement('tr');
-
     row.innerHTML = `
-
         <td>
-
+            <select
+                class="form-control material-type-select"
+                required>
+                <option value="">
+                    — Выберите —
+                </option>
+                {% for material_type in material_types %}
+                <option value="{{ material_type.id }}">
+                    {{ material_type.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </td>
+        <td>
             <select
                 class="form-control material-select"
                 required>
-
                 {% for material in materials %}
-
                 <option value="{{ material.id }}">
-
                     {{ material.name }}
-
                 </option>
-
                 {% endfor %}
-
             </select>
-
         </td>
-
         <td>
-
             <input type="number"
                    class="form-control quantity-input"
                    required>
-
         </td>
-
         <td>
-
+            <select
+                class="form-control material-unit-select"
+                required>
+                <option value="">
+                    — Выберите —
+                </option>
+                {% for material_unit in material_units %}
+                <option value="{{ material_unit.id }}">
+                    {{ material_unit.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </td>
+        <td>
             <input type="number"
                    step="0.01"
                    class="form-control price-input"
                    required>
-
         </td>
-
         <td>
-
             <button type="button"
                     class="btn-action btn-delete"
                     onclick="removeRow(this)">
-
                 Удалить
-
             </button>
-
         </td>
     `;
 
     tbody.appendChild(row);
 
     if (item) {
+
+        row.querySelector(
+            '.material-type-select'
+        ).value = item.material_type_id;
 
         row.querySelector(
             '.material-select'
@@ -682,16 +564,14 @@ function addEditMaterialRow(item = null) {
         ).value = item.quantity;
 
         row.querySelector(
+            '.material-unit-select'
+        ).value = item.material_unit_id;
+
+        row.querySelector(
             '.price-input'
         ).value = item.unit_price;
     }
 }
-
-
-
-//
-// CUSTOM DELIVERY EDIT
-//
 
 async function submitDeliveryEdit() {
 
@@ -710,6 +590,11 @@ async function submitDeliveryEdit() {
 
         delivery_items.push({
 
+            material_type_id:
+                row.querySelector(
+                    '.material-type-select'
+                ).value,
+
             medical_material_id:
                 row.querySelector(
                     '.material-select'
@@ -718,6 +603,11 @@ async function submitDeliveryEdit() {
             quantity:
                 row.querySelector(
                     '.quantity-input'
+                ).value,
+
+            material_unit_id:
+                row.querySelector(
+                    '.material-unit-select'
                 ).value,
 
             unit_price:
@@ -754,42 +644,29 @@ async function submitDeliveryEdit() {
     };
 
     const response = await fetch(
-
         `/delivery/${id}`,
-
         {
-
             method: 'PUT',
-
             headers: {
-
                 'Content-Type':
                     'application/json'
             },
-
             body:
                 JSON.stringify(payload)
         }
     );
 
     const result = await response.json();
-
     showToast(
         result.message || 'Запись обновлена',
         'success'
     );
-
     closeModal('modal-edit');
-
     setTimeout(function () {
-
         location.reload();
-
     }, 800);
 }
-
 </script>
-
 {% endblock %}
 
 {% endblock %}

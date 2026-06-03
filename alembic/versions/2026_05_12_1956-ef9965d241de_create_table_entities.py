@@ -1,7 +1,7 @@
 """create table entities
 
 Revision ID: ef9965d241de
-Revises: d97ba21c19b5
+Revises: 0d8e536836ce
 Create Date: 2026-05-12 19:56:48.242665
 
 """
@@ -11,7 +11,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = 'ef9965d241de'
-down_revision: Union[str, Sequence[str], None] = 'd97ba21c19b5'
+down_revision: Union[str, Sequence[str], None] = '0d8e536836ce'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
