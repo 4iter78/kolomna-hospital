@@ -33,35 +33,11 @@
   {% if can_read('written_off') %}
   <a href="/written_off"     class="btn-action btn-create">Списанные медматериалы</a>
   {% endif %}
-  {% if can_read('patients') %}
-  <a href="/patients"       class="btn-action btn-create">Пациенты</a>
+  {% if can_read('material_types') %}
+  <a href="/material_types"      class="btn-action btn-create">Типы материалов</a>
   {% endif %}
-  {% if can_read('health_cards') %}
-  <a href="/health_cards"   class="btn-action btn-create">Медицинские карты</a>
-  {% endif %}
-  {% if can_read('appointments') %}
-  <a href="/appointments"   class="btn-action btn-create">Приёмы</a>
-  {% endif %}
-  {% if can_read('work_timetable') %}
-  <a href="/work_timetable" class="btn-action btn-create">Расписание работы</a>
-  {% endif %}
-  {% if can_read('clean_timetable') %}
-  <a href="/clean_timetable"class="btn-action btn-create">Расписание уборки</a>
-  {% endif %}
-  {% if can_read('diagnosises') %}
-  <a href="/diagnosises"    class="btn-action btn-create">Диагнозы</a>
-  {% endif %}
-  {% if can_read('drugs') %}
-  <a href="/drugs"          class="btn-action btn-create">Препараты</a>
-  {% endif %}
-  {% if can_read('treatment_types') %}
-  <a href="/treatment_types"class="btn-action btn-create">Типы лечения</a>
-  {% endif %}
-  {% if can_read('room_type') %}
-  <a href="/room_type"      class="btn-action btn-create">Типы помещений</a>
-  {% endif %}
-  {% if can_read('rooms') %}
-  <a href="/rooms"          class="btn-action btn-create">Помещения</a>
+  {% if can_read('material_units') %}
+  <a href="/material_units"          class="btn-action btn-create">Единицы измерения</a>
   {% endif %}
 
 </div>

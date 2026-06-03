@@ -8,9 +8,6 @@ Create Date: 2026-06-03 05:41:41.848321
 from typing import Sequence, Union
 
 from alembic import op
-import sqlalchemy as sa
-from sqlalchemy import text
-
 
 # revision identifiers, used by Alembic.
 revision: str = 'ce46d24c0112'
@@ -27,7 +24,6 @@ def upgrade() -> None:
         FOR EACH ROW
         EXECUTE FUNCTION trg_issue_items_after_update();
     ''')
-    pass
 
 
 def downgrade() -> None:
@@ -35,4 +31,3 @@ def downgrade() -> None:
     op.execute('''
         DROP TRIGGER IF EXISTS after_issue_item_update ON issue_items;
     ''')
-    pass
