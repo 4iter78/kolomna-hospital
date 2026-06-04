@@ -237,6 +237,7 @@
             <tr>
               <th>Тип</th>
               <th>Материал</th>
+              <th>Всего</th>
               <th>Количество</th>
               <th>Ед. изм.</th>
               <th width="120"></th>
@@ -346,6 +347,7 @@
             <tr>
               <th>Тип</th>
               <th>Материал</th>
+              <th>Всего</th>
               <th>Количество</th>
               <th>Ед. изм.</th>
               <th width="120"></th>
@@ -374,6 +376,22 @@
 
 {% block scripts %}
 <script>
+
+  document.getElementById('modal-create-form')
+  .addEventListener('submit', function (e) {
+
+      const rows = document.querySelectorAll('#issue-materials-body tr');
+
+      if (rows.length === 0) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
+          alert('Добавьте хотя бы один материал');
+
+          return false;
+      }
+  });
+
   function issueMaterialChanged(select) {
     const row = select.closest('tr');
     const selectedOption =
@@ -382,12 +400,17 @@
         selectedOption.dataset.typeId;
     const materialUnitId =
         selectedOption.dataset.unitId;
+    const tableQuantity =
+        selectedOption.dataset.tableQuantity;
     row.querySelector(
         '[name="material_type_id[]"]'
     ).value = materialTypeId;
     row.querySelector(
         '[name="material_unit_id[]"]'
     ).value = materialUnitId;
+    row.querySelector(
+        '[name="table_quantity[]"]'
+    ).value = tableQuantity;
   }
 
 function issueMaterialChangedEdit(select) {
@@ -406,6 +429,11 @@ function issueMaterialChangedEdit(select) {
         '.material-unit-select'
     ).value =
         selectedOption.dataset.unitId;
+
+    row.querySelector(
+        '.table-quantity-input'
+    ).value =
+        selectedOption.dataset.tableQuantity;
 }
 
 function removeRow(btn) {
@@ -446,12 +474,19 @@ function addIssueMaterialRow() {
                 <option
                     value="{{ material.id }}"
                     data-type-id="{{ material.material_type_id }}"
-                    data-unit-id="{{ material.material_unit_id }}">
+                    data-unit-id="{{ material.material_unit_id }}"
+                    data-table-quantity="{{ material.table_quantity }}">
                     {{ material.name }}
                 </option>
                 {% endfor %}
             </select>
-          </td>
+        </td>
+        <td>
+            <input type="text"
+                class="form-control"
+                name="table_quantity[]"
+                disabled>
+        </td>
         <td>
             <input
                 type="number"
@@ -555,14 +590,22 @@ function addEditIssueMaterialRow(item = null) {
                 class="form-control material-select"
                 onchange="issueMaterialChangedEdit(this)"
                 required>
+                <option value="">
+                </option>
                 {% for material in materials %}
                 <option value="{{ material.id }}"
                     data-type-id="{{ material.material_type_id }}"
-                    data-unit-id="{{ material.material_unit_id }}">
+                    data-unit-id="{{ material.material_unit_id }}"
+                    data-table-quantity="{{ material.table_quantity }}">
                     {{ material.name }}
                 </option>
                 {% endfor %}
             </select>
+        </td>
+        <td>
+            <input type="text"
+                   class="form-control table-quantity-input"
+                   disabled>
         </td>
         <td>
             <input type="number"
@@ -602,6 +645,11 @@ function addEditIssueMaterialRow(item = null) {
           item.medical_material_id;
 
       row.querySelector(
+          '.table-quantity-input'
+      ).value = item.table_quantity;
+
+
+      row.querySelector(
           '.quantity-input'
       ).value = item.quantity;
 
@@ -612,13 +660,21 @@ function addEditIssueMaterialRow(item = null) {
 }
 
 async function submitIssueEdit() {
-    const id =
-        document.getElementById(
-            'edit-id'
-        ).value;
+    const id = document.getElementById('edit-id').value;
     const rows = document.querySelectorAll(
         '#edit-issue-materials-body tr'
     );
+
+    if (rows.length === 0) {
+        alert('Добавьте хотя бы один материал');
+        return;
+    }
+
+    const form = document.getElementById('edit-form');
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
     const issue_items = [];
     rows.forEach(row => {
         issue_items.push({
@@ -629,6 +685,11 @@ async function submitIssueEdit() {
             medical_material_id:
                 row.querySelector(
                     '.material-select'
+                ).value,
+
+            table_quantity:
+                row.querySelector(
+                    '.table-quantity-input'
                 ).value,
 
             quantity:

@@ -93,7 +93,7 @@
       data-supplier="{{ delivery.supplier }}"
       data-delivery_date="{{ delivery.delivery_date }}"
       data-document_number="{{ delivery.document_number }}"
-      data-notes="{{ delivery.notes }}"
+      data-notes="{{ delivery.notes or '' }}"
     >
       <td>{{ delivery.id }}</td>
       <td>{{ delivery.supplier }}</td>
@@ -117,18 +117,10 @@
             <tbody>
               {% for item in delivery.delivery_items %}
               <tr>
-                <td>
-                  {{ item.material_type }}
-                </td>
-                <td>
-                  {{ item.medical_material }}
-                </td>
-                <td>
-                  {{ item.quantity }}
-                </td>
-                <td>
-                  {{ item.unit_price }}
-                </td>
+                <td>{{ item.material_type }}</td>
+                <td>{{ item.medical_material }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unit_price }}</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -157,8 +149,7 @@
 
 {% block modals %}
 {%- if can_write('delivery') %}
-<div id="modal-create"
-     class="modal-overlay"
+<div id="modal-create" class="modal-overlay"
      onclick="closeOnOverlay(event,'modal-create')">
   <div class="modal-box modal-xl">
     <div class="modal-header">
@@ -171,9 +162,7 @@
     <div class="modal-body">
       <form id="modal-create-form" method="POST" action="/delivery">
         <div class="form-group">
-          <label class="form-label">
-            Поставщик
-          </label>
+          <label class="form-label">Поставщик</label>
           <select class="form-control"
                   name="supplier_id"
                   required>
@@ -184,9 +173,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">
-            Дата поставки
-          </label>
+          <label class="form-label">Дата поставки</label>
           <input class="form-control"
                  type="date"
                  name="delivery_date"
@@ -214,9 +201,7 @@
           <h4>Медицинские материалы</h4>
           <button type="button"
                   class="btn-action btn-create"
-                  onclick="addMaterialRow()">
-            Добавить материал
-          </button>
+                  onclick="addMaterialRow()">Добавить материал</button>
         </div>
         <table class="table table-bordered">
           <thead>
@@ -232,19 +217,15 @@
           <tbody id="materials-body">
           </tbody>
         </table>
+      </form>
+    </div>
 	  <div class="modal-footer">
 		<button form="modal-create-form" type="button"
 				class="btn-action btn-edit"
-				onclick="closeModal('modal-create')">
-		  Отмена
-		</button>
+				onclick="closeModal('modal-create')">Отмена</button>
 		<button form="modal-create-form" type="submit"
-				class="btn-action btn-create">
-		  Сохранить
-		</button>
-	  </div>
-      </form>
-    </div>
+				class="btn-action btn-create">Сохранить</button>
+      </div>
   </div>
 </div>
 {%- endif %}
@@ -323,7 +304,7 @@
         <table class="table table-bordered">
           <thead>
             <tr>
-              <th>Тип материала</th>
+              <th>Тип</th>
               <th>Материал</th>
               <th>Количество</th>
               <th>Ед. изм.</th>
@@ -344,7 +325,7 @@
       </button>
       <button type="button"
               class="btn-action btn-create"
-                onclick="submitDeliveryEdit()">
+              onclick="submitDeliveryEdit()">
         Сохранить
       </button>
     </div>
@@ -354,6 +335,22 @@
 
 {% block scripts %}
 <script>
+
+  document.getElementById('modal-create-form')
+  .addEventListener('submit', function (e) {
+
+    const rows = document.querySelectorAll('#materials-body tr');
+
+    if (rows.length === 0) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        alert('Добавьте хотя бы один материал');
+
+        return false;
+    }
+});
+
   function materialChanged(select) {
     const row = select.closest('tr');
     const selectedOption =
@@ -427,7 +424,7 @@ function addMaterialRow() {
                 </option>
                 {% endfor %}
             </select>
-        </td>
+          </td>
         <td>
             <input
                 type="number"
@@ -478,7 +475,6 @@ async function openEditModal(id) {
         `/delivery/${id}`
     );
     const data = await response.json();
-    console.log("data for openEditModal", data)
     const delivery = data.delivery;
 
     document.getElementById(
@@ -540,6 +536,8 @@ function addEditMaterialRow(item = null) {
                 class="form-control material-select"
                 onchange="materialChangedEdit(this)"
                 required>
+                <option value="">
+                </option>
                 {% for material in materials %}
                 <option value="{{ material.id }}"
                     data-type-id="{{ material.material_type_id }}"
@@ -585,43 +583,47 @@ function addEditMaterialRow(item = null) {
     tbody.appendChild(row);
 
     if (item) {
+      row.querySelector(
+          '.material-type-select'
+      ).value = item.material_type_id;
 
-        row.querySelector(
-            '.material-type-select'
-        ).value = item.material_type_id;
+      row.querySelector(
+          '.material-select'
+      ).value = item.medical_material_id;
 
-        row.querySelector(
-            '.material-select'
-        ).value = item.medical_material_id;
+      row.querySelector(
+          '.quantity-input'
+      ).value = item.quantity;
 
-        row.querySelector(
-            '.quantity-input'
-        ).value = item.quantity;
+      row.querySelector(
+          '.material-unit-select'
+      ).value = item.material_unit_id;
 
-        row.querySelector(
-            '.material-unit-select'
-        ).value = item.material_unit_id;
-
-        row.querySelector(
-            '.price-input'
-        ).value = item.unit_price;
+      row.querySelector(
+          '.price-input'
+      ).value = item.unit_price;
     }
 }
 
 async function submitDeliveryEdit() {
-
-    const id =
-        document.getElementById(
-            'edit-id'
-        ).value;
+    const id = document.getElementById('edit-id').value;
     const rows = document.querySelectorAll(
         '#edit-materials-body tr'
     );
+
+    if (rows.length === 0) {
+        alert('Добавьте хотя бы один материал');
+        return;
+    }
+
+    const form = document.getElementById('edit-form');
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
     const delivery_items = [];
     rows.forEach(row => {
-
         delivery_items.push({
-
             material_type_id:
                 row.querySelector(
                     '.material-type-select'

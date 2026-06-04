@@ -22,6 +22,7 @@ def handle_user_roles():
                   'success')
         except Exception as e:
             db.session.rollback()
+            print(e)
             flash(f"Роль не может быть создана. {str(e)}", "danger")
         return redirect(url_for('user_roles_controller.handle_user_roles'))
 
@@ -61,6 +62,7 @@ def handle_user_role(user_role_id):
             return {"success": True, "message": f"Роль {user_role.name} успешно обновлена"}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Роль {user_role.name} не может быть обновлена. {str(e)}"}, 400
 
     elif request.method == 'DELETE':
@@ -70,4 +72,5 @@ def handle_user_role(user_role_id):
             return {"success": True, "message": f"Роль {user_role.name} успешно удалена."}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Роль {user_role.name} не может быть удалена. {str(e)}"}, 400

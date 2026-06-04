@@ -15,9 +15,7 @@ users_controller = Blueprint('users_controller', __name__)
 @users_controller.route('/users', methods=['POST', 'GET'])
 @access_control('users')
 def handle_users():
-    print(f'handle_users')
     if request.method == 'POST':
-        print(f'method post in users')
         try:
             data = request.get_json() if request.is_json else request.form
             new_user = Users(surname=data['surname'],
@@ -37,6 +35,7 @@ def handle_users():
                   f"{new_user.id} успешно создан.", 'success')
         except Exception as e:
             db.session.rollback()
+            print(e)
             flash(f"Пользователь не может быть создан. {str(e)}", "danger")
         return redirect(url_for('users_controller.handle_users'))
 
@@ -134,6 +133,7 @@ def handle_user(user_id):
                                                 f"успешно обновлен"}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Пользователь {user.surname} {user.name} {user.second_name} "
                                                  f"не может быть обновлен. {str(e)}"}, 400
 
@@ -146,5 +146,6 @@ def handle_user(user_id):
                                                 f"успешно удален."}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Пользователь {user.surname} {user.name} {user.second_name} "
                                                  f"не может быть удален. {str(e)}"}, 400

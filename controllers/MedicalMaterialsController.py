@@ -39,6 +39,7 @@ def handle_medical_materials():
             flash(f'Материал "{material.name}" успешно создан','success')
         except Exception as e:
             db.session.rollback()
+            print(e)
             flash(f"Материал не может быть создан. {str(e)}", 'danger')
         return redirect(
             url_for(
@@ -139,6 +140,7 @@ def handle_medical_material(material_id):
             return {"success": True, "message": f"Материал {material.id} успешно обновлен"}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Материал {material.name} не может быть обновлен. {str(e)}"}, 400
 
     elif request.method == 'DELETE':
@@ -148,4 +150,5 @@ def handle_medical_material(material_id):
             return {"success": True, "message": f"Материал {material.id} успешно удален"}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Материал {material.name} не может быть удален. {str(e)}"}, 400

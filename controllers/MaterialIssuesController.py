@@ -13,6 +13,7 @@ from flask import (
 from app import db_connection
 
 from decorators import access_control
+from models.MaterialBalances import MaterialBalances
 from models.MaterialTypes import MaterialTypes
 from models.MaterialUnits import MaterialUnits
 
@@ -52,6 +53,9 @@ def handle_issue():
             material_ids = request.form.getlist(
                 'medical_material_id[]'
             )
+
+            if len(material_ids) == 0:
+                raise Exception("Добавьте хотя бы один материал в поставку")
             quantities = request.form.getlist(
                 'quantity[]'
             )
@@ -66,6 +70,7 @@ def handle_issue():
             flash(f'Выдача #{new_issue.id} успешно создана.','success')
         except Exception as e:
             db.session.rollback()
+            print(e)
             flash(f"Выдача не может быть создана. {str(e)}", "danger")
         return redirect(url_for('material_issues_controller.handle_issue'))
 
@@ -159,15 +164,25 @@ def handle_issue():
 
             for department in Departments.query.all()
         ]
-        materials = [
-            {
+        store_id = Departments.query.filter_by(name='Склад').first().id
+
+        materials = []
+        for material in MedicalMaterials.query.all():
+
+            balance = MaterialBalances.query.filter_by(medical_material_id=material.id,
+                                                       department_id=store_id).first()
+            material_unit = MaterialUnits.query.get(material.material_unit_id)
+            item = {
                 "id": material.id,
                 "name": material.name,
                 "material_type_id": material.material_type_id,
-                "material_unit_id": material.material_unit_id
+                "material_unit_id": material.material_unit_id,
+                "table_quantity": f'{balance.current_quantity if balance else 0} {material_unit.short_name}'
             }
-            for material in MedicalMaterials.query.all()
-        ]
+
+            materials.append(item)
+
+
         material_types = [
             {
                 "id": material_type.id,
@@ -211,7 +226,6 @@ def handle_issue_item(issue_id):
         issue_items = IssueItems.query.filter_by(
             material_issue_id=issue.id
         ).all()
-        print(f"issue items in GET {issue_items}")
         items = []
         for item in issue_items:
             material = MedicalMaterials.query.get(
@@ -288,6 +302,8 @@ def handle_issue_item(issue_id):
             old_items = IssueItems.query.filter_by(
                 material_issue_id=issue.id
             ).all()
+            if len(old_items) == 0:
+                raise Exception("Добавьте хотя бы один материал")
             for item in old_items:
                 db.session.delete(item)
             for item_data in data['issue_items']:
@@ -302,6 +318,7 @@ def handle_issue_item(issue_id):
             return {"success": True, "message": f"Выдача {issue.id} успешно обновлена"}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Выдача {issue.id} не может быть обновлена. {str(e)}"}, 400
 
     elif request.method == 'DELETE':
@@ -316,4 +333,5 @@ def handle_issue_item(issue_id):
             return {"success": True, "message": f"Выдача {issue.id} успешно удалена"}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Выдача {issue.name} не может быть удалена. {str(e)}"}, 400

@@ -27,6 +27,7 @@ def handle_suppliers():
                   f"{new_supplier.id} успешно создан.", 'success')
         except Exception as e:
             db.session.rollback()
+            print(e)
             flash(f"Поставщик не может быть создан. {str(e)}", "danger")
         return redirect(url_for('suppliers_controller.handle_suppliers'))
 
@@ -79,6 +80,7 @@ def handle_supplier(supplier_id):
             return {"success": True, "message": f"Поставщик {supplier.name} успешно обновлен"}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Поставщик {supplier.name} не может быть обновлено. {str(e)}"}, 400
 
     elif request.method == 'DELETE':
@@ -88,4 +90,5 @@ def handle_supplier(supplier_id):
             return {"success": True, "message": f"Поставщик {supplier.name} успешно удален."}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Поставщик {supplier.name} не может быть удалено. {str(e)}"}, 400

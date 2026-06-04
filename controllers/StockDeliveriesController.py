@@ -48,7 +48,8 @@ def handle_delivery():
             material_ids = request.form.getlist(
                 'medical_material_id[]'
             )
-
+            if len(material_ids) == 0:
+                raise Exception("Добавьте хотя бы один материал в поставку")
             quantities = request.form.getlist(
                 'quantity[]'
             )
@@ -67,6 +68,7 @@ def handle_delivery():
             flash(f'Поставка #{new_delivery.id} успешно создана.', 'success')
         except Exception as e:
             db.session.rollback()
+            print(e)
             flash(f"Поставка не может быть создана. {str(e)}", "danger")
         return redirect(url_for('stock_deliveries_controller.handle_delivery'))
 
@@ -262,7 +264,8 @@ def handle_delivery_item(delivery_id):
             old_items = DeliveryItems.query.filter_by(
                 stock_delivery_id=delivery.id
             ).all()
-
+            if len(old_items) == 0:
+                raise Exception("Добавьте хотя бы один материал")
             for item in old_items:
                 db.session.delete(item)
             for item_data in data['delivery_items']:
@@ -278,6 +281,7 @@ def handle_delivery_item(delivery_id):
             return {"success": True, "message": f"Поступление {delivery.id} успешно обновлено"}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Поступление {delivery.id} не может быть обновлено. {str(e)}"}, 400
 
     elif request.method == 'DELETE':
@@ -292,5 +296,6 @@ def handle_delivery_item(delivery_id):
             return {"success": True, "message": f"Поступление {delivery.id} успешно удалена"}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Поступление {delivery.name} не может быть удалена. {str(e)}"}, 400
 

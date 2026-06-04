@@ -21,6 +21,7 @@ def handle_material_types():
                   f"{new_material_type.id} успешно создан.", 'success')
         except Exception as e:
             db.session.rollback()
+            print(e)
             flash(f"Тип материала не может быть создан. {str(e)}", "danger")
         return redirect(url_for('material_types_controller.handle_material_types'))
 
@@ -48,6 +49,7 @@ def handle_material_type(material_types_id):
             return {"success": True, "message": f"Тип материала {material_type.name} успешно обновлен"}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Тип материала {material_type.name} не может быть обновлен. {str(e)}"}, 400
 
     elif request.method == 'DELETE':
@@ -57,4 +59,5 @@ def handle_material_type(material_types_id):
             return {"success": True, "message": f"Тип материала {material_type.name} успешно удален."}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Тип материала {material_type.name} не может быть удален. {str(e)}"}, 400

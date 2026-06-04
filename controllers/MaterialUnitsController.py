@@ -21,6 +21,7 @@ def handle_material_units():
                   f"{new_material_unit.id} успешно создана.", 'success')
         except Exception as e:
             db.session.rollback()
+            print(e)
             flash(f"Единица измерения не может быть создана. {str(e)}", "danger")
         return redirect(url_for('material_units_controller.handle_material_units'))
 
@@ -50,6 +51,7 @@ def handle_material_unit(material_units_id):
             return {"success": True, "message": f"Единица измерения {material_unit.name} успешно обновлена"}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Единица измерения {material_unit.name} не может быть обновлен. "
                                                  f"{str(e)}"}, 400
 
@@ -60,5 +62,6 @@ def handle_material_unit(material_units_id):
             return {"success": True, "message": f"Единица измерения {material_unit.name} успешно удалена."}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Единица измерения {material_unit.name} не может быть удален. "
                                                  f"{str(e)}"}, 400

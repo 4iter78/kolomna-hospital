@@ -184,6 +184,7 @@ def handle_issued_item(issued_id):
             return {"success": True, "message": f"Материал {material.name} успешно выдан."}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Материал {material.name} не может быть выдан. {str(e)}"}, 400
 
 
@@ -217,6 +218,7 @@ def handle_written_off_item(written_off_id):
             return {"success": True, "message": f"Материал #{material.name} успешно списан."}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Материал {material.name} не может быть списан. {str(e)}"}, 400
 
 

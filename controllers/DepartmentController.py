@@ -20,6 +20,7 @@ def handle_departments():
                   f"успешно создано.", 'success')
         except Exception as e:
             db.session.rollback()
+            print(e)
             flash(f"Отделение не может быть создано. {str(e)}", "danger")
         return redirect(url_for('department_controller.handle_departments'))
 
@@ -47,6 +48,7 @@ def handle_department(department_id):
             return {"success": True, "message": f"Отделение {department.name} успешно обновлено"}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Отделение {department.name} не может быть обновлено. {str(e)}"}, 400
 
     elif request.method == 'DELETE':
@@ -56,4 +58,5 @@ def handle_department(department_id):
             return {"success": True, "message": f"Отделение {department.name} успешно удалено."}
         except Exception as e:
             db.session.rollback()
+            print(e)
             return {"success": False, "message": f"Отделение {department.name} не может быть удалено. {str(e)}"}, 400
