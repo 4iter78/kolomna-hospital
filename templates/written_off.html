@@ -95,12 +95,13 @@
     data-from_user="{{ item.current_user }}"
     data-medical_material="{{ item.medical_material }}"
     data-document_number="{{ item.document_number }}"
-    data-operation_date="{{ item.operation_date }}">
+    data-operation_date="{{ item.operation_date }}"
+    data-quantity="{{ item.quantity }}">
       <td>{{ item.id }}</td>
       <td>{{ item.department }}</td>
       <td>{{ item.current_user }}</td>
       <td>{{ item.medical_material }}</td>
-      <td>{{ item.table_quantity }}</td>
+      <td data-sort="{{ item.quantity }}">{{ item.table_quantity }}</td>
       <td>{{ item.document_number }}</td>
       <td>{{ item.operation_date.strftime('%d.%m.%Y %H:%M') }}</td>
     </tr>

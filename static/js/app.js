@@ -132,11 +132,11 @@ function sortTable(th, columnIndex) {
     const asc = sortDirections[key];
     rows.sort((a, b) => {
         let aVal =
-            a.cells[columnIndex]
-                .innerText.trim();
+            a.cells[columnIndex].dataset.sort ??
+            a.cells[columnIndex].innerText.trim();
         let bVal =
-            b.cells[columnIndex]
-                .innerText.trim();
+            b.cells[columnIndex].dataset.sort ??
+            b.cells[columnIndex].innerText.trim();
         const numA = Number(aVal);
         const numB = Number(bVal);
         if (!isNaN(numA) && !isNaN(numB)) {
