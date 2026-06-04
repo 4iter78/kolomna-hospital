@@ -86,7 +86,6 @@
       <th class="sortable">Количество</th>
       <th class="sortable">Дата обновления</th>
       <th data-export="false">Действия</th>
-      <td>
     </tr>
   </thead>
   <tbody>
@@ -105,7 +104,7 @@
       <td>{{ item.id }}</td>
       <td>{{ item.department }}</td>
       <td>{{ item.medical_material }}</td>
-      <td>{{ item.table_quantity }}</td>
+      <td data-sort="{{ item.current_quantity }}">{{ item.table_quantity }}</td>
       <td>{{ item.last_updated.strftime('%d.%m.%Y %H:%M') }}</td>
       <td><div class="actions-cell">
           {%- if can_write('written_off')  %}
