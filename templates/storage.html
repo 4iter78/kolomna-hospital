@@ -7,6 +7,19 @@
 {% block content %}
 
   <div class="table-toolbar">
+    <div>
+      <a href="{{ url_for('material_balances_controller.export_storage_excel') }}"
+         class="btn-action btn-edit">
+          Полный экспорт в Excel
+      </a>
+      <button
+          type="button"
+          class="btn-action btn-edit"
+          onclick="exportVisibleRowsToExcel(
+              '.table',
+              'material_balances_filter.xlsx')">Видимые строки в Excel
+      </button>
+    </div>
     <span id="record-count" class="record-count">Записей: {{ count }}</span>
   </div>
 
@@ -67,12 +80,12 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th class="sortable">ID</th>
+      <th class="sortable" data-export="false">ID</th>
       <th class="sortable">Отделение</th>
       <th class="sortable">Медицинский материал</th>
       <th class="sortable">Количество</th>
       <th class="sortable">Дата обновления</th>
-      <th>Действия</th>
+      <th data-export="false">Действия</th>
       <td>
     </tr>
   </thead>

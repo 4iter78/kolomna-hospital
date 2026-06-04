@@ -27,6 +27,18 @@ material_balances_controller = Blueprint(
 )
 
 
+def autosize_columns(ws):
+    for column in ws.columns:
+        max_length = max(
+            len(str(cell.value))
+            for cell in column
+            if cell.value
+        )
+        ws.column_dimensions[
+            column[0].column_letter
+        ].width = min(max_length + 3, 50)
+
+
 @material_balances_controller.route('/storage',methods=['GET'])
 @access_control('storage')
 def handle_storage():
@@ -92,6 +104,88 @@ def handle_storage():
         materials=materials,
         departments=departments,
         count=len(available)
+    )
+
+
+@material_balances_controller.route('/storage/export')
+@access_control('storage')
+def export_storage_excel():
+
+    balances = MaterialBalances.query.all()
+
+    rows = []
+
+    for balance in balances:
+        material = MedicalMaterials.query.get(
+            balance.medical_material_id
+        )
+        department = Departments.query.get(
+            balance.department_id
+        )
+        unit = None
+        if material:
+            unit = MaterialUnits.query.get(
+                material.material_unit_id
+            )
+        rows.append({
+            'department':
+                department.name if department else '',
+            'material':
+                material.name if material else '',
+            'quantity':
+                f'{balance.current_quantity} {unit.short_name if unit else ""}',
+            'last_updated':
+                (
+                    balance.last_updated.strftime(
+                        '%d.%m.%Y %H:%M'
+                    )
+                    if balance.last_updated
+                    else ''
+                )
+        })
+
+    # Сортировка:
+    # Отделение -> Материал
+
+    rows.sort(
+        key=lambda x: (
+            x['department'].lower(),
+            x['material'].lower()
+        )
+    )
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = f"{datetime.now().strftime("%Y-%m-%d")}"
+
+    ws.append([
+        "№ п/п",
+        "Отделение",
+        "Медицинский материал",
+        "Количество",
+        "Дата обновления"
+    ])
+
+    for index, row in enumerate(rows,start=1):
+
+        ws.append([
+            index,
+            row['department'],
+            row['material'],
+            row['quantity'],
+            row['last_updated']
+        ])
+
+    autosize_columns(ws)
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="material_balances.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
 
@@ -195,17 +289,77 @@ def handle_issued_item(issued_id):
 @access_control('issued')
 def export_issued_excel():
 
-    issued_operations = MaterialOperations.query.filter_by(
-        is_issued=True
-    ).all()
+    issued_operations = (
+        MaterialOperations.query
+        .filter_by(is_issued=True)
+        .all()
+    )
+
+    rows = []
+
+    for operation in issued_operations:
+
+        material = MedicalMaterials.query.get(
+            operation.medical_material_id
+        )
+        current_user = Users.query.get(
+            operation.current_user_id
+        )
+        department = Departments.query.get(
+            operation.department_id
+        )
+        material_unit = None
+
+        if material:
+            material_unit = MaterialUnits.query.get(
+                material.material_unit_id
+            )
+
+        rows.append({
+            'department':
+                department.name if department else '',
+            'user':
+                (
+                    f'{current_user.surname} '
+                    f'{current_user.name} '
+                    f'{current_user.second_name}'
+                ) if current_user else '',
+            'material':
+                material.name if material else '',
+            'quantity':
+                (
+                    f'{operation.quantity} '
+                    f'{material_unit.short_name if material_unit else ""}'
+                ),
+            'document_number':
+                operation.document_number or '',
+            'operation_date':
+                (
+                    operation.operation_date.strftime(
+                        '%d.%m.%Y %H:%M'
+                    )
+                    if operation.operation_date
+                    else ''
+                )
+        })
+
+    # Сортировка:
+    # Отделение -> Материал
+    rows.sort(
+        key=lambda x: (
+            x['department'].lower(),
+            x['material'].lower()
+        )
+    )
 
     wb = Workbook()
     ws = wb.active
-    ws.title = f"{datetime.now().strftime("%Y-%m-%d")}"
+    ws.title = datetime.now().strftime(
+        "%Y-%m-%d"
+    )
 
-    # Заголовки
     ws.append([
-        "ID",
+        "№ п/п",
         "Отделение",
         "Выдал",
         "Материал",
@@ -214,52 +368,22 @@ def export_issued_excel():
         "Дата операции"
     ])
 
-    for operation in issued_operations:
-
-        material = MedicalMaterials.query.get(
-            operation.medical_material_id
-        )
-
-        current_user = Users.query.get(
-            operation.current_user_id
-        )
-
-        department = Departments.query.get(
-            operation.department_id
-        )
-
-        material_unit = None
-        if material:
-            material_unit = MaterialUnits.query.get(
-                material.material_unit_id
-            )
-
-        quantity = (
-            f"{operation.quantity} "
-            f"{material_unit.short_name if material_unit else ''}"
-        )
+    for index, row in enumerate(
+        rows,
+        start=1
+    ):
 
         ws.append([
-            operation.id,
-            department.name if department else '',
-            f'{current_user.surname} {current_user.name} {current_user.second_name}',
-            material.name if material else '',
-            quantity,
-            operation.document_number,
-            operation.operation_date
+            index,
+            row['department'],
+            row['user'],
+            row['material'],
+            row['quantity'],
+            row['document_number'],
+            row['operation_date']
         ])
 
-        # авто ширина (openpyxl-версия)
-        for col in ws.columns:
-            max_length = 0
-            letter = col[0].column_letter
-
-            for cell in col:
-                if cell.value:
-                    max_length = max(max_length, len(str(cell.value)))
-
-            ws.column_dimensions[letter].width = min(max_length + 3, 50)
-
+    autosize_columns(ws)
     output = BytesIO()
     wb.save(output)
     output.seek(0)
@@ -372,17 +496,69 @@ def handle_written_off():
 @material_balances_controller.route('/written_off/export')
 @access_control('written_off')
 def export_written_off_excel():
+    written_off_ops = (MaterialOperations.query.filter_by(is_written_off=True).all())
 
-    written_off_ops = MaterialOperations.query.filter_by(
-        is_written_off=True
-    ).all()
+    rows = []
+
+    for op in written_off_ops:
+
+        material = MedicalMaterials.query.get(
+            op.medical_material_id
+        )
+        user = Users.query.get(
+            op.current_user_id
+        )
+        dept = Departments.query.get(
+            op.department_id
+        )
+        unit = None
+        if material:
+            unit = MaterialUnits.query.get(
+                material.material_unit_id
+            )
+
+        rows.append({
+            'department':
+                dept.name if dept else '',
+            'user':
+                (
+                    f'{user.surname} '
+                    f'{user.name} '
+                    f'{user.second_name}'
+                ) if user else '',
+            'material':
+                material.name if material else '',
+            'quantity':
+                f'{op.quantity} '
+                f'{unit.short_name if unit else ""}',
+            'document_number':
+                op.document_number or '',
+            'operation_date':
+                (op.operation_date.strftime('%d.%m.%Y %H:%M')
+                    if op.operation_date
+                    else ''
+                )
+        })
+
+    # Сортировка:
+    # сначала отделение,
+    # потом материал
+
+    rows.sort(
+        key=lambda x: (
+            x['department'].lower(),
+            x['material'].lower()
+        )
+    )
 
     wb = Workbook()
+
     ws = wb.active
-    ws.title = f"{datetime.now().strftime("%Y-%m-%d")}"
+
+    ws.title = datetime.now().strftime("%Y-%m-%d")
 
     ws.append([
-        "ID",
+        "№ п/п",
         "Отделение",
         "Выдал",
         "Материал",
@@ -391,37 +567,18 @@ def export_written_off_excel():
         "Дата операции"
     ])
 
-    for op in written_off_ops:
-
-        material = MedicalMaterials.query.get(op.medical_material_id)
-        user = Users.query.get(op.current_user_id)
-        dept = Departments.query.get(op.department_id)
-        unit = None
-
-        if material:
-            unit = MaterialUnits.query.get(material.material_unit_id)
-
+    for index, row in enumerate(rows,start=1):
         ws.append([
-            op.id,
-            dept.name if dept else '',
-            f'{user.surname} {user.name} {user.second_name}' if user else '',
-            material.name if material else '',
-            f'{op.quantity} {unit.short_name if unit else ""}',
-            op.document_number,
-            op.operation_date
+            index,
+            row['department'],
+            row['user'],
+            row['material'],
+            row['quantity'],
+            row['document_number'],
+            row['operation_date']
         ])
 
-    # авто ширина (openpyxl-версия)
-    for col in ws.columns:
-        max_length = 0
-        letter = col[0].column_letter
-
-        for cell in col:
-            if cell.value:
-                max_length = max(max_length, len(str(cell.value)))
-
-        ws.column_dimensions[letter].width = min(max_length + 3, 50)
-
+    autosize_columns(ws)
     output = BytesIO()
     wb.save(output)
     output.seek(0)

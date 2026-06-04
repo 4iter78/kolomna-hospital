@@ -8,8 +8,11 @@
 {% block content %}
 
   <div class="table-toolbar">
-    <span id="record-count" class="record-count">Записей: {{ count }}</span>
     <div>
+        <a href="{{ url_for('material_balances_controller.export_written_off_excel') }}"
+           class="btn-action btn-edit">
+            Полный экспорт в Excel
+        </a>
         <button
             type="button"
             class="btn-action btn-edit"
@@ -17,11 +20,8 @@
                 '.table',
                 'written_off_materials_filter.xlsx')">Видимые строки в Excel
         </button>
-        <a href="{{ url_for('material_balances_controller.export_written_off_excel') }}"
-           class="btn-action btn-edit">
-            Полный экспорт в Excel
-        </a>
     </div>
+    <span id="record-count" class="record-count">Записей: {{ count }}</span>
   </div>
 
   <div class="filter-panel mb-3">
@@ -77,7 +77,7 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th class="sortable">ID</th>
+      <th class="sortable" data-export="false">ID</th>
       <th class="sortable">Отделение</th>
       <th class="sortable">Выдал</th>
       <th class="sortable">Медицинский материал</th>
