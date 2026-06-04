@@ -15,6 +15,9 @@ from models.MaterialOperations import MaterialOperations
 from models.MaterialUnits import MaterialUnits
 from models.MedicalMaterials import MedicalMaterials
 from models.Users import Users
+from io import BytesIO
+from flask import send_file
+from openpyxl import Workbook
 
 db = db_connection
 
@@ -188,6 +191,87 @@ def handle_issued_item(issued_id):
             return {"success": False, "message": f"Материал {material.name} не может быть выдан. {str(e)}"}, 400
 
 
+@material_balances_controller.route('/issued/export')
+@access_control('issued')
+def export_issued_excel():
+
+    issued_operations = MaterialOperations.query.filter_by(
+        is_issued=True
+    ).all()
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = f"{datetime.now().strftime("%Y-%m-%d")}"
+
+    # Заголовки
+    ws.append([
+        "ID",
+        "Отделение",
+        "Выдал",
+        "Материал",
+        "Количество",
+        "№ документа",
+        "Дата операции"
+    ])
+
+    for operation in issued_operations:
+
+        material = MedicalMaterials.query.get(
+            operation.medical_material_id
+        )
+
+        current_user = Users.query.get(
+            operation.current_user_id
+        )
+
+        department = Departments.query.get(
+            operation.department_id
+        )
+
+        material_unit = None
+        if material:
+            material_unit = MaterialUnits.query.get(
+                material.material_unit_id
+            )
+
+        quantity = (
+            f"{operation.quantity} "
+            f"{material_unit.short_name if material_unit else ''}"
+        )
+
+        ws.append([
+            operation.id,
+            department.name if department else '',
+            f'{current_user.surname} {current_user.name} {current_user.second_name}',
+            material.name if material else '',
+            quantity,
+            operation.document_number,
+            operation.operation_date
+        ])
+
+        # авто ширина (openpyxl-версия)
+        for col in ws.columns:
+            max_length = 0
+            letter = col[0].column_letter
+
+            for cell in col:
+                if cell.value:
+                    max_length = max(max_length, len(str(cell.value)))
+
+            ws.column_dimensions[letter].width = min(max_length + 3, 50)
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name='issued_materials.xlsx',
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+
+
 @material_balances_controller.route('/written_off/<written_off_id>',methods=['PUT'])
 @access_control('written_off')
 def handle_written_off_item(written_off_id):
@@ -283,4 +367,68 @@ def handle_written_off():
         materials=materials,
         departments=departments,
         count=len(written_off)
+    )
+
+@material_balances_controller.route('/written_off/export')
+@access_control('written_off')
+def export_written_off_excel():
+
+    written_off_ops = MaterialOperations.query.filter_by(
+        is_written_off=True
+    ).all()
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = f"{datetime.now().strftime("%Y-%m-%d")}"
+
+    ws.append([
+        "ID",
+        "Отделение",
+        "Выдал",
+        "Материал",
+        "Количество",
+        "№ документа",
+        "Дата операции"
+    ])
+
+    for op in written_off_ops:
+
+        material = MedicalMaterials.query.get(op.medical_material_id)
+        user = Users.query.get(op.current_user_id)
+        dept = Departments.query.get(op.department_id)
+        unit = None
+
+        if material:
+            unit = MaterialUnits.query.get(material.material_unit_id)
+
+        ws.append([
+            op.id,
+            dept.name if dept else '',
+            f'{user.surname} {user.name} {user.second_name}' if user else '',
+            material.name if material else '',
+            f'{op.quantity} {unit.short_name if unit else ""}',
+            op.document_number,
+            op.operation_date
+        ])
+
+    # авто ширина (openpyxl-версия)
+    for col in ws.columns:
+        max_length = 0
+        letter = col[0].column_letter
+
+        for cell in col:
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+
+        ws.column_dimensions[letter].width = min(max_length + 3, 50)
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="written_off_materials.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )

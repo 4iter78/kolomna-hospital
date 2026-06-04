@@ -9,6 +9,19 @@
 
   <div class="table-toolbar">
     <span id="record-count" class="record-count">Записей: {{ count }}</span>
+    <div>
+        <button
+            type="button"
+            class="btn-action btn-edit"
+            onclick="exportVisibleRowsToExcel(
+                '.table',
+                'written_off_materials_filter.xlsx')">Видимые строки в Excel
+        </button>
+        <a href="{{ url_for('material_balances_controller.export_written_off_excel') }}"
+           class="btn-action btn-edit">
+            Полный экспорт в Excel
+        </a>
+    </div>
   </div>
 
   <div class="filter-panel mb-3">
@@ -89,7 +102,7 @@
       <td>{{ item.medical_material }}</td>
       <td>{{ item.table_quantity }}</td>
       <td>{{ item.document_number }}</td>
-      <td>{{ item.operation_date }}</td>
+      <td>{{ item.operation_date.strftime('%d.%m.%Y %H:%M') }}</td>
     </tr>
     {% endfor %}
   </tbody>

@@ -20,7 +20,6 @@
           {{ role.name }}
         </th>
       {% endfor %}
-      <th style="min-width:160px;">Сущность</th>
     </tr>
     <tr>
       <th></th>
@@ -53,9 +52,6 @@
         </td>
         {% endfor %}
       {% endfor %}
-      <td><strong>{{ entity.name }}</strong>
-        <span style="display:block;font-size:.75rem;color:var(--text-muted);">{{ entity.code }}</span>
-      </td>
     </tr>
     {% endfor %}
     <tr>
@@ -65,7 +61,6 @@
           {{ role.name }}
         </th>
       {% endfor %}
-      <th style="min-width:160px;">Сущность</th>
     </tr>
     <tr>
       <th></th>
@@ -81,6 +76,10 @@
 </div>
 
 <style>
+    #ajax-messages {
+        display: none;
+    }
+
   .perm-toggle {
     width: 36px; height: 28px; border-radius: 6px; border: 1.5px solid var(--gray-border);
     background: var(--gray-light); color: var(--text-muted);

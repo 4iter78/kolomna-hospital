@@ -292,3 +292,64 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     });
 });
+
+function exportVisibleRowsToExcel(
+    tableSelector,
+    fileName
+) {
+    const data = [];
+
+    const headers = [];
+
+    document.querySelectorAll(
+        `${tableSelector} thead th`
+    ).forEach(th => {
+        headers.push(th.textContent.trim());
+    });
+
+    data.push(headers);
+
+    document.querySelectorAll(
+        `${tableSelector} tbody tr[data-id]`
+    ).forEach(row => {
+
+        if (row.style.display === 'none') {
+            return;
+        }
+
+        const rowData = [];
+
+        row.querySelectorAll('td')
+            .forEach(td => {
+                rowData.push(td.textContent.trim());
+            });
+
+        data.push(rowData);
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(data);
+
+    // 📌 ширина колонок (фикс + нормально выглядит)
+    ws['!cols'] = [
+        { wch: 8 },   // ID
+        { wch: 25 },  // Отделение
+        { wch: 30 },  // Выдал
+        { wch: 40 },  // Материал
+        { wch: 15 },  // Количество
+        { wch: 20 },  // Документ
+        { wch: 15 }   // Дата
+    ];
+
+    const wb = XLSX.utils.book_new();
+
+    const sheetName =
+        new Date().toLocaleDateString('ru-RU');
+
+    XLSX.utils.book_append_sheet(
+        wb,
+        ws,
+        sheetName
+    );
+
+    XLSX.writeFile(wb, fileName);
+}

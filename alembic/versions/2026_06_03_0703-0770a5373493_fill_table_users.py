@@ -34,9 +34,9 @@ def upgrade() -> None:
                 (SELECT id FROM user_roles WHERE name = 'Врач')),
             ('Орлов',     'Николай',   'Сергеевич',      '2020-09-01', 'orlov_ns',     'secret_3',
                 (SELECT id FROM user_roles WHERE name = 'Врач')),
-            ('Захаров',   'Виктор',    'Геннадьевич',    '2014-04-01', 'zakharov_vg',  'secret_9',
+            ('Захаров',   'Виктор',    'Геннадьевич',    '2014-04-01', 'zakharov_vg',  'secret_4',
                 (SELECT id FROM user_roles WHERE name = 'Администратор')),
-            ('Полякова',  'Кристина',  'Олеговна',       '2023-01-09', 'polyakova_ko', 'secret_10',
+            ('Полякова',  'Кристина',  'Олеговна',       '2023-01-09', 'polyakova_ko', 'secret_5',
                 (SELECT id FROM user_roles WHERE name = 'Гость')),
             -- Провизоры
             (
@@ -45,7 +45,7 @@ def upgrade() -> None:
                 'Игоревна',
                 '2019-02-11',
                 'kovaleva_mi',
-                'secret_11',
+                'secret_6',
                 (SELECT id FROM user_roles WHERE name = 'Провизор')
             ),
             (
@@ -54,7 +54,7 @@ def upgrade() -> None:
                 'Сергеевич',
                 '2021-06-03',
                 'lebedev_as',
-                'secret_12',
+                'secret_7',
                 (SELECT id FROM user_roles WHERE name = 'Провизор')
             ),
             -- Кладовщики
@@ -64,7 +64,7 @@ def upgrade() -> None:
                 'Валерьевич',
                 '2018-09-17',
                 'morozov_dv',
-                'secret_13',
+                'secret_8',
                 (SELECT id FROM user_roles WHERE name = 'Кладовщик')
             ),
             (
@@ -73,7 +73,7 @@ def upgrade() -> None:
                 'Павловна',
                 '2020-12-01',
                 'kuznetsova_ep',
-                'secret_14',
+                'secret_9',
                 (SELECT id FROM user_roles WHERE name = 'Кладовщик')
             ),
             -- Медсестры
@@ -83,7 +83,7 @@ def upgrade() -> None:
                 'Андреевна',
                 '2017-05-22',
                 'nikitina_oa',
-                'secret_15',
+                'secret_10',
                 (SELECT id FROM user_roles WHERE name = 'Медсестра')
             ),
             (
@@ -92,7 +92,7 @@ def upgrade() -> None:
                 'Викторовна',
                 '2022-03-14',
                 'sokolova_tv',
-                'secret_16',
+                'secret_11',
                 (SELECT id FROM user_roles WHERE name = 'Медсестра')
             ),
             (
@@ -101,7 +101,7 @@ def upgrade() -> None:
                 'Романовна',
                 '2021-08-09',
                 'vlasova_yr',
-                'secret_17',
+                'secret_12',
                 (SELECT id FROM user_roles WHERE name = 'Медсестра')
             ),
             -- Фельдшеры
@@ -111,7 +111,7 @@ def upgrade() -> None:
                 'Ильич',
                 '2016-01-18',
                 'egorov_mi',
-                'secret_18',
+                'secret_13',
                 (SELECT id FROM user_roles WHERE name = 'Фельдшер')
             ),
             (
@@ -120,7 +120,7 @@ def upgrade() -> None:
                 'Олеговна',
                 '2019-11-07',
                 'tarasova_no',
-                'secret_19',
+                'secret_14',
                 (SELECT id FROM user_roles WHERE name = 'Фельдшер')
             );
     """)
