@@ -6,6 +6,8 @@ Create Date: 2026-06-04 05:06:33.790072
 
 """
 from typing import Sequence, Union
+from dotenv import load_dotenv
+import os
 
 from alembic import op
 
@@ -72,8 +74,8 @@ def downgrade():
     """)
 
     # Удаляем роль
-    op.execute("""
-        REASSIGN OWNED BY admin_backup TO postgres;
+    op.execute(f"""
+        REASSIGN OWNED BY admin_backup TO {os.getenv('DB_USER')};
         DROP OWNED BY admin_backup;
         DROP ROLE IF EXISTS admin_backup;
     """)
