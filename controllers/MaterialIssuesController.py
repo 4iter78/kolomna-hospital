@@ -240,6 +240,10 @@ def handle_issue_item(issue_id):
                 material_unit = MaterialUnits.query.get(
                     material.material_unit_id
                 )
+            store_id = Departments.query.filter_by(name='Склад').first().id
+            balance = MaterialBalances.query.filter_by(medical_material_id=material.id,
+                                                       department_id=store_id).first()
+
             txt_item = {
                 "id":
                     item.id,
@@ -256,7 +260,8 @@ def handle_issue_item(issue_id):
                 "material_unit":
                     material_unit.short_name if material else '',
                 "quantity":
-                    item.quantity
+                    item.quantity,
+                "table_quantity": f'{balance.current_quantity if balance else 0} {material_unit.short_name}'
             }
             items.append(txt_item)
         response = {
