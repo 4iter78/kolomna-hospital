@@ -7,6 +7,19 @@
 {% block content %}
 
   <div class="table-toolbar">
+    <div>
+      <a href="{{ url_for('material_balances_controller.export_storage_excel') }}"
+         class="btn-action btn-edit">
+          Полный экспорт в Excel
+      </a>
+      <button
+          type="button"
+          class="btn-action btn-edit"
+          onclick="exportVisibleRowsToExcel(
+              '.table',
+              'material_balances_filter.xlsx')">Видимые строки в Excel
+      </button>
+    </div>
     <span id="record-count" class="record-count">Записей: {{ count }}</span>
   </div>
 

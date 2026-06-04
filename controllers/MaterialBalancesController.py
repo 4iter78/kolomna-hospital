@@ -95,6 +95,60 @@ def handle_storage():
     )
 
 
+@material_balances_controller.route('/storage/export')
+@access_control('storage')
+def export_storage_excel():
+
+    balances = MaterialBalances.query.order_by(MaterialBalances.id).all()
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = f"{datetime.now().strftime("%Y-%m-%d")}"
+
+    ws.append([
+        "ID",
+        "Отделение",
+        "Медицинский материал",
+        "Количество",
+        "Дата обновления"
+    ])
+
+    for balance in balances:
+
+        material = MedicalMaterials.query.get(balance.medical_material_id)
+        department = Departments.query.get(balance.department_id)
+
+        ws.append([
+            balance.id,
+            department.name if department else '',
+            material.name if material else '',
+            balance.current_quantity,
+            balance.last_updated.strftime('%d.%m.%Y %H:%M') if balance.last_updated else ''
+        ])
+
+    # авто ширина
+    for col in ws.columns:
+        max_length = 0
+        letter = col[0].column_letter
+
+        for cell in col:
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+
+        ws.column_dimensions[letter].width = min(max_length + 3, 50)
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="storage.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+
 @material_balances_controller.route('/issued',methods=['GET'])
 @access_control('issued')
 def handle_issued():
