@@ -159,7 +159,7 @@ body::after {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
 }
-.record-count { font-size: .85rem; color: var(--text-muted); }
+.record-count { margin-left: auto; font-size: .85rem; color: var(--text-muted); }
 
 /* ── Buttons ── */
 .btn-action {
