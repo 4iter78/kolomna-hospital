@@ -17,18 +17,18 @@ def handle_material_types():
             new_material_type = MaterialTypes(name=data['name'])
             db.session.add(new_material_type)
             db.session.commit()
-            flash(f"Тип материалов {new_material_type.name} с идентификатором "
+            flash(f"Тип материала {new_material_type.name} с идентификатором "
                   f"{new_material_type.id} успешно создан.", 'success')
-
         except Exception as e:
             db.session.rollback()
-            flash(f"{str(e)}", "danger")
+            print(e)
+            flash(f"Тип материала не может быть создан. {str(e)}", "danger")
         return redirect(url_for('material_types_controller.handle_material_types'))
 
     elif request.method == 'GET':
         material_types = MaterialTypes.query.all()
         results = [{"id": rt.id, "name": rt.name} for rt in material_types]
-        return render_template('material_types.html', title='Типы медицинских материалов',
+        return render_template('material_types.html', title='Типы медицинских материала',
                                material_types=results, count=len(results))
 
 
@@ -41,13 +41,23 @@ def handle_material_type(material_types_id):
         return {"message": "success", "material_types": {"id": material_type.id, "name": material_type.name}}
 
     elif request.method == 'PUT':
-        data = request.get_json()
-        material_type.name = data['name']
-        db.session.add(material_type)
-        db.session.commit()
-        return {"message": f"Тип материалов {material_type.name} успешно обновлен"}
+        try:
+            data = request.get_json()
+            material_type.name = data['name']
+            db.session.add(material_type)
+            db.session.commit()
+            return {"success": True, "message": f"Тип материала {material_type.name} успешно обновлен"}
+        except Exception as e:
+            db.session.rollback()
+            print(e)
+            return {"success": False, "message": f"Тип материала {material_type.name} не может быть обновлен. {str(e)}"}, 400
 
     elif request.method == 'DELETE':
-        db.session.delete(material_type)
-        db.session.commit()
-        return {"message": f"Тип материалов {material_type.name} успешно удален."}
+        try:
+            db.session.delete(material_type)
+            db.session.commit()
+            return {"success": True, "message": f"Тип материала {material_type.name} успешно удален."}
+        except Exception as e:
+            db.session.rollback()
+            print(e)
+            return {"success": False, "message": f"Тип материала {material_type.name} не может быть удален. {str(e)}"}, 400

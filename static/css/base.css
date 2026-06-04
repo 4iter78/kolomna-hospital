@@ -319,3 +319,9 @@ td a:hover { color: var(--blue-deep); text-decoration: underline; }
 .sortable:hover {
     background-color: #e6f4ff;
 }
+
+#ajax-messages {
+    position: sticky;
+    top: 10px;
+    z-index: 1000;
+}

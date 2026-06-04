@@ -22,7 +22,8 @@ def handle_user_roles():
                   'success')
         except Exception as e:
             db.session.rollback()
-            flash(f"{str(e)}", "danger")
+            print(e)
+            flash(f"Роль не может быть создана. {str(e)}", "danger")
         return redirect(url_for('user_roles_controller.handle_user_roles'))
 
     elif request.method == 'GET':
@@ -35,7 +36,7 @@ def handle_user_roles():
 
         return render_template('roles.html', title='Роли пользователей',
                            user_roles=results, count=len(results))
-        # {"count": len(results), "users": results}
+
 
 # маршрут к конкретному пользователю по его user_id
 # GET выводит данные по конкретному пользователю
@@ -53,16 +54,23 @@ def handle_user_role(user_role_id):
         return {"message": "success", "user_role": response}
 
     elif request.method == 'PUT':
-        data = request.get_json()
-        user_role.name = data['name']
-
-        db.session.add(user_role)
-        db.session.commit()
-
-        return {"message": f"Роль {user_role.name} успешно обновлена"}
+        try:
+            data = request.get_json()
+            user_role.name = data['name']
+            db.session.add(user_role)
+            db.session.commit()
+            return {"success": True, "message": f"Роль {user_role.name} успешно обновлена"}
+        except Exception as e:
+            db.session.rollback()
+            print(e)
+            return {"success": False, "message": f"Роль {user_role.name} не может быть обновлена. {str(e)}"}, 400
 
     elif request.method == 'DELETE':
-        db.session.delete(user_role)
-        db.session.commit()
-
-        return {"message": f"Роль {user_role.name} успешно удалена."}
+        try:
+            db.session.delete(user_role)
+            db.session.commit()
+            return {"success": True, "message": f"Роль {user_role.name} успешно удалена."}
+        except Exception as e:
+            db.session.rollback()
+            print(e)
+            return {"success": False, "message": f"Роль {user_role.name} не может быть удалена. {str(e)}"}, 400

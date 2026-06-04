@@ -19,10 +19,10 @@ def handle_material_units():
             db.session.commit()
             flash(f"Единица измерения {new_material_unit.name} с идентификатором "
                   f"{new_material_unit.id} успешно создана.", 'success')
-
         except Exception as e:
             db.session.rollback()
-            flash(f"{str(e)}", "danger")
+            print(e)
+            flash(f"Единица измерения не может быть создана. {str(e)}", "danger")
         return redirect(url_for('material_units_controller.handle_material_units'))
 
     elif request.method == 'GET':
@@ -42,14 +42,26 @@ def handle_material_unit(material_units_id):
         return {"message": "success", "material_units": {"id": material_unit.id, "name": material_unit.name}}
 
     elif request.method == 'PUT':
-        data = request.get_json()
-        material_unit.name = data['name']
-        material_unit.short_name = data['short_name']
-        db.session.add(material_unit)
-        db.session.commit()
-        return {"message": f"Единица измерения {material_unit.name} успешно обновлена"}
+        try:
+            data = request.get_json()
+            material_unit.name = data['name']
+            material_unit.short_name = data['short_name']
+            db.session.add(material_unit)
+            db.session.commit()
+            return {"success": True, "message": f"Единица измерения {material_unit.name} успешно обновлена"}
+        except Exception as e:
+            db.session.rollback()
+            print(e)
+            return {"success": False, "message": f"Единица измерения {material_unit.name} не может быть обновлен. "
+                                                 f"{str(e)}"}, 400
 
     elif request.method == 'DELETE':
-        db.session.delete(material_unit)
-        db.session.commit()
-        return {"message": f"Единица измерения {material_unit.name} успешно удалена."}
+        try:
+            db.session.delete(material_unit)
+            db.session.commit()
+            return {"success": True, "message": f"Единица измерения {material_unit.name} успешно удалена."}
+        except Exception as e:
+            db.session.rollback()
+            print(e)
+            return {"success": False, "message": f"Единица измерения {material_unit.name} не может быть удален. "
+                                                 f"{str(e)}"}, 400

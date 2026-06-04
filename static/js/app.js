@@ -9,13 +9,11 @@ function openModal(id) {
 }
 
 function closeModal(id) {
-  console.log('closing', id);
   document.getElementById(id || 'modal-create').classList.remove('open');
   document.body.style.overflow = '';
 }
 
 function closeOnOverlay(e, id) {
-  console.log('closing overlay', id);
   if (e.target === e.currentTarget) closeModal(id);
 }
 
@@ -30,32 +28,47 @@ document.addEventListener('keydown', function (e) {
 
 // ── Toast-уведомления ────────────────────────────
 function showToast(msg, type) {
-  const t = document.createElement('div');
-  t.className = 'toast ' + (type || 'success');
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(function () { t.remove(); }, 20000);
+    const timeout = type === 'success'
+        ? 2000
+        : 10000;
+    const container = document.getElementById('ajax-messages');
+
+    const alert = document.createElement('div');
+
+    const bsType = {
+        success: 'success',
+        error: 'danger',
+        danger: 'danger',
+        warning: 'warning',
+        info: 'info'
+    }[type] || 'success';
+
+    alert.className = `alert alert-${bsType}`;
+    alert.textContent = msg;
+
+    container.prepend(alert);
+
+    setTimeout(() => {
+        alert.remove();
+    }, timeout);
 }
 
 // ── DELETE через fetch ───────────────────────────
 function deleteRecord(url, id) {
   if (!confirm('Удалить запись #' + id + '?')) return;
-
   fetch(url + id, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' }
   })
     .then(function (r) { return r.json(); })
     .then(function (resp) {
-      showToast(resp.message || 'Запись удалена', 'success');
-
-      const modal = document.getElementById(modalId);
-      console.log(modal);
-      setTimeout(function () { location.reload(); }, 20000);
-    })
-    .catch(function () { showToast('Ошибка при удалении', 'error');
-      setTimeout(function () { location.reload(); }, 20000);
-    });
+    const timeout = resp.success ? 2000 : 10000;
+    showToast(
+        resp.message,
+        resp.success ? 'success' : 'danger'
+    );
+    setTimeout(function () { location.reload(); }, timeout);
+})
 }
 
 // ── PUT через fetch ──────────────────────────────
@@ -82,16 +95,14 @@ function submitEdit(url, formId, modalId) {
   })
     .then(function (r) { return r.json(); })
     .then(function (resp) {
-      showToast(resp.message || 'Запись обновлена', 'success');
-      closeModal(modalId || 'modal-edit');
-
-      const modal = document.getElementById(modalId);
-      console.log(modal);
-      setTimeout(function () { location.reload(); }, 10000);
+        const timeout = resp.success ? 2000 : 10000;
+        showToast(
+            resp.message,
+            resp.success ? 'success' : 'danger'
+        );
+        closeModal(modalId || 'modal-edit');
+        setTimeout(function () { location.reload(); }, timeout);
     })
-    .catch(function () { showToast('Ошибка при сохранении', 'error');
-    });
-
 }
 
 let sortDirections = {};
@@ -146,76 +157,6 @@ document.addEventListener(
     enableTableSorting
 );
 
-function initNameFilter() {
-
-    const filter =
-        document.getElementById('filter-name');
-
-    if (!filter)
-        return;
-
-    filter.addEventListener(
-        'input',
-        applyNameFilter
-    );
-
-    applyNameFilter();
-}
-
-function applyNameFilter() {
-
-    const name =
-        document.getElementById('filter-name')
-            .value
-            .toLowerCase();
-
-    let visibleCount = 0;
-
-    document.querySelectorAll(
-        '.table tbody > tr[data-id]'
-    ).forEach(row => {
-
-        const rowName =
-            (row.dataset.name || '')
-                .toLowerCase();
-
-        const visible =
-            !name ||
-            rowName.includes(name);
-
-        row.style.display =
-            visible ? '' : 'none';
-
-        if (visible) {
-            visibleCount++;
-        }
-    });
-
-    const counter =
-        document.getElementById(
-            'record-count'
-        );
-
-    if (counter) {
-        counter.textContent =
-            `Записей: ${visibleCount}`;
-    }
-}
-
-function resetNameFilter() {
-
-    const filter =
-        document.getElementById(
-            'filter-name'
-        );
-
-    if (filter) {
-        filter.value = '';
-    }
-
-    applyNameFilter();
-}
-
 document.addEventListener(
     'DOMContentLoaded',
     () => {
@@ -245,8 +186,6 @@ function applyTableFilters() {
         '.table tbody tr[data-id]'
     ).forEach(row => {
         let visible = true;
-        console.log("apply filters", row)
-        console.log("dataset", row.dataset)
         document
             .querySelectorAll('.table-filter')
             .forEach(filter => {
