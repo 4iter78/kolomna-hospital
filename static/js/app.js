@@ -297,53 +297,104 @@ function exportVisibleRowsToExcel(
     tableSelector,
     fileName
 ) {
-    const data = [];
 
-    const headers = [];
+    const table =
+        document.querySelector(tableSelector);
 
-    document.querySelectorAll(
-        `${tableSelector} thead th`
-    ).forEach(th => {
-        headers.push(th.textContent.trim());
-    });
+    if (!table) {
+        console.error(
+            `Таблица "${tableSelector}" не найдена`
+        );
+        return;
+    }
 
-    data.push(headers);
+    const exportColumns = [];
 
-    document.querySelectorAll(
-        `${tableSelector} tbody tr[data-id]`
+    // Всегда начинаем с № п/п
+    const headers = ['№ п/п'];
+
+    table.querySelectorAll('thead th')
+        .forEach((th, index) => {
+
+            if (
+                th.dataset.export === 'false'
+            ) {
+                return;
+            }
+
+            exportColumns.push(index);
+
+            headers.push(th.textContent.trim()
+            );
+        });
+
+    const data = [headers];
+
+    let rowNumber = 1;
+
+    table.querySelectorAll(
+        'tbody tr[data-id]'
     ).forEach(row => {
 
         if (row.style.display === 'none') {
             return;
         }
 
-        const rowData = [];
+        const rowData = [rowNumber];
 
-        row.querySelectorAll('td')
-            .forEach(td => {
-                rowData.push(td.textContent.trim());
-            });
+        exportColumns.forEach(index => {
+
+            const cell =
+                row.cells[index];
+
+            rowData.push(
+                cell
+                    ? cell.textContent.trim()
+                    : ''
+            );
+        });
 
         data.push(rowData);
+        rowNumber++;
     });
 
-    const ws = XLSX.utils.aoa_to_sheet(data);
+    const ws =
+        XLSX.utils.aoa_to_sheet(data);
 
-    // 📌 ширина колонок (фикс + нормально выглядит)
-    ws['!cols'] = [
-        { wch: 8 },   // ID
-        { wch: 25 },  // Отделение
-        { wch: 30 },  // Выдал
-        { wch: 40 },  // Материал
-        { wch: 15 },  // Количество
-        { wch: 20 },  // Документ
-        { wch: 15 }   // Дата
-    ];
+    // Автоподбор ширины колонок
+    const colWidths = [];
+    data.forEach(row => {
+        row.forEach((cell, index) => {
+            const length =
+                String(cell || '').length;
+            if (!colWidths[index]) {
+                colWidths[index] = {
+                    wch: length
+                };
+            } else {
+                colWidths[index].wch =
+                    Math.max(
+                        colWidths[index].wch,
+                        length
+                    );
+            }
+        });
+    });
 
-    const wb = XLSX.utils.book_new();
+    colWidths.forEach(col => {
+        col.wch = Math.min(
+            col.wch + 3,
+            50
+        );
+    });
 
+    ws['!cols'] = colWidths;
+    const wb =
+        XLSX.utils.book_new();
     const sheetName =
-        new Date().toLocaleDateString('ru-RU');
+        new Date()
+            .toLocaleDateString('ru-RU')
+            .replaceAll('.', '-');
 
     XLSX.utils.book_append_sheet(
         wb,
@@ -351,5 +402,9 @@ function exportVisibleRowsToExcel(
         sheetName
     );
 
-    XLSX.writeFile(wb, fileName);
+    XLSX.writeFile(
+        wb,
+        fileName ||
+        `export_${sheetName}.xlsx`
+    );
 }
