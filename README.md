@@ -4,7 +4,7 @@
 Для подключения к БД и разворачивания приложения нужно заполнить локальный файл .env в корне проекта, такой же положить в /docker 
 и указать в нём свои данные для подключения:
 ```commandline
-DB_HOST=postgres
+DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=kolomna_hospital
 DB_USER=myuser
