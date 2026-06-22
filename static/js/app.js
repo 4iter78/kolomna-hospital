@@ -122,9 +122,7 @@ function enableTableSorting() {
 function sortTable(th, columnIndex) {
     const table = th.closest('table');
     const tbody = table.querySelector('tbody');
-    const rows = Array.from(
-        tbody.querySelectorAll('tr')
-    );
+    const rows = Array.from(tbody.children);
     const key =
         `${table.id || 'table'}-${columnIndex}`;
     sortDirections[key] =
