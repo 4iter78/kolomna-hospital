@@ -27,3 +27,7 @@ APP_PORT=8001
 ```commandline
     docker compose up -d app
 ```
+# Запуск только приложения с пересборкой образа, без БД
+```commandline
+    docker compose up -d app --build
+```

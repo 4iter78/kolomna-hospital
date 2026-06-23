@@ -59,9 +59,14 @@
                      placeholder="№ документа">
           </div>
           <div class="col">
-              <input type="date"
+              <input type="datetime-local"
                      class="form-control table-filter"
-                     data-filter-field="operation_date">
+                     data-filter-field="operation_date_from">
+          </div>
+          <div class="col">
+              <input type="datetime-local"
+                     class="form-control table-filter"
+                     data-filter-field="operation_date_to">
           </div>
           <div class="col-auto">
               <button type="button"
