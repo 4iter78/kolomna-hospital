@@ -80,9 +80,19 @@ body::after {
   color: rgba(255,255,255,.7); letter-spacing: .06em;
   text-transform: uppercase; margin-top: 1px;
 }
+.mobile-topbar {
+  display: none;
+}
 .sidebar-nav { flex: 1; overflow-y: auto; padding: 16px 12px; }
 .sidebar-nav::-webkit-scrollbar { width: 4px; }
 .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+.mobile-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: rgba(255,255,255,.7);
+  padding: 0 8px;
+  margin-right: auto;
+}
 .nav-section-label {
   font-family: 'Montserrat', sans-serif;
   font-size: .62rem; font-weight: 600; letter-spacing: .1em;
@@ -205,7 +215,7 @@ td a:hover { color: var(--blue-deep); text-decoration: underline; }
 .modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 11000;
 
   display: flex;
   justify-content: center;
@@ -306,9 +316,46 @@ td a:hover { color: var(--blue-deep); text-decoration: underline; }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-  .sidebar { transform: translateX(-100%); transition: transform .25s; }
-  .sidebar.open { transform: translateX(0); }
-  .main-area { margin-left: 0; padding: 20px 16px; }
+
+  .mobile-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 12px 16px;
+
+
+    position: sticky;
+    top: 0;
+    z-index: 2000;
+  }
+
+  .burger-btn {
+    font-size: 26px;
+    color: white;
+  }
+
+  /* sidebar becomes drawer */
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    z-index: 12000;
+
+    /* 🔥 ВАЖНО: фон drawer */
+    background: linear-gradient(145deg, var(--blue-deep), #103a7a);
+
+    /* или проще:
+    background: var(--blue-deep);
+    */
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main-area {
+    margin-left: 0; padding: 20px 16px;
+  }
 }
 
 .sortable {
@@ -324,4 +371,11 @@ td a:hover { color: var(--blue-deep); text-decoration: underline; }
     position: sticky;
     top: 10px;
     z-index: 1000;
+}
+
+.burger-btn {
+  font-size: 26px;
+  background: none;
+  border: none;
+  cursor: pointer;
 }

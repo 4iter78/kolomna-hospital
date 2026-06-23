@@ -406,3 +406,31 @@ function exportVisibleRowsToExcel(
         `export_${sheetName}.xlsx`
     );
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  const burger = document.getElementById('burgerBtn');
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('drawerOverlay');
+  const topbar = document.querySelector('.mobile-topbar');
+
+  burger?.addEventListener('click', () => {
+    sidebar.classList.add('open');
+    overlay.classList.add('open');
+    topbar.style.display = 'none';
+  });
+
+  overlay?.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('open');
+    topbar.style.display = 'flex';
+  });
+
+  document.querySelectorAll('.nav-link-item').forEach(link => {
+    link.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('open');
+    });
+  });
+
+});
